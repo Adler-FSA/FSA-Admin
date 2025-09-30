@@ -170,7 +170,7 @@
 <div class="bg-video" aria-hidden="true">
   <iframe id="bgVideo" src=""
           title="Adlerflug Video"
-          allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
+          allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
           allowfullscreen
           referrerpolicy="strict-origin-when-cross-origin"></iframe>
 </div>
@@ -195,6 +195,7 @@
 </div>
 
 <main>
+
   <!-- HERO -->
   <section id="hero">
     <div class="wrap grid cols-2">
@@ -316,4 +317,264 @@
 
   <!-- FOOTER -->
   <footer class="footer">
-    <div class="wrap" style
+    <div class="wrap" style="text-align:center">
+      <div style="font-size:1.2rem;font-weight:800;color:var(--accent);margin-bottom:6px">Finanzbildung für die neue Welt</div>
+      <div style="color:#bbd;margin-bottom:8px;font-style:italic">„Wissen ist Macht – angewandtes Wissen ist Freiheit.“</div>
+      <div style="color:#99a">© <span id="year"></span> Finanzielle Souveränitäts Akademie</div>
+    </div>
+  </footer>
+</main>
+
+<script>
+/* ========= Jahr ========= */
+document.getElementById('year').textContent = new Date().getFullYear();
+
+/* ========= Fade-In ========= */
+const fades = document.querySelectorAll('.fade');
+const io = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+},{threshold:.2});
+fades.forEach(el=>io.observe(el));
+
+/* ========= Musik-Schalter ========= */
+const musikBtn=document.getElementById("musikBtn");
+const bgMusik=document.getElementById("bgMusic");
+let musicPlaying=false;
+musikBtn.addEventListener("click",()=>{
+  if(!musicPlaying){bgMusik.play();musikBtn.textContent="⏸ Musik stoppen";musicPlaying=true;}
+  else{bgMusik.pause();musikBtn.textContent="🎵 Musik starten";musicPlaying=false;}
+});
+
+/* ========= Accordion ========= */
+document.querySelectorAll(".accordion-btn").forEach(btn=>{
+  btn.addEventListener("click",()=>btn.parentElement.classList.toggle("active"));
+});
+
+/* ========= Copy-E-Mail ========= */
+document.getElementById('copyBtn').addEventListener('click',()=>{
+  const t=document.getElementById('ctaCopyText').textContent.trim();
+  navigator.clipboard.writeText(t).then(()=>alert("📋 E-Mail kopiert: "+t));
+});
+
+/* ========= Page-ID & E-Mail-Handling ========= */
+(function(){
+  function extractPageIdFromUrl(url){
+    try{
+      const u=new URL(url,window.location.origin);
+      const hay=u.href;
+      let m=hay.match(/FSA-\d{4}-\d{2}-\d{2}-[A-Z0-9]{4}/i);
+      if(m) return m[0];
+      m=hay.match(/FSA-[A-Z0-9\-]+/i);
+      if(m) return m[0];
+      return "DEFAULT";
+    }catch(e){
+      return (url||"").startsWith("FSA-")?url:"DEFAULT";
+    }
+  }
+  const PAGE_ID = extractPageIdFromUrl(location.href);
+  const K_LOCK = "FSA_EMAIL_LOCK_"+PAGE_ID;
+  const K_OVER = "FSA_EMAIL_OVERRIDE_"+PAGE_ID;
+
+  const overlay=document.getElementById("emailOverlay");
+  const emailIn=document.getElementById("emailInput");
+  const btnApply=document.getElementById("emailApplyBtn");
+  const btnReset=document.getElementById("emailResetBtn");
+  const btnLater=document.getElementById("emailLaterBtn");
+  const statusEl=document.getElementById("emailStatus");
+
+  // Reset nur anzeigen, wenn ?admin=1
+  if(/(\?|&)admin=1(\b|$)/.test(location.search)){ btnReset.style.display="inline-block"; }
+
+  function isValidEmail(v){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);}
+  function getEffectiveEmail(){
+    return localStorage.getItem(K_OVER)
+        || localStorage.getItem(K_LOCK)
+        || "EMAIL_PLACEHOLDER";
+  }
+  function replaceEverywhere(mail){
+    // Textnodes
+    document.querySelectorAll("body *").forEach(el=>{
+      if(el.childNodes) el.childNodes.forEach(n=>{
+        if(n.nodeType===3 && n.nodeValue && n.nodeValue.includes("EMAIL_PLACEHOLDER")){
+          n.nodeValue = n.nodeValue.replace(/EMAIL_PLACEHOLDER/g, mail);
+        }
+      });
+      // mailto
+      if(el.href) el.href = el.href.replace(/EMAIL_PLACEHOLDER/g, mail);
+    });
+    // CTA explizit
+    const t = document.getElementById('ctaMailText');
+    const c = document.getElementById('ctaCopyText');
+    const a = document.getElementById('ctaMailto');
+    if(t) t.textContent = mail;
+    if(c) c.textContent = mail;
+    if(a) a.href = "mailto:"+mail;
+  }
+
+  function initEmail(){
+    const eff = getEffectiveEmail();
+    replaceEverywhere(eff);
+    overlay.style.display = (eff==="EMAIL_PLACEHOLDER") ? "flex" : "none";
+  }
+
+  function applyLock(){
+    const v=(emailIn.value||"").trim();
+    if(!isValidEmail(v)){
+      statusEl.textContent="⚠️ Ungültige E-Mail";
+      statusEl.style.color="#c62828";
+      return;
+    }
+    localStorage.setItem(K_LOCK, v);
+    statusEl.textContent="✅ Eingesetzt";
+    statusEl.style.color="#2e7d32";
+    replaceEverywhere(getEffectiveEmail());
+    setTimeout(()=>overlay.style.display="none", 500);
+  }
+  function resetLock(){
+    localStorage.removeItem(K_LOCK);
+    statusEl.textContent="🔄 Zurückgesetzt – Platzhalter aktiv";
+    statusEl.style.color="#555";
+    replaceEverywhere(getEffectiveEmail());
+    overlay.style.display = "flex";
+  }
+  function closeLater(){
+    overlay.style.display="none"; // beim Reload wieder sichtbar, solange keine gültige Mail
+  }
+
+  btnApply.addEventListener("click", applyLock);
+  btnReset.addEventListener("click", resetLock);
+  btnLater.addEventListener("click", closeLater);
+
+  document.addEventListener("DOMContentLoaded", initEmail);
+})();
+
+/* ========= Laufband aus laufband.json (Fallback integriert) ========= */
+(async function(){
+  const el=document.getElementById('laufbandText');
+  const fallback = [
+    "🚀 Starte deine Reise zur finanziellen Souveränität",
+    "💡 Wissen baut Sicherheit auf",
+    "💰 Vermögen schützen – langfristig denken",
+    "🔑 Zugang zur Welt der Krypto-Assets",
+    "🤖 Einkommen mit KI & Automatisierung",
+    "🌐 Klarheit statt Chaos",
+    "📚 Kostenfreier Grundkurs: Jetzt beginnen",
+    "🧭 Schritt-für-Schritt Anleitungen",
+    "🛡️ Risiko verstehen, Chancen nutzen",
+    "👥 Wachsende Community – du bist nicht allein",
+    "🧠 Finanzielle Bildung ist Freiheit",
+    "🎯 Fokus auf Umsetzung"
+  ];
+  try{
+    const res = await fetch('laufband.json?nocache='+Date.now(), {cache:'no-store'});
+    if(res.ok){
+      const data = await res.json();
+      const msgs = (data.messages||fallback).join("   •   ");
+      el.textContent = "  " + msgs + "   •   " + msgs + "   •   " + msgs + "  ";
+    }else{
+      el.textContent = fallback.join("   •   ");
+    }
+  }catch(e){
+    el.textContent = fallback.join("   •   ");
+  }
+})();
+
+/* ========= Kino-Fenster: Uhr/Datum + Admin-konfigurierbar via LocalStorage =========
+   LocalStorage Key: FSA_KINO
+   { active:true, title:"Spezial-Session", date:"2025-10-01T20:00", url:"https://www.youtube.com/embed/..." }
+   Admin: ALT+K (nur mit ?admin=1)
+*/
+(function(){
+  const badge = document.getElementById('kinoBadge');
+  const frame = document.getElementById('kinoIframe');
+
+  function loadCfg(){
+    try{return JSON.parse(localStorage.getItem('FSA_KINO')||'{}')}catch(e){return {}}
+  }
+  function fmtDate(s){
+    try{
+      const d=new Date(s); if(isNaN(d)) return "—";
+      return d.toLocaleString('de-DE', {weekday:'long', day:'numeric', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit'});
+    }catch(e){return "—"}
+  }
+  function render(){
+    const c = loadCfg();
+    if(c.active && c.url){
+      frame.src = c.url;
+      badge.textContent = c.title ? (c.title + " • " + (c.date?fmtDate(c.date):"")) : (c.date?fmtDate(c.date):"Live");
+    }else{
+      frame.src = "about:blank";
+      badge.textContent = "—";
+    }
+  }
+  render();
+
+  // Mini-Admin nur bei ?admin=1: per Prompt schnell setzen
+  if(/(\?|&)admin=1(\b|$)/.test(location.search)){
+    document.addEventListener('keydown', (e)=>{
+      if(e.altKey && (e.key==='k'||e.key==='K')){
+        const act = confirm("Kino aktivieren? (Abbrechen = deaktivieren)");
+        if(!act){ localStorage.setItem('FSA_KINO', JSON.stringify({active:false})); return render(); }
+        const url = prompt("YouTube/Zoom/Embed URL:", "https://www.youtube.com/embed/miWBKSszEIw?rel=0")||"";
+        const title = prompt("Titel (optional):", "Spezial-Session: Adlerflug & Q&A")||"";
+        const date = prompt("Datum/Zeit (ISO, optional):", new Date().toISOString().slice(0,16))||"";
+        localStorage.setItem('FSA_KINO', JSON.stringify({active:true, url, title, date}));
+        render();
+      }
+    });
+  }
+})();
+
+/* ========= Hintergrund-Video & Musik Defaults ========= */
+document.getElementById("bgVideo").src =
+  "https://www.youtube-nocookie.com/embed/miWBKSszEIw?autoplay=1&mute=1&loop=1&playlist=miWBKSszEIw&controls=0&modestbranding=1&playsinline=1";
+
+document.getElementById("bgMusicSrc").src =
+  "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
+document.getElementById("bgMusic").load();
+</script>
+
+<!-- ======================= PATCH: Adler Video Fallback ======================= -->
+<script>
+(function(){
+  const frame = document.getElementById("bgVideo");
+
+  // Adler-Video Standard-URL (explizit nocookie + enablejsapi)
+  const url = "https://www.youtube-nocookie.com/embed/miWBKSszEIw?autoplay=1&mute=1&loop=1&playlist=miWBKSszEIw&controls=0&modestbranding=1&playsinline=1&enablejsapi=1";
+
+  // Eigenes Adler-Bild als Fallback (Repo-Asset)
+  const fallbackImage = "https://raw.githubusercontent.com/Adler-FSA/FSA-Admin/main/assets/adler-fallback.jpg";
+
+  function swapToImage(){
+    if (!frame) return;
+    frame.outerHTML = '<div style="position:fixed;inset:0;z-index:-2;background:url('+fallbackImage+') center/cover no-repeat;"></div>';
+  }
+
+  if(frame){
+    // Primär setzen
+    frame.src = url;
+
+    // Fehler-Event
+    frame.addEventListener("error", swapToImage);
+
+    // iOS/Safari/Blocker-Heuristik
+    setTimeout(()=>{
+      // Wenn keine contentWindow verfügbar ist oder leere Größe → Bild
+      try{
+        const noContext = !frame.contentWindow;
+        const rect = frame.getBoundingClientRect();
+        const tooSmall = (rect.width < 2 || rect.height < 2);
+        if(noContext || tooSmall){
+          swapToImage();
+        }
+      }catch(e){
+        swapToImage();
+      }
+    }, 2500);
+  }
+})();
+</script>
+<!-- ======================= /PATCH ======================= -->
+
+</body>
+</html>
