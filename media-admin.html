@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <title>Media Admin – FSA</title>
+  <style>
+    body { font-family: system-ui, Segoe UI, Roboto, sans-serif; background:#f9fafb; padding:20px; }
+    h2 { color:#111827; }
+    .box { background:#fff; border:1px solid #ddd; border-radius:10px; padding:20px; margin-bottom:20px; }
+    ul { list-style:none; padding:0; }
+    li { padding:6px 0; }
+  </style>
+</head>
+<body>
+  <h2>🎬 Media Admin</h2>
+
+  <div class="box">
+    <h3>🎵 Musik-Playlist</h3>
+    <ul id="music-list"></ul>
+  </div>
+
+  <div class="box">
+    <h3>📺 Videos</h3>
+    <ul id="video-list"></ul>
+  </div>
+
+  <script>
+  (async function(){
+    try {
+      const res = await fetch("playlist.json");
+      const playlist = await res.json();
+
+      const musicList = document.getElementById("music-list");
+      playlist.music.forEach(m => {
+        musicList.insertAdjacentHTML("beforeend", `<li>🎵 ${m}</li>`);
+      });
+
+      const videoList = document.getElementById("video-list");
+      playlist.videos.forEach(v => {
+        videoList.insertAdjacentHTML("beforeend", `<li>📺 ${v}</li>`);
+      });
+    } catch(e){
+      document.getElementById("music-list").innerHTML = "<li>⚠️ playlist.json nicht gefunden</li>";
+      document.getElementById("video-list").innerHTML = "<li>⚠️ playlist.json nicht gefunden</li>";
+    }
+  })();
+  </script>
+</body>
+</html>
