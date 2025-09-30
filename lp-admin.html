@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <title>LP-Admin – Übersicht</title>
+  <style>
+    body {
+      font-family: system-ui, Segoe UI, Roboto, sans-serif;
+      background: #f3f4f6;
+      padding: 20px;
+    }
+    h2 { color: #111827; }
+    table { width:100%; border-collapse:collapse; margin-top:20px; background:#fff; }
+    th, td { border:1px solid #ddd; padding:8px; text-align:left; }
+    th { background:#2563eb; color:#fff; }
+  </style>
+</head>
+<body>
+  <h2>📋 LP-Admin – Globale Übersicht</h2>
+  <p>Alle Landingpages mit aktuellem Status:</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Status</th>
+        <th>E-Mail</th>
+      </tr>
+    </thead>
+    <tbody id="lp-list"></tbody>
+  </table>
+
+  <script>
+  (async function(){
+    try {
+      const res = await fetch("config.json");
+      const config = await res.json();
+      const tbody = document.getElementById("lp-list");
+
+      Object.entries(config.pages).forEach(([id,data])=>{
+        const row = `
+          <tr>
+            <td>${id}</td>
+            <td style="color:${data.status==="frei"?"green":"#2563eb"}; font-weight:bold;">${data.status}</td>
+            <td>${data.email}</td>
+          </tr>`;
+        tbody.insertAdjacentHTML("beforeend", row);
+      });
+    } catch(e){
+      document.getElementById("lp-list").innerHTML = "<tr><td colspan='3'>⚠️ config.json nicht gefunden.</td></tr>";
+    }
+  })();
+  </script>
+</body>
+</html>
