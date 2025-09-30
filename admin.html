@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <title>Admin – Landingpages</title>
+  <style>
+    body { font-family: system-ui,Segoe UI,Roboto,Arial,sans-serif; background:#f9fafb; padding:20px; }
+    h2 { color:#111827; }
+    table { width:100%; border-collapse:collapse; margin-top:20px; background:#fff; }
+    th, td { border:1px solid #ddd; padding:8px; text-align:left; }
+    th { background:#2563eb; color:#fff; }
+    input[type=email]{ width:95%; padding:4px; border:1px solid #bbb; border-radius:4px; }
+    button{ padding:6px 10px; margin-right:4px; border:none; border-radius:4px; cursor:pointer; }
+    .save{ background:#16a34a; color:#fff; }
+    .reset{ background:#e11d48; color:#fff; }
+  </style>
+</head>
+<body>
+  <h2>⚙️ Admin – Übersicht aller Landingpages</h2>
+  <div style="margin-bottom:12px;">
+    Gesamt: <strong id="count-total">0</strong> |
+    Frei: <strong id="count-free">0</strong> |
+    Aktiv: <strong id="count-active">0</strong>
+  </div>
+  <button onclick="exportCSV()" style="background:#2563eb;color:#fff;padding:8px 14px;border-radius:6px;">📤 Exportieren (CSV)</button>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Status</th>
+        <th>E-Mail</th>
+        <th>Aktionen</th>
+      </tr>
+    </thead>
+    <tbody id="page-list"></tbody>
+  </table>
+
+  <h3 style="margin-top:40px;">🎬 Kino-Fenster einstellen</h3>
+  <input id="kinoUrl" type="text" placeholder="https://..." style="width:100%;padding:8px;border:1px solid #bbb;border-radius:6px;">
+  <div style="margin-top:10px;">
+    <button id="saveKinoBtn" style="background:#2563eb;color:#fff;padding:8px 14px;border-radius:6px;">✅ Speichern</button>
+    <button id="resetKinoBtn" style="background:#e11d48;color:#fff;padding:8px 14px;border-radius:6px;">♻️ Standard (Adlerflug)</button>
+  </div>
+  <div id="kinoMsg" style="margin-top:10px;font-weight:bold;"></div>
+
+<script>
+(async function(){
+  let config = { pages: {} };
+  try {
+    const res = await fetch("config.json");
+    config = await res.json();
+  } catch(e){
+    console.warn("⚠️ config.json nicht geladen.");
+  }
+
+  const listEl = document.getElementById("page-list");
+  const totalEl = document.getElementById("count-total");
+  const freeEl = document.getElementById("count-free");
+  const activeEl = document.getElementById("count-active");
+
+  function render(){
+    let total=0, free=0, active=0;
+    const rows = Object.entries(config.pages).map(([id,data])=>{
+      total++;
+      if(data.status==="frei") free++; else active++;
+      return `
+        <tr>
+          <td>${id}</td>
+          <td style="color:${data.status==="frei"?"green":"#2563eb"};font-weight:bold;">${data.status}</td>
+          <td><input id="mail-${id}" type="email" value="${data.email}"></td>
+          <td>
+            <button class="save" onclick="setEmail('${id}')">Speichern</button>
+            <button class="reset" onclick="resetPage('${id}')">Reset</button>
+          </td>
+        </tr>`;
+    });
+    listEl.innerHTML = rows.join("");
+    totalEl.textContent = total;
+    freeEl.textContent = free;
+    activeEl.textContent = active;
+  }
+
+  window.setEmail = function(id){
+    const mail = document.getElementById("mail-"+id).value.trim();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)){
+      alert("⚠️ Ungültige E-Mail.");
+      return;
+    }
+    config.pages[id].email = mail;
+    config.pages[id].status = "aktiv";
+    render();
+  };
+
+  window.resetPage = function(id){
+    config.pages[id].email = "platzhalter@email.de";
+    config.pages[id].status = "frei";
+    render();
+  };
+
+  window.exportCSV = function(){
+    let csv = "ID,Status,E-Mail\n";
+    Object.entries(config.pages).forEach(([id,data])=>{
+      csv += `${id},${data.status},${data.email}\n`;
+    });
+    const blob = new Blob([csv], { type:"text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "landingpages.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  render();
+})();
+
+async function updateKinoJson(newUrl){
+  const data = { kino:{ type:"custom", url:newUrl } };
+  try {
+    await fetch("kino.json", {
+      method:"PUT",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify(data, null, 2)
+    });
+    document.getElementById("kinoMsg").textContent="✅ Kino aktualisiert!";
+    document.getElementById("kinoMsg").style.color="#16a34a";
+  } catch(e){
+    localStorage.setItem("kinoOverride", JSON.stringify(data));
+    document.getElementById("kinoMsg").textContent="💾 Lokal gespeichert (Testlauf)";
+    document.getElementById("kinoMsg").style.color="#f59e0b";
+  }
+}
+document.getElementById("saveKinoBtn").onclick=()=>{
+  const url=document.getElementById("kinoUrl").value.trim();
+  if(!url){document.getElementById("kinoMsg").textContent="⚠️ Bitte gültige URL eingeben.";return;}
+  updateKinoJson(url);
+};
+document.getElementById("resetKinoBtn").onclick=()=>{
+  updateKinoJson("https://www.youtube.com/embed/miWBKSszEIw?autoplay=1&mute=1&loop=1&playlist=miWBKSszEIw");
+};
+</script>
+</body>
+</html>
