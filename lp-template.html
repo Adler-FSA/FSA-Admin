@@ -1,0 +1,83 @@
+<!-- ===============================
+   🦅 FSA Landingpage – Template
+   Wird vom Generator mit ?id=FSA-XXXX aufgerufen
+================================= -->
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FSA Landingpage</title>
+  <style>
+    body {
+      margin:0; font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+      background:#0b1220; color:#eaf2ff;
+    }
+    header {
+      background:linear-gradient(135deg,#0f172a,#1e293b);
+      padding:20px; text-align:center;
+    }
+    h1 {
+      margin:0; font-size:1.8rem; color:#facc15;
+    }
+    .hero {
+      text-align:center; padding:40px 20px;
+    }
+    .hero h2 {
+      font-size:1.4rem; color:#38bdf8; margin-bottom:10px;
+    }
+    .content {
+      max-width:800px; margin:20px auto; padding:20px;
+      background:#111827; border-radius:12px; box-shadow:0 4px 14px rgba(0,0,0,.4);
+    }
+    .content h3 {
+      color:#facc15;
+    }
+    footer {
+      margin-top:40px; padding:20px; text-align:center; font-size:0.9rem;
+      background:#1e293b; color:#94a3b8;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🦅 Finanzielle Souveränität</h1>
+  </header>
+
+  <div class="hero">
+    <h2>Deine persönliche Landingpage</h2>
+    <p id="lpId">ID wird geladen...</p>
+  </div>
+
+  <div class="content">
+    <h3>Was erwartet dich?</h3>
+    <p>
+      Willkommen auf deiner eigenen Landingpage! 🎉<br>
+      Sie wurde speziell für dich erstellt und ist dein Einstieg in die
+      <strong>Finanzielle Souveränität Akademie</strong>.
+    </p>
+    <ul>
+      <li>📖 Lerne die Grundlagen des dezentralen Network Marketing</li>
+      <li>💳 Starte mit deinem eigenen Wallet</li>
+      <li>🌍 Werde Teil einer starken Community</li>
+    </ul>
+    <p>
+      👉 Nimm direkt Kontakt auf über die E-Mail, die auf deiner Seite eingetragen ist.
+    </p>
+  </div>
+
+  <footer>
+    &copy; 2025 Finanzielle Souveränität Akademie – Deine ID: <span id="idFooter"></span>
+  </footer>
+
+<script>
+  // ID aus URL auslesen
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id") || "Unbekannt";
+  document.getElementById("lpId").textContent = "Deine ID: " + id;
+  document.getElementById("idFooter").textContent = id;
+</script>
+
+</body>
+</html>
