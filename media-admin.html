@@ -13,7 +13,6 @@
   html,body{height:100%}
   body{margin:0;background:var(--bg);color:var(--txt);font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif}
   h1,h2,h3{margin:0 0 10px;font-family:Montserrat,system-ui,sans-serif}
-  a{color:var(--blue);text-decoration:none}
   .wrap{max-width:1100px;margin:24px auto;padding:0 16px}
   .card{background:var(--card);border:1px solid rgba(212,175,55,.25);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
   .grid{display:grid;gap:16px}
@@ -25,52 +24,35 @@
   .muted{color:var(--muted);font-size:.95rem}
   .hr{height:1px;background:rgba(255,255,255,.1);margin:12px 0}
   label{display:block;margin:8px 0 6px;font-weight:700;color:#dbe3f3}
-  input[type="text"],input[type="number"],input[type="datetime-local"],textarea,select{
+  input[type="text"],input[type="number"],input[type="datetime-local"],select{
     width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#0b1325;color:#fff;font-size:.98rem;outline:none
   }
-  textarea{min-height:96px}
   .row{display:flex;gap:10px;flex-wrap:wrap}
   .btn{padding:10px 14px;border:none;border-radius:10px;font-weight:800;cursor:pointer;box-shadow:var(--shadow)}
-  .btn.gold{background:var(--gold);color:#000}
-  .btn.teal{background:var(--teal);color:#001210}
-  .btn.blue{background:var(--blue);color:#001018}
-  .btn.red{background:var(--red);color:#fff}
-  .btn.ghost{background:transparent;border:1px dashed rgba(255,255,255,.25);color:#cbd5e1}
   .btn.small{padding:6px 10px;font-weight:700}
+  .gold{background:var(--gold);color:#000}.teal{background:var(--teal);color:#001210}
+  .blue{background:var(--blue);color:#001018}.red{background:var(--red);color:#fff}
+  .ghost{background:transparent;border:1px dashed rgba(255,255,255,.25);color:#cbd5e1}
+  .chip{padding:4px 10px;border-radius:999px;background:#0f1a30;border:1px solid rgba(255,255,255,.12);color:#cbe0ff;font-size:.92rem}
   .list{display:grid;gap:10px}
   .item{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;background:#0e182b;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px}
   .badge{background:var(--gold);color:#000;border-radius:999px;padding:2px 8px;font-weight:900;font-size:.8rem}
   .item .url{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#dbeafe}
   .item.active{outline:2px solid var(--teal);background:#0e1e2b}
   .preview{border:2px solid var(--gold);border-radius:12px;overflow:hidden;height:360px;background:#000}
-  .stat{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:.92rem}
-  .chip{padding:4px 10px;border-radius:999px;background:#0f1a30;border:1px solid rgba(255,255,255,.12);color:#cbe0ff}
   .note{font-size:.9rem;color:#b6c3d6}
   .ok{color:#22c55e}.warn{color:#f59e0b}.err{color:#ef4444}
-
-  /* On-Air & Now-Playing */
-  .nowplay{
-    display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center;
-    background:#0f1a30;border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:10px
-  }
-  .np-badge{background:var(--teal);color:#001210;border-radius:999px;padding:4px 10px;font-weight:900}
-  .np-label{font-weight:800}
-  .np-url{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;font-size:.86rem;color:#cbe0ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .onair {display:flex;gap:6px;flex-wrap:wrap}
-  .onair .slot{
-    min-width:28px;height:28px;display:flex;align-items:center;justify-content:center;
-    border-radius:999px;border:1px solid rgba(255,255,255,.15);background:#0f1a30;color:#cbe0ff;font-weight:900;font-size:.9rem
-  }
-  .onair .slot.dim{opacity:.35}
-  .onair .slot.active{outline:2px solid var(--teal)}
-  .blink{animation:blink 1s linear infinite}
-  @keyframes blink{0%,49%{box-shadow:0 0 0 0 rgba(28,194,160,.0)}50%,100%{box-shadow:0 0 12px 0 rgba(28,194,160,.55)}}
+  .onair{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .dot{width:24px;height:24px;border-radius:999px;border:1px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:.8rem;color:#cfe1ff;background:#0f192a}
+  .dot.active{outline:2px solid var(--teal);background:#0e2631}
+  .dot.blink{animation:blink 1s infinite}
+  @keyframes blink{0%,100%{filter:brightness(1)}50%{filter:brightness(1.8)}}
 </style>
 </head>
 <body>
 <div class="wrap">
 
-  <!-- 🔑 GitHub Verbindung -->
+  <!-- GitHub Verbindung -->
   <div class="card">
     <div class="title"><h2>🔑 GitHub Verbindung</h2></div>
     <div class="grid g-2">
@@ -83,20 +65,24 @@
         <input id="ghToken" type="text" placeholder="ghp_... (fine-grained: contents read/write)">
       </div>
     </div>
-    <div class="row" style="margin-top:10px">
+    <div class="row" style="margin-top:10px;align-items:center">
       <button class="btn gold" id="btnConnect">🔗 Verbinden</button>
       <button class="btn ghost" id="btnReload" disabled>🔄 Daten laden / anlegen</button>
+      <label class="row" style="align-items:center;gap:8px">
+        <input type="checkbox" id="lockSession">
+        <span class="muted">🔒 Sitzung merken (nur dieser Tab)</span>
+      </label>
+      <button class="btn ghost" id="btnLogout">🔓 Ausloggen</button>
       <span id="connStatus" class="note">Bitte Token einfügen und verbinden.</span>
     </div>
   </div>
 
-  <!-- 📚 Teil 1: Bibliothek · Aktive · Archiv -->
+  <!-- Teil 1: Bibliothek / Aktive / Archiv -->
   <div class="grid g-3" style="margin-top:16px">
-    <!-- Bibliothek + Eingabe -->
     <div class="card">
       <div class="title"><h2>📚 Bibliothek</h2><div class="muted">Globaler Pool deiner Videos</div></div>
       <label>Neue Video-URL (YouTube/Vimeo/Zoom)</label>
-      <input id="newUrl" type="text" placeholder="https://youtu.be/... oder https://www.youtube.com/watch?v=...">
+      <input id="newUrl" type="text" placeholder="https://youtu.be/… oder https://www.youtube.com/watch?v=…">
       <div class="row" style="margin-top:8px">
         <button class="btn teal" id="btnAddLib">＋ Zur Bibliothek</button>
         <button class="btn blue" id="btnAddActive">＋ Direkt in Rotator</button>
@@ -104,89 +90,56 @@
         <button class="btn ghost" id="btnStopPreview">⏹️ Vorschau Stop</button>
       </div>
       <div class="hr"></div>
-      <div class="stat">
+      <div class="row">
         <span class="chip">Einträge: <span id="countLib">0</span></span>
-        <span class="chip">Aktive max: 12</span>
+        <span class="chip">Aktive max: <span id="maxActiveLabel">12</span></span>
+        <button class="btn small ghost" id="btnQuickFill">⚡ 4 Testvideos laden</button>
       </div>
       <div id="libList" class="list" style="margin-top:10px"></div>
     </div>
 
-    <!-- Aktive -->
     <div class="card">
       <div class="title"><h2>🎛 Aktive Videos (Rotator)</h2><div class="muted">Max. 12 – Reihenfolge zählt</div></div>
-      <div class="stat">
-        <span class="chip">Aktiv: <span id="countActive">0</span>/12</span>
+      <div class="row">
+        <span class="chip">Aktiv: <span id="countActive">0</span>/<span id="maxActiveLabel2">12</span></span>
         <span class="chip">Intervall: <span id="intervalLabel">60</span>s</span>
       </div>
       <div id="activeList" class="list" style="margin-top:10px"></div>
     </div>
 
-    <!-- Archiv -->
     <div class="card">
       <div class="title"><h2>📦 Archiv</h2><div class="muted">Zurückholen möglich</div></div>
       <div id="archList" class="list"></div>
     </div>
   </div>
 
-  <!-- 🖥 Teil 2: Vorschau & Rotation -->
+  <!-- Teil 2: Vorschau & Rotation -->
   <div class="card" style="margin-top:16px">
     <div class="title"><h2>🖥 Vorschau & Rotation</h2><div class="muted">Nur Admin-Test – LP liest die gespeicherten Daten</div></div>
-
     <div class="grid g-2">
       <div>
         <div id="previewBox" class="preview">
-          <iframe id="preview" width="100%" height="100%"
-            allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
-            allowfullscreen
-            sandbox="allow-scripts allow-same-origin allow-presentation allow-forms"
-            referrerpolicy="origin-when-cross-origin"
-            style="border:0"></iframe>
+          <iframe id="preview" width="100%" height="100%" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="border:0"></iframe>
         </div>
-
-        <div class="hr"></div>
-        <div>
-          <div class="muted" style="margin-bottom:6px">On-Air (1–12)</div>
-          <div id="onAir" class="onair"></div>
-        </div>
-
-        <div class="hr"></div>
-        <div class="nowplay">
-          <div class="np-badge">Now</div>
-          <div>
-            <div class="np-label"><span id="npIndex">—</span>/<span id="npTotal">—</span> · <span id="npHost">—</span></div>
-            <div class="np-url" id="npUrl">—</div>
-          </div>
-        </div>
-
-        <div class="row" style="margin-top:8px">
-          <button class="btn ghost" id="btnPrev" type="button">⏮ Zurück</button>
-          <button class="btn ghost" id="btnNext" type="button">⏭ Weiter</button>
-          <label style="display:flex;align-items:center;gap:8px">
-            <input id="toggleAutoSkip" type="checkbox"> Verdächtige automatisch überspringen
-          </label>
-        </div>
-
-        <div class="note" style="margin-top:6px">Countdown: <span id="cdGuard">—</span>s bis Guard · <span id="cdInterval">—</span>s bis Intervall</div>
+        <div class="onair" id="onAirDots"></div>
       </div>
-
       <div>
         <label>Intervall (Sekunden)</label>
         <input id="intervalSec" type="number" min="3" value="60">
-
-        <label style="margin-top:8px">Guard-Zeit (Sekunden) – Anti-Störung</label>
-        <input id="guardSec" type="number" min="3" value="12">
-
-        <label style="margin-top:8px">Host-Präferenz</label>
+        <label>Guard-Zeit (Sekunden) – Anti-Störung</label>
+        <input id="guardSec" type="number" min="0" value="10">
+        <label>Host-Präferenz</label>
         <select id="hostPref">
           <option value="auto">Automatisch</option>
           <option value="yt">YouTube bevorzugt</option>
           <option value="vimeo">Vimeo bevorzugt</option>
         </select>
-
         <div class="row" style="margin-top:10px">
           <button class="btn teal" id="btnStartRotation">▶️ Start</button>
           <button class="btn red"  id="btnPauseRotation">⏸ Stop</button>
           <button class="btn blue" id="btnSaveInterval">💾 Intervall & Guard & Host merken</button>
+          <button class="btn gold" id="btnTestRotate">✏️ Rotationstest (5s)</button>
+          <button class="btn ghost" id="btnStopAll">⏹️ Test/Rotation beenden</button>
         </div>
         <div class="hr"></div>
         <div class="note">Status: <span id="statusMsg">—</span></div>
@@ -194,7 +147,7 @@
     </div>
   </div>
 
-  <!-- 🎬 Teil 3: Kino / Playlist / Fallback -->
+  <!-- Teil 3 -->
   <div class="card" style="margin-top:16px">
     <div class="title"><h2>🎬 Kino / Playlist / Fallback</h2><div class="muted">Global für LP-„Kino-Fenster“</div></div>
     <div class="grid g-2">
@@ -231,81 +184,53 @@
     </div>
   </div>
 
-  <!-- Fuß -->
   <div class="muted" style="margin:14px 4px">Letztes Laden: <span id="lastLoad">—</span> · Letztes Speichern: <span id="lastSave">—</span></div>
 </div>
 
 <script>
-/* ===== Limits/State ===== */
+/* ===== Konstante Limits ===== */
 const MAX_ACTIVE = 12;
-let current=null, currentSha="", selectedActiveIndex=-1;
-let testTimer=null, rotateTimer=null, guardTimer=null, intervalCountdownTimer=null, guardCountdownTimer=null;
-let currentIndex=-1;                 // welcher Slot läuft
-let blacklist = new Set();           // nur Laufzeit (nicht gespeichert)
-let autoSkipEnabled = false;         // nur Laufzeit
 
-/* ===== Shortcuts ===== */
+/* ===== Helpers ===== */
 const $ = s => document.querySelector(s);
 const byId = id => document.getElementById(id);
-function shortUrl(u){try{const x=new URL(u); return x.hostname.replace('www.','')+x.pathname+(x.search?'…':'')}catch(e){return u}}
+function shortUrl(u){try{const x=new URL(u);return x.hostname.replace('www.','')+x.pathname+(x.search?'…':'')}catch(e){return u}}
 function nowISO(){return new Date().toISOString()}
 function toISO(v){if(!v) return ""; const d=new Date(v); return isNaN(d)?"":d.toISOString();}
 function fromISOtoLocal(iso){if(!iso) return ""; const d=new Date(iso); if(isNaN(d)) return ""; const z=d.getTimezoneOffset()*60000; return new Date(d - z).toISOString().slice(0,16);}
-
-/* ===== Base64 UTF-8 ===== */
 function toBase64(str){const enc=new TextEncoder().encode(str);let bin="";enc.forEach(b=>bin+=String.fromCharCode(b));return btoa(bin)}
 function fromBase64(b64){const bin=atob(b64);const bytes=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);return new TextDecoder().decode(bytes)}
 
-/* ===== Embed Normalisierung (mit Host-Präferenz) ===== */
-function toEmbed(raw, pref){
-  if(!raw) return "";
-  let u = raw.trim();
-  const P = pref || (byId("hostPref")?.value || "auto");
-
-  // YouTube
-  if(/youtu\.be\//i.test(u)){
-    const id = u.split("youtu.be/")[1].split(/[?&]/)[0];
-    return `https://www.youtube.com/embed/${id}?rel=0&autoplay=1&mute=1&playsinline=1&modestbranding=1&controls=0&iv_load_policy=3`;
-  }
-  if(/youtube\.com\/watch/i.test(u)){
-    const q = new URL(u).searchParams.get("v");
-    if(q) return `https://www.youtube.com/embed/${q}?rel=0&autoplay=1&mute=1&playsinline=1&modestbranding=1&controls=0&iv_load_policy=3`;
-  }
-  if(/youtube\.com\/embed/i.test(u)){
-    // evtl. Param-Verbesserung
-    if(P==="yt" || P==="auto"){
-      if(!u.includes("autoplay")) u += (u.includes("?")?"&":"?")+"autoplay=1&mute=1&playsinline=1&modestbranding=1&controls=0&iv_load_policy=3";
-    }
-    return u;
-  }
-
-  // Vimeo
-  if(/vimeo\.com\/\d+/.test(u)){
-    const m=u.match(/vimeo\.com\/(\d+)/); const id=m?m[1]:"";
-    return `https://player.vimeo.com/video/${id}?autoplay=1&muted=1&title=0&byline=0&portrait=0`;
-  }
-  if(/player\.vimeo\.com\/video/.test(u)){
-    if(P==="vimeo" || P==="auto"){
-      if(!u.includes("autoplay")) u += (u.includes("?")?"&":"?")+"autoplay=1&muted=1&title=0&byline=0&portrait=0";
-    }
-    return u;
-  }
-
-  // sonst: durchreichen
+/* URL ➝ EMBED (hostPref berücksichtigt) */
+function toEmbed(url){
+  if(!url) return "";
+  let u=url.trim();
+  // YT short
+  if(/youtu\.be\//i.test(u)){const id=u.split("youtu.be/")[1].split(/[?&]/)[0];return `https://www.youtube.com/embed/${id}?rel=0&autoplay=1&mute=1&playsinline=1`}
+  // YT watch
+  if(/youtube\.com\/watch/i.test(u)){const q=new URL(u).searchParams.get("v"); if(q) return `https://www.youtube.com/embed/${q}?rel=0&autoplay=1&mute=1&playsinline=1`}
+  // YT embed bleibt
+  if(/youtube\.com\/embed/i.test(u)) return u;
+  // Vimeo normal
+  if(/vimeo\.com\/\d+/.test(u)){const id=(u.match(/vimeo\.com\/(\d+)/)||[])[1]; if(id) return `https://player.vimeo.com/video/${id}?autoplay=1&muted=1`}
+  // Vimeo embed bleibt
+  if(/player\.vimeo\.com\/video/.test(u)) return u;
   return u;
 }
 
-/* ===== GitHub API ===== */
+/* ===== GitHub ===== */
 let GH={owner:"Adler-FSA",repo:"FSA-Admin",branch:"main",path:"rotator.json",token:""};
-function ghHeaders(){
-  if(!GH.token) throw new Error("Kein Token");
-  return {"Authorization":"Bearer "+GH.token,"Accept":"application/vnd.github+json","Content-Type":"application/json"};
-}
+let current=null, currentSha="", testTimer=null, rotateTimer=null, selectedActiveIndex=-1, guardTimer=null, onAirIdx=-1;
+
+/* HEADERS */
+function ghHeaders(){ if(!GH.token) throw new Error("Kein Token"); return {"Authorization":"Bearer "+GH.token,"Accept":"application/vnd.github+json","Content-Type":"application/json"};}
+
+/* API */
 async function ghGetFile(){
   const url=`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${GH.path}?ref=${GH.branch}`;
   const res=await fetch(url,{headers:ghHeaders()});
   if(res.status===404) return {status:404};
-  if(!res.ok){ throw new Error(`GET ${res.status}: ${await res.text()}`); }
+  if(!res.ok){throw new Error(`GET ${res.status}: ${await res.text()}`)}
   const j=await res.json(); const content=fromBase64(j.content||"");
   return {status:200,sha:j.sha,data:JSON.parse(content)};
 }
@@ -314,19 +239,18 @@ async function ghPutFile(data,message){
   const body={message:message||"update rotator.json",content:toBase64(JSON.stringify(data,null,2)),branch:GH.branch};
   if(currentSha) body.sha=currentSha;
   const res=await fetch(url,{method:"PUT",headers:ghHeaders(),body:JSON.stringify(body)});
-  if(!res.ok){ throw new Error(`PUT ${res.status}: ${await res.text()}`); }
-  const j=await res.json(); currentSha=j.content.sha;
-  byId("lastSave").textContent=new Date().toLocaleString();
+  if(!res.ok){throw new Error(`PUT ${res.status}: ${await res.text()}`)}
+  const j=await res.json(); currentSha=j.content.sha; byId("lastSave").textContent=new Date().toLocaleString();
 }
 
-/* ===== Defaults (4 Testvideos, alles embeds) ===== */
+/* Defaults inkl. 4 Test-Videos */
 function defaultData(){
   return {
     active:[
-      "https://www.youtube.com/embed/miWBKSszEIw?rel=0&autoplay=1&mute=1&playsinline=1&modestbranding=1&controls=0&iv_load_policy=3",
-      "https://www.youtube.com/embed/J7QYQ-Qj-48?rel=0&autoplay=1&mute=1&playsinline=1&modestbranding=1&controls=0&iv_load_policy=3",
-      "https://www.youtube.com/embed/CqesPVWSzao?rel=0&autoplay=1&mute=1&playsinline=1&modestbranding=1&controls=0&iv_load_policy=3",
-      "https://www.youtube.com/embed/WcuSPqefQBY?rel=0&autoplay=1&mute=1&playsinline=1&modestbranding=1&controls=0&iv_load_policy=3"
+      "https://www.youtube.com/embed/miWBKSszEIw?rel=0&autoplay=1&mute=1&playsinline=1",
+      "https://www.youtube.com/embed/J7QYQ-Qj-48?rel=0&autoplay=1&mute=1&playsinline=1",
+      "https://www.youtube.com/embed/CqesPVWSzao?rel=0&autoplay=1&mute=1&playsinline=1",
+      "https://www.youtube.com/embed/WcuSPqefQBY?rel=0&autoplay=1&mute=1&playsinline=1"
     ],
     library:[
       "https://youtu.be/CqesPVWSzao",
@@ -335,7 +259,7 @@ function defaultData(){
     ],
     archived:[],
     interval:60,
-    guard:12,
+    guard:10,
     hostPref:"auto",
     kino:{url:"",playlist:"",mode:"60s",startISO:""},
     fallback:{enabled:true,imageUrl:""},
@@ -343,27 +267,42 @@ function defaultData(){
   };
 }
 
-/* ===== Render Helpers ===== */
-function renderCounts(){
-  byId("countLib").textContent=(current.library||[]).length;
-  byId("countActive").textContent=(current.active||[]).length;
-  byId("intervalLabel").textContent=current.interval||60;
+/* Render */
+function renderOnAirDots(){
+  const n=(current.active||[]).length;
+  const dots=Array.from({length:MAX_ACTIVE},(_,i)=>i<n?i+1:"").map((lab,i)=>{
+    const active = (i===onAirIdx) ? 'active blink' : (i< n? 'active':'');
+    return `<div class="dot ${active}">${lab?lab:''}</div>`;
+  }).join("");
+  byId("onAirDots").innerHTML=dots;
 }
-function renderLists(){
-  const lib=current.library||[];
-  byId("libList").innerHTML = lib.map((u,i)=>`
+function renderAll(){
+  current.library=current.library||[];
+  current.active=current.active||[];
+  current.archived=current.archived||[];
+
+  byId("maxActiveLabel").textContent=MAX_ACTIVE;
+  byId("maxActiveLabel2").textContent=MAX_ACTIVE;
+
+  byId("countLib").textContent=current.library.length;
+  byId("countActive").textContent=current.active.length;
+  byId("intervalLabel").textContent=current.interval||60;
+  byId("intervalSec").value=current.interval||60;
+  byId("guardSec").value=current.guard ?? 10;
+  byId("hostPref").value=current.hostPref || "auto";
+
+  byId("libList").innerHTML=current.library.map((u,i)=>`
     <div class="item">
       <span class="badge">${i+1}</span>
       <div class="url" title="${u}">${shortUrl(u)}</div>
       <div class="row">
-        <button class="btn small gold" onclick="previewUrl('${encodeURIComponent(toEmbed(u,current.hostPref))}')">▶️ Vorschau</button>
+        <button class="btn small gold" onclick="previewUrl('${encodeURIComponent(u)}')">▶️ Vorschau</button>
         <button class="btn small teal" onclick="libToActive(${i})">＋ In Rotator</button>
         <button class="btn small ghost" onclick="removeFromLibrary(${i})">🗑 Entfernen</button>
       </div>
     </div>`).join("");
 
-  const act=current.active||[];
-  byId("activeList").innerHTML = act.map((u,i)=>`
+  byId("activeList").innerHTML=current.active.map((u,i)=>`
     <div class="item ${i===selectedActiveIndex?'active':''}" onclick="selectActive(${i})">
       <span class="badge">${i+1}</span>
       <div class="url" title="${u}">${shortUrl(u)}</div>
@@ -375,8 +314,8 @@ function renderLists(){
       </div>
     </div>`).join("");
 
-  const ar=current.archived||[];
-  byId("archList").innerHTML = ar.length? ar.map((o,i)=>`
+  const ar=current.archived;
+  byId("archList").innerHTML=ar.length? ar.map((o,i)=>`
     <div class="item">
       <span class="badge">${i+1}</span>
       <div class="url" title="${o.url}">${shortUrl(o.url)} <span class="muted">· ${o.archived_at?new Date(o.archived_at).toLocaleString():""}</span></div>
@@ -385,91 +324,59 @@ function renderLists(){
         <button class="btn small ghost" onclick="removeFromArchive(${i})">🗑 Entfernen</button>
       </div>
     </div>`).join(""):`<div class="muted">Noch nichts archiviert.</div>`;
-}
-function renderSettings(){
-  byId("intervalSec").value=current.interval||60;
-  byId("guardSec").value=current.guard||12;
-  byId("hostPref").value=current.hostPref||"auto";
-  // Teil 3
-  byId("kinoUrl").value=current.kino?.url||"";
-  byId("playlistUrl").value=current.kino?.playlist||"";
-  byId("kinoMode").value=current.kino?.mode||"60s";
-  byId("kinoStart").value=fromISOtoLocal(current.kino?.startISO||"");
-  byId("fallbackEnabled").value=String(current.fallback?.enabled??true);
-  byId("fallbackImage").value=current.fallback?.imageUrl||"";
-}
-function renderOnAir(){
-  const el=byId("onAir"); if(!el) return;
-  const arr=current?.active||[]; const len=12;
-  el.innerHTML = Array.from({length:len}).map((_,i)=>{
-    const has=!!arr[i]; const cls=["slot",has?"":"dim",(i===currentIndex)?"active blink":""].join(" ");
-    return `<div class="${cls}">${i+1}</div>`;
-  }).join("");
-}
-function renderNowPlaying(idx, url, total){
-  if(byId("npIndex")) byId("npIndex").textContent = (idx>=0? idx+1 : "—");
-  if(byId("npTotal")) byId("npTotal").textContent = total ?? (current?.active?.length||0);
-  if(byId("npUrl"))   byId("npUrl").textContent   = url || "—";
-  if(byId("npHost")){
-    try{ byId("npHost").textContent = url ? new URL(url).hostname.replace('www.','') : "—"; }
-    catch(e){ byId("npHost").textContent = "—"; }
-  }
-}
-function renderAll(){ renderCounts(); renderLists(); renderSettings(); renderOnAir(); }
 
-/* ===== Countdowns ===== */
-function startCountdowns(intervalSec, guardSec){
-  if(intervalCountdownTimer) clearInterval(intervalCountdownTimer);
-  if(guardCountdownTimer) clearInterval(guardCountdownTimer);
-  let ic=intervalSec|0, gc=guardSec|0;
-  if(byId("cdInterval")) byId("cdInterval").textContent = ic;
-  if(byId("cdGuard"))    byId("cdGuard").textContent    = gc;
-  guardCountdownTimer = setInterval(()=>{ gc--; if(gc>=0&&byId("cdGuard")) byId("cdGuard").textContent=gc; },1000);
-  intervalCountdownTimer = setInterval(()=>{ ic--; if(ic>=0&&byId("cdInterval")) byId("cdInterval").textContent=ic; },1000);
+  renderOnAirDots();
 }
 
-/* ===== Teil 1 Aktionen ===== */
+/* Guard: sicherstellen, dass current geladen ist */
 async function ensureLoaded(){ if(current) return; await loadOrInit(); }
+
+/* Aktionen – Teil 1 */
 async function addToLibrary(){
   try{
     await ensureLoaded();
-    const u=toEmbed(byId("newUrl").value,current.hostPref);
+    const u=toEmbed(byId("newUrl").value);
     if(!u) return alert("Bitte gültige URL eingeben.");
-    current.library=current.library||[];
     if(!current.library.includes(u)) current.library.push(u);
-    current.updated=nowISO(); await ghPutFile(current,"add: library"); renderAll();
+    current.updated=nowISO();
+    await ghPutFile(current,"add: library");
+    renderAll();
   }catch(e){ alert("Fehler (Bibliothek hinzufügen):\n"+e.message); }
 }
 async function addDirectToActive(){
   try{
     await ensureLoaded();
-    const u=toEmbed(byId("newUrl").value,current.hostPref);
+    const u=toEmbed(byId("newUrl").value);
     if(!u) return alert("Bitte gültige URL eingeben.");
-    current.active=current.active||[];
     if(current.active.length>=MAX_ACTIVE) return alert(`Maximal ${MAX_ACTIVE} aktive Videos.`);
     if(!current.active.includes(u)) current.active.push(u);
-    current.library=current.library||[];
     if(!current.library.includes(u)) current.library.push(u);
-    current.updated=nowISO(); await ghPutFile(current,"add: direct-to-active"); renderAll();
+    current.updated=nowISO();
+    await ghPutFile(current,"add: direct-to-active");
+    renderAll();
   }catch(e){ alert("Fehler (Direkt in Rotator):\n"+e.message); }
 }
 async function libToActive(i){
   try{
     await ensureLoaded();
-    const u=toEmbed(current.library[i],current.hostPref);
+    const u=toEmbed(current.library[i]);
     if(current.active.length>=MAX_ACTIVE) return alert(`Maximal ${MAX_ACTIVE} aktive Videos.`);
     if(!current.active.includes(u)) current.active.push(u);
-    current.updated=nowISO(); await ghPutFile(current,"add: lib->active"); renderAll();
+    current.updated=nowISO();
+    await ghPutFile(current,"add: lib->active");
+    renderAll();
   }catch(e){ alert("Fehler (lib->active):\n"+e.message); }
 }
 async function removeFromLibrary(i){
   try{
     await ensureLoaded();
     current.library.splice(i,1);
-    current.updated=nowISO(); await ghPutFile(current,"remove: library"); renderAll();
+    current.updated=nowISO();
+    await ghPutFile(current,"remove: library");
+    renderAll();
   }catch(e){ alert("Fehler (Library entfernen):\n"+e.message); }
 }
-function selectActive(i){ selectedActiveIndex=i; renderAll(); }
+function selectActive(i){selectedActiveIndex=i; renderAll();}
 async function moveUp(i){
   if(i<=0) return;
   const a=current.active; [a[i-1],a[i]]=[a[i],a[i-1]];
@@ -486,11 +393,11 @@ async function activeToArchive(i){
   try{
     await ensureLoaded();
     const u=current.active[i];
-    current.archived=current.archived||[];
     current.archived.unshift({url:u,archived_at:nowISO()});
     current.active.splice(i,1);
     selectedActiveIndex=-1; current.updated=nowISO();
-    await ghPutFile(current,"archive: from-active"); renderAll();
+    await ghPutFile(current,"archive: from-active");
+    renderAll();
   }catch(e){ alert("Fehler (Archivieren):\n"+e.message); }
 }
 async function restoreFromArchive(i){
@@ -500,83 +407,94 @@ async function restoreFromArchive(i){
     if(current.active.length>=MAX_ACTIVE) return alert(`Schon ${MAX_ACTIVE} aktive Videos.`);
     if(!current.active.includes(u)) current.active.push(u);
     current.archived.splice(i,1);
-    current.updated=nowISO(); await ghPutFile(current,"restore: archive->active"); renderAll();
+    current.updated=nowISO();
+    await ghPutFile(current,"restore: archive->active");
+    renderAll();
   }catch(e){ alert("Fehler (Zurückholen):\n"+e.message); }
 }
 async function removeFromArchive(i){
   try{
     await ensureLoaded();
     current.archived.splice(i,1);
-    current.updated=nowISO(); await ghPutFile(current,"remove: archive"); renderAll();
+    current.updated=nowISO();
+    await ghPutFile(current,"remove: archive");
+    renderAll();
   }catch(e){ alert("Fehler (Archiv entfernen):\n"+e.message); }
 }
-
-/* ===== Vorschau (einmaliger) ===== */
-function previewUrl(enc){ const u=decodeURIComponent(enc); byId("preview").src=u; byId("statusMsg").textContent="Vorschau läuft"; }
-function stopPreview(){ byId("preview").src="about:blank"; byId("statusMsg").textContent="Vorschau gestoppt"; }
-
-/* ===== Rotation / Guard ===== */
-function nextIndex(arr, i){
-  if(!autoSkipEnabled) return (i+1)%arr.length;
-  for(let step=1; step<=arr.length; step++){
-    const ni=(i+step)%arr.length;
-    if(!blacklist.has(arr[ni])) return ni;
-  }
-  return (i+1)%arr.length;
+async function quickFill(){
+  await ensureLoaded();
+  if((current.active||[]).length>0) return alert("Aktiv ist nicht leer.");
+  const def=defaultData();
+  current.active = def.active.slice(0,4);
+  current.library=[...new Set([...(current.library||[]),...def.library])];
+  current.updated=nowISO();
+  await ghPutFile(current,"add: quick-fill-4");
+  renderAll();
 }
-function setPreviewWithGuard(idx, arr, jumpFn, intervalSec){
-  currentIndex=idx; renderOnAir();
-  const src=arr[idx];
-  byId("preview").src=src;
-  renderNowPlaying(idx, src, arr.length);
-  if(guardTimer) clearTimeout(guardTimer);
-  const gSec = Math.max(3, parseInt(byId("guardSec").value || current.guard || 12, 10));
-  guardTimer=setTimeout(()=>{ if(typeof jumpFn==="function") jumpFn(); }, gSec*1000);
-  startCountdowns(intervalSec, gSec);
+
+/* Vorschau/Rotation – Teil 2 */
+function previewUrl(enc){const u=decodeURIComponent(enc); byId("preview").src=u; byId("statusMsg").textContent="Vorschau läuft";}
+function stopPreview(){byId("preview").src="about:blank"; byId("statusMsg").textContent="Vorschau gestoppt";}
+function clearTimers(){if(testTimer)clearInterval(testTimer); if(rotateTimer)clearInterval(rotateTimer); if(guardTimer)clearTimeout(guardTimer); testTimer=null; rotateTimer=null; guardTimer=null;}
+function stopAllTimers(){clearTimers(); stopPreview();}
+function setOnAir(i){onAirIdx=i; renderOnAirDots();}
+
+function hostPrefEmbed(u){
+  const pref=(byId("hostPref").value)||"auto";
+  // Im Moment nur Info – toEmbed normalisiert beides.
+  return toEmbed(u);
 }
+
+function runRotation(intervalSec){
+  const arr=(current?.active||[]).map(hostPrefEmbed);
+  if(!arr.length){ alert("Keine aktiven Videos."); return; }
+  let i=0;
+  byId("preview").src=arr[0];
+  setOnAir(0);
+  byId("statusMsg").textContent=`Rotation aktiv (${intervalSec}s)`;
+  const guard = Math.max(0, parseInt(byId("guardSec").value||"0",10))*1000;
+  rotateTimer=setInterval(()=>{
+    i=(i+1)%arr.length;
+    byId("preview").src=arr[i];
+    setOnAir(i);
+    if(guard){ // Anti-Störung: während Guard-Zeit nicht reagieren
+      if(guardTimer) clearTimeout(guardTimer);
+      guardTimer=setTimeout(()=>{},guard);
+    }
+  }, intervalSec*1000);
+}
+
 function startTestRotate(){
   stopAllTimers();
-  const arr=current?.active||[]; if(!arr.length) return alert("Keine aktiven Videos.");
+  const arr=(current?.active||[]).map(hostPrefEmbed);
+  if(!arr.length){ alert("Keine aktiven Videos."); return; }
   let i=0;
+  byId("preview").src=arr[0];
+  setOnAir(0);
   byId("statusMsg").textContent="Rotationstest (5s) …";
-  setPreviewWithGuard(i, arr, ()=>{}, 5);
-  testTimer=setInterval(()=>{ i=(i+1)%arr.length; setPreviewWithGuard(i, arr, ()=>{}, 5); }, 5000);
+  testTimer=setInterval(()=>{ i=(i+1)%arr.length; byId("preview").src=arr[i]; setOnAir(i); },5000);
 }
 function startRotation(){
   stopAllTimers();
-  const arr=current?.active||[]; if(!arr.length) return alert("Keine aktiven Videos.");
-  let i=0;
-  const sec=Math.max(3,parseInt(byId("intervalSec").value||current.interval||"60",10));
-  byId("statusMsg").textContent=`Rotation aktiv (${sec}s)`;
-  const jump=()=>{ i = nextIndex(arr, i); setPreviewWithGuard(i, arr, jump, sec); };
-  setPreviewWithGuard(i, arr, jump, sec);
-  rotateTimer=setInterval(jump, sec*1000);
+  const arr=current?.active||[];
+  if(!arr.length){ alert("Keine aktiven Videos."); return; }
+  const sec=Math.max(3,parseInt(byId("intervalSec").value||"60",10));
+  runRotation(sec);
 }
-function pauseRotation(){ if(rotateTimer) clearInterval(rotateTimer); rotateTimer=null; byId("statusMsg").textContent="Rotation pausiert"; }
-function stopAllTimers(){
-  if(testTimer) clearInterval(testTimer);
-  if(rotateTimer) clearInterval(rotateTimer);
-  if(guardTimer) clearTimeout(guardTimer);
-  if(intervalCountdownTimer) clearInterval(intervalCountdownTimer);
-  if(guardCountdownTimer) clearInterval(guardCountdownTimer);
-  testTimer=rotateTimer=guardTimer=intervalCountdownTimer=guardCountdownTimer=null;
-  stopPreview();
-}
-
-/* ===== Einstellungen speichern (Intervall, Guard, Host) ===== */
+function pauseRotation(){if(rotateTimer)clearInterval(rotateTimer); rotateTimer=null; byId("statusMsg").textContent="Rotation pausiert";}
 async function saveInterval(){
   try{
     await ensureLoaded();
     const sec=Math.max(3,parseInt(byId("intervalSec").value||"60",10));
-    const g  =Math.max(3,parseInt(byId("guardSec").value||"12",10));
-    const hp =byId("hostPref").value||"auto";
-    current.interval=sec; current.guard=g; current.hostPref=hp; current.updated=nowISO();
-    await ghPutFile(current,"update: interval/guard/hostPref");
+    const guard=Math.max(0,parseInt(byId("guardSec").value||"0",10));
+    const pref=byId("hostPref").value||"auto";
+    current.interval=sec; current.guard=guard; current.hostPref=pref; current.updated=nowISO();
+    await ghPutFile(current,"update: interval/guard/host");
     byId("intervalLabel").textContent=sec; byId("statusMsg").textContent="Einstellungen gespeichert";
   }catch(e){ alert("Fehler beim Speichern:\n"+e.message); }
 }
 
-/* ===== Kino / Playlist / Fallback ===== */
+/* Kino – Teil 3 */
 function kinoPreview(){const u=byId("kinoUrl").value.trim(); if(!u) return alert("Bitte Kino/Embed URL eintragen."); byId("preview").src=u; byId("statusMsg").textContent="Kino-Vorschau läuft";}
 function kinoClear(){byId("kinoUrl").value=""; byId("playlistUrl").value=""; byId("kinoMode").value="60s"; byId("kinoStart").value=""; byId("statusMsg").textContent="Kino-Felder geleert (noch nicht gespeichert)";}
 async function kinoSave(){
@@ -589,20 +507,35 @@ async function kinoSave(){
   }catch(e){ alert("Fehler beim Speichern Kino:\n"+e.message); }
 }
 
-/* ===== Verbinden / Laden ===== */
+/* Verbinden / Laden / Session-Lock */
+function restoreSessionTokenIfAny(){
+  const saved=sessionStorage.getItem("fsa_admin_token");
+  if(saved){
+    GH.token=saved;
+    // Feld leer lassen (Token bleibt verborgen)
+    byId("connStatus").textContent="Token aus Sitzung geladen. Verbinde …";
+  }
+}
 async function connect(){
   GH.owner=byId("ghOwner").value.trim();
   GH.repo=byId("ghRepo").value.trim();
   GH.branch=byId("ghBranch").value.trim();
   GH.path=byId("ghPath").value.trim();
-  GH.token=byId("ghToken").value.trim();
+  const manual=byId("ghToken").value.trim();
+  GH.token = manual || GH.token;
+
   byId("connStatus").textContent="Verbinde …"; byId("btnReload").disabled=true;
   try{
     const ping=await fetch(`https://api.github.com/repos/${GH.owner}/${GH.repo}`,{headers:ghHeaders()});
     if(!ping.ok) throw new Error(`Repo nicht erreichbar (${ping.status})`);
     byId("connStatus").innerHTML=`<span class="ok">Verbunden.</span>`;
     byId("btnReload").disabled=false;
-    await loadOrInit();
+
+    // Sitzung merken?
+    if(byId("lockSession").checked && GH.token){
+      sessionStorage.setItem("fsa_admin_token", GH.token);
+    }
+    await loadOrInit(); // automatisch laden
   }catch(e){ byId("connStatus").innerHTML=`<span class="err">Fehler: ${e.message}</span>`; }
 }
 async function loadOrInit(){
@@ -621,42 +554,38 @@ async function loadOrInit(){
     renderAll();
   }catch(e){ byId("connStatus").innerHTML=`<span class="err">Fehler: ${e.message}</span>`; }
 }
+function logout(){
+  sessionStorage.removeItem("fsa_admin_token");
+  GH.token=""; current=null; currentSha="";
+  byId("ghToken").value="";
+  byId("btnReload").disabled=true;
+  byId("connStatus").innerHTML=`<span class="warn">Abgemeldet. Bitte Token einfügen und verbinden.</span>`;
+  stopAllTimers();
+}
 
-/* ===== Events ===== */
+/* Events */
 byId("btnConnect").addEventListener("click",connect);
 byId("btnReload").addEventListener("click",loadOrInit);
+byId("btnLogout").addEventListener("click",logout);
 
 byId("btnAddLib").addEventListener("click",addToLibrary);
 byId("btnAddActive").addEventListener("click",addDirectToActive);
-byId("btnPreviewNew").addEventListener("click",()=>{const u=toEmbed(byId("newUrl").value,current?.hostPref||"auto"); if(!u) return alert("Bitte gültige URL"); previewUrl(encodeURIComponent(u));});
+byId("btnPreviewNew").addEventListener("click",()=>{const u=toEmbed(byId("newUrl").value); if(!u) return alert("Bitte gültige URL"); previewUrl(encodeURIComponent(u));});
 byId("btnStopPreview").addEventListener("click",stopPreview);
+byId("btnQuickFill").addEventListener("click",quickFill);
 
-// Rotation
 byId("btnTestRotate").addEventListener("click",startTestRotate);
 byId("btnStopAll").addEventListener("click",stopAllTimers);
 byId("btnStartRotation").addEventListener("click",startRotation);
 byId("btnPauseRotation").addEventListener("click",pauseRotation);
 byId("btnSaveInterval").addEventListener("click",saveInterval);
 
-// Manuell & Auto-Skip (nur Laufzeit)
-byId("btnPrev").addEventListener("click", ()=>{
-  const arr=current?.active||[]; if(!arr.length) return;
-  stopAllTimers();
-  currentIndex = (currentIndex-1+arr.length)%arr.length;
-  setPreviewWithGuard(currentIndex, arr, ()=>{}, parseInt(byId("intervalSec").value||current.interval||"60",10));
-});
-byId("btnNext").addEventListener("click", ()=>{
-  const arr=current?.active||[]; if(!arr.length) return;
-  stopAllTimers();
-  currentIndex = nextIndex(arr, currentIndex<0?0:currentIndex);
-  setPreviewWithGuard(currentIndex, arr, ()=>{}, parseInt(byId("intervalSec").value||current.interval||"60",10));
-});
-byId("toggleAutoSkip").addEventListener("change",(e)=>{ autoSkipEnabled = !!e.target.checked; });
-
-// Teil 3
 byId("btnKinoPreview").addEventListener("click",kinoPreview);
 byId("btnKinoClear").addEventListener("click",kinoClear);
 byId("btnKinoSave").addEventListener("click",kinoSave);
+
+/* Beim Laden: Token aus Sitzung verwenden, wenn vorhanden */
+restoreSessionTokenIfAny();
 </script>
 </body>
 </html>
