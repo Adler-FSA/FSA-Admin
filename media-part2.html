@@ -22,7 +22,7 @@
   .hr{height:1px;background:rgba(255,255,255,.1);margin:12px 0}
   label{display:block;margin:8px 0 6px;font-weight:700;color:#dbe3f3}
   input,select{width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#0b1325;color:#fff;outline:none}
-  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
   .btn{padding:10px 14px;border:none;border-radius:10px;font-weight:800;cursor:pointer;box-shadow:var(--shadow)}
   .btn.gold{background:var(--gold);color:#000}.btn.teal{background:var(--teal);color:#001210}
   .btn.blue{background:var(--blue);color:#001018}.btn.red{background:var(--red);color:#fff}
@@ -53,14 +53,21 @@
       <div><label>Branch</label><input id="ghBranch" value="main"></div>
       <div><label>JSON-Pfad</label><input id="ghPath" value="rotator.json"></div>
       <div style="grid-column:1/-1">
-        <label>Personal Access Token (in-memory, geht verloren bei Reload)</label>
+        <label>Personal Access Token</label>
         <input id="ghToken" type="text" placeholder="ghp_... (contents:read/write)">
       </div>
     </div>
-    <div class="row" style="margin-top:10px">
-      <button class="btn gold" id="btnConnect">🔗 Verbinden & Laden</button>
-      <span id="connStatus" class="note">Bitte Token einfügen und verbinden.</span>
+    <div class="row" style="margin-top:10px;justify-content:space-between">
+      <div class="row">
+        <button class="btn gold" id="btnConnect">🔗 Verbinden & Laden</button>
+        <label style="display:flex;gap:8px;align-items:center">
+          <input id="rememberSession" type="checkbox" checked>
+          <span>für diese Sitzung merken</span>
+        </label>
+      </div>
+      <button class="btn ghost" id="btnLogout">🔒 Ausloggen</button>
     </div>
+    <div class="note" id="connStatus" style="margin-top:8px">Bitte Token einfügen und verbinden.</div>
   </div>
 
   <!-- Vorschau & Rotation -->
@@ -106,6 +113,7 @@
 
         <div class="row" style="margin-top:10px">
           <button class="btn teal" id="btnStartRotation">▶️ Start</button>
+          <button class="btn teal" id="btnStart5s">▶️ Start (5s)</button>
           <button class="btn red"  id="btnPauseRotation">⏸ Stop</button>
           <button class="btn blue" id="btnSaveInterval">💾 Intervall merken</button>
         </div>
@@ -135,7 +143,6 @@ function shortUrl(u){try{const x=new URL(u);return x.hostname.replace('www.','')
 function nowISO(){return new Date().toISOString()}
 function toBase64(str){const enc=new TextEncoder().encode(str);let bin="";enc.forEach(b=>bin+=String.fromCharCode(b));return btoa(bin)}
 function fromBase64(b64){const bin=atob(b64);const bytes=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);return new TextDecoder().decode(bytes)}
-
 function toEmbed(url){
   if(!url) return "";
   let u=url.trim();
@@ -150,6 +157,37 @@ function toEmbed(url){
 /* ===== GitHub ===== */
 let GH={owner:"Adler-FSA",repo:"FSA-Admin",branch:"main",path:"rotator.json",token:""};
 let current=null, currentSha="", timer=null, curIdx=0;
+
+/* ===== Session remember (optional, ONLY sessionStorage) ===== */
+const SKEY="fsa_media_conn";
+function rememberIfWanted(){
+  if(!byId("rememberSession").checked) return;
+  const payload={owner:GH.owner,repo:GH.repo,branch:GH.branch,path:GH.path,token:GH.token,ts:Date.now()};
+  sessionStorage.setItem(SKEY, JSON.stringify(payload));
+}
+function tryRestoreSession(){
+  try{
+    const raw=sessionStorage.getItem(SKEY);
+    if(!raw) return;
+    const s=JSON.parse(raw);
+    byId("ghOwner").value=s.owner||"";
+    byId("ghRepo").value=s.repo||"";
+    byId("ghBranch").value=s.branch||"";
+    byId("ghPath").value=s.path||"";
+    byId("ghToken").value=s.token||"";
+    byId("rememberSession").checked=true;
+    // auto-connect (nur wenn Token da ist)
+    if(s.token) connect();
+  }catch(e){}
+}
+function logout(){
+  sessionStorage.removeItem(SKEY);
+  GH={owner:"",repo:"",branch:"",path:"",token:""};
+  current=null; currentSha=""; curIdx=0;
+  stopAll();
+  byId("ghOwner").value=""; byId("ghRepo").value=""; byId("ghBranch").value=""; byId("ghPath").value=""; byId("ghToken").value="";
+  byId("connStatus").innerHTML='<span class="warn">Abgemeldet. Sitzung geleert.</span>';
+}
 
 function ghHeaders(){ if(!GH.token) throw new Error("Kein Token"); return {"Authorization":"Bearer "+GH.token,"Accept":"application/vnd.github+json","Content-Type":"application/json"};}
 async function ghGetFile(){
@@ -175,7 +213,6 @@ function renderActive(){
   byId("countActive").textContent=act.length;
   byId("intervalLabel").textContent=current?.interval||60;
   byId("guardLabel").textContent=byId("guardSec").value||0;
-
   byId("activeList").innerHTML=act.map((u,i)=>`
     <div class="item ${i===curIdx?'onair blink':''}">
       <span class="badge">${i+1}</span>
@@ -246,6 +283,14 @@ function startRotation(){
   curIdx=0;
   chainRotate(sec*1000, guard*1000);
 }
+function startRotation5s(){
+  stopAll();
+  if(!current?.active?.length) return alert("Keine aktiven Videos.");
+  const guard=Math.max(0, parseInt(byId("guardSec").value||"0",10));
+  byId("statusMsg").textContent=`Rotation aktiv (5s + Guard ${guard}s)`;
+  curIdx=0;
+  chainRotate(5000, guard*1000);
+}
 function pauseRotation(){
   if(timer){ clearTimeout(timer); timer=null; byId("statusMsg").textContent="Rotation pausiert"; }
 }
@@ -281,6 +326,7 @@ async function connect(){
     byId("lastLoad").textContent=new Date().toLocaleString();
     curIdx=0;
     renderActive();
+    rememberIfWanted(); // <-- Session speichern (optional)
   }catch(e){
     byId("connStatus").innerHTML=`<span class="err">Fehler: ${e.message}</span>`;
   }
@@ -288,13 +334,19 @@ async function connect(){
 
 /* ===== Events ===== */
 byId("btnConnect").addEventListener("click",connect);
+byId("btnLogout").addEventListener("click",logout);
+
 byId("btnTestRotate").addEventListener("click",startTest);
 byId("btnStopAll").addEventListener("click",stopAll);
 byId("btnStartRotation").addEventListener("click",startRotation);
+byId("btnStart5s").addEventListener("click",startRotation5s);
 byId("btnPauseRotation").addEventListener("click",pauseRotation);
 byId("btnSaveInterval").addEventListener("click",saveInterval);
 byId("safeMode").addEventListener("change",()=>applySandbox());
 byId("guardSec").addEventListener("change",()=>{byId("guardLabel").textContent=byId("guardSec").value||0;});
+
+/* Auto-restore (nur Sitzung) */
+tryRestoreSession();
 </script>
 </body>
 </html>
