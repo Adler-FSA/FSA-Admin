@@ -6,16 +6,9 @@
 <title>FSA Admin · Media (Rota-Style-003)</title>
 <style>
   :root{
-    --bg: #0b1220;
-    --card: #111827;
-    --muted:#9aa4b2;
-    --txt: #eaf2ff;
-    --gold:#d4af37;
-    --teal:#1cc2a0;
-    --red:#e11d48;
-    --blue:#38bdf8;
-    --shadow: 0 10px 30px rgba(0,0,0,.45);
-    --radius:14px;
+    --bg:#0b1220; --card:#111827; --muted:#9aa4b2; --txt:#eaf2ff;
+    --gold:#d4af37; --teal:#1cc2a0; --red:#e11d48; --blue:#38bdf8;
+    --shadow:0 10px 30px rgba(0,0,0,.45); --radius:14px;
   }
   html,body{height:100%}
   body{margin:0;background:var(--bg);color:var(--txt);font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif}
@@ -35,8 +28,8 @@
   .hr{height:1px;background:rgba(255,255,255,.1);margin:12px 0}
 
   label{display:block;margin:8px 0 6px;font-weight:700;color:#dbe3f3}
-  input[type="text"], input[type="number"], input[type="datetime-local"], textarea, select{
-    width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#0b1325;color:#fff;
+  input[type="text"],input[type="number"],input[type="datetime-local"],textarea,select{
+    width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#0b1325;color:#fff
   }
   textarea{min-height:96px}
   .row{display:flex;gap:10px;flex-wrap:wrap}
@@ -49,12 +42,12 @@
   .btn.small{padding:6px 10px;font-weight:700}
 
   .list{display:grid;gap:10px}
-  .item{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;background:#0e182b;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px;}
+  .item{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;background:#0e182b;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px}
   .badge{background:var(--gold);color:#000;border-radius:999px;padding:2px 8px;font-weight:900;font-size:.8rem}
   .item .url{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#dbeafe}
   .item.active{outline:2px solid var(--teal);background:#0e1e2b}
 
-  .preview{border:2px solid var(--gold);border-radius:12px;overflow:hidden;height:360px;background:#000;}
+  .preview{border:2px solid var(--gold);border-radius:12px;overflow:hidden;height:360px;background:#000}
   .stat{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:.92rem}
   .chip{padding:4px 10px;border-radius:999px;background:#0f1a30;border:1px solid rgba(255,255,255,.12);color:#cbe0ff}
 
@@ -186,7 +179,7 @@
 </div>
 
 <script>
-/* ===== Konstante Limits ===== */
+/* ===== Limits ===== */
 const MAX_ACTIVE = 12;
 
 /* ===== Helpers ===== */
@@ -217,16 +210,19 @@ function toEmbed(url){
 let GH={owner:"Adler-FSA",repo:"FSA-Admin",branch:"main",path:"rotator.json",token:""};
 let current=null, currentSha="", testTimer=null, rotateTimer=null, selectedActiveIndex=-1;
 
-function ghHeaders(){ if(!GH.token) throw new Error("Kein Token"); return {"Authorization":"Bearer "+GH.token,"Accept":"application/vnd.github+json","Content-Type":"application/json"};}
+/* Headers */
+function ghHeaders(){ if(!GH.token) throw new Error("Kein Token"); return {"Authorization":"Bearer "+GH.token,"Accept":"application/vnd.github+json","Content-Type":"application/json"}; }
 
-async function ghGetFile(){
+/* Rohdatei laden (ohne JSON.parse) */
+async function ghGetFileRaw(){
   const url=`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${GH.path}?ref=${GH.branch}`;
   const res=await fetch(url,{headers:ghHeaders()});
   if(res.status===404) return {status:404};
   if(!res.ok){throw new Error(`GET ${res.status}: ${await res.text()}`)}
-  const j=await res.json(); const content=fromBase64(j.content||"");
-  return {status:200,sha:j.sha,data:JSON.parse(content)};
+  const j=await res.json(); return {status:200,sha:j.sha,content:fromBase64(j.content||"")};
 }
+
+/* Datei speichern (aktueller Pfad) */
 async function ghPutFile(data,message){
   const url=`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${GH.path}`;
   const body={message:message||"update rotator.json",content:toBase64(JSON.stringify(data,null,2)),branch:GH.branch};
@@ -234,6 +230,27 @@ async function ghPutFile(data,message){
   const res=await fetch(url,{method:"PUT",headers:ghHeaders(),body:JSON.stringify(body)});
   if(!res.ok){throw new Error(`PUT ${res.status}: ${await res.text()}`)}
   const j=await res.json(); currentSha=j.content.sha; byId("lastSave").textContent=new Date().toLocaleString();
+}
+
+/* Beliebigen Pfad schreiben (für Backups) */
+async function ghPutAtPath(path, contentStr, message){
+  const url=`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${path}`;
+  const body={message:message,content:toBase64(contentStr),branch:GH.branch};
+  const res=await fetch(url,{method:"PUT",headers:ghHeaders(),body:JSON.stringify(body)});
+  if(!res.ok){throw new Error(`PUT ${res.status}: ${await res.text()}`)}
+}
+
+/* zentrales Speichern mit Updater-Funktion */
+async function ghSave(updater, commitMsg){
+  if(!current) await loadOrInit();
+  if(!current) throw new Error("Daten nicht geladen.");
+  const draft=JSON.parse(JSON.stringify(current));
+  const changed = await updater(draft); // optionaler Rückgabewert
+  if(changed===false) return; // nichts zu tun
+  draft.updated=nowISO();
+  current=draft;
+  await ghPutFile(current, commitMsg||"update");
+  renderAll();
 }
 
 /* Defaults (inkl. 4 Test-Videos) */
@@ -260,6 +277,7 @@ function defaultData(){
 
 /* Render */
 function renderAll(){
+  if(!current){ return; }
   current.library=current.library||[];
   current.active=current.active||[];
   current.archived=current.archived||[];
@@ -311,105 +329,74 @@ function renderAll(){
   byId("fallbackImage").value=current.fallback?.imageUrl||"";
 }
 
-/* Guard: sicherstellen, dass current geladen ist */
-async function ensureLoaded(){
-  if(current) return;
-  await loadOrInit();
-}
-
 /* Aktionen – Teil 1 */
 async function addToLibrary(){
-  try{
-    await ensureLoaded();
-    const u=toEmbed(byId("newUrl").value);
-    if(!u) return alert("Bitte gültige URL eingeben.");
-    current.library=current.library||[];
-    if(!current.library.includes(u)) current.library.push(u);
-    current.updated=nowISO();
-    await ghPutFile(current,"add: library");
-    renderAll();
-  }catch(e){ alert("Fehler (Bibliothek hinzufügen):\n"+e.message); }
+  const raw=byId("newUrl").value;
+  const u=toEmbed(raw);
+  if(!u) return alert("Bitte gültige URL eingeben.");
+  await ghSave(d=>{
+    d.library=d.library||[];
+    if(!d.library.includes(u)) d.library.push(u);
+  },"add: library");
 }
 async function addDirectToActive(){
-  try{
-    await ensureLoaded();
-    const u=toEmbed(byId("newUrl").value);
-    if(!u) return alert("Bitte gültige URL eingeben.");
-    current.active=current.active||[];
-    if(current.active.length>=MAX_ACTIVE) return alert(`Maximal ${MAX_ACTIVE} aktive Videos.`);
-    if(!current.active.includes(u)) current.active.push(u);
-    current.library=current.library||[];
-    if(!current.library.includes(u)) current.library.push(u);
-    current.updated=nowISO();
-    await ghPutFile(current,"add: direct-to-active");
-    renderAll();
-  }catch(e){ alert("Fehler (Direkt in Rotator):\n"+e.message); }
+  const raw=byId("newUrl").value;
+  const u=toEmbed(raw);
+  if(!u) return alert("Bitte gültige URL eingeben.");
+  await ghSave(d=>{
+    d.active=d.active||[];
+    if(d.active.length>=MAX_ACTIVE){ alert(`Maximal ${MAX_ACTIVE} aktive Videos.`); return false; }
+    if(!d.active.includes(u)) d.active.push(u);
+    d.library=d.library||[];
+    if(!d.library.includes(u)) d.library.push(u);
+  },"add: direct-to-active");
 }
 async function libToActive(i){
-  try{
-    await ensureLoaded();
-    const u=toEmbed(current.library[i]);
-    if(current.active.length>=MAX_ACTIVE) return alert(`Maximal ${MAX_ACTIVE} aktive Videos.`);
-    if(!current.active.includes(u)) current.active.push(u);
-    current.updated=nowISO();
-    await ghPutFile(current,"add: lib->active");
-    renderAll();
-  }catch(e){ alert("Fehler (lib->active):\n"+e.message); }
+  await ghSave(d=>{
+    const u=toEmbed(d.library[i]);
+    d.active=d.active||[];
+    if(d.active.length>=MAX_ACTIVE){ alert(`Maximal ${MAX_ACTIVE} aktive Videos.`); return false; }
+    if(!d.active.includes(u)) d.active.push(u);
+  },"add: lib->active");
 }
 async function removeFromLibrary(i){
-  try{
-    await ensureLoaded();
-    current.library.splice(i,1);
-    current.updated=nowISO();
-    await ghPutFile(current,"remove: library");
-    renderAll();
-  }catch(e){ alert("Fehler (Library entfernen):\n"+e.message); }
+  await ghSave(d=>{ d.library.splice(i,1); },"remove: library");
 }
-function selectActive(i){selectedActiveIndex=i; renderAll();}
+function selectActive(i){ selectedActiveIndex=i; renderAll(); }
 async function moveUp(i){
-  if(i<=0) return;
-  const a=current.active; [a[i-1],a[i]]=[a[i],a[i-1]];
-  selectedActiveIndex=i-1; current.updated=nowISO();
-  await ghPutFile(current,"reorder: up"); renderAll();
+  await ghSave(d=>{
+    if(i<=0) return false;
+    const a=d.active; [a[i-1],a[i]]=[a[i],a[i-1]];
+    selectedActiveIndex=i-1;
+  },"reorder: up");
 }
 async function moveDown(i){
-  const a=current.active; if(i>=a.length-1) return;
-  [a[i+1],a[i]]=[a[i],a[i+1]];
-  selectedActiveIndex=i+1; current.updated=nowISO();
-  await ghPutFile(current,"reorder: down"); renderAll();
+  await ghSave(d=>{
+    const a=d.active; if(i>=a.length-1) return false;
+    [a[i+1],a[i]]=[a[i],a[i+1]];
+    selectedActiveIndex=i+1;
+  },"reorder: down");
 }
 async function activeToArchive(i){
-  try{
-    await ensureLoaded();
-    const u=current.active[i];
-    current.archived=current.archived||[];
-    current.archived.unshift({url:u,archived_at:nowISO()});
-    current.active.splice(i,1);
-    selectedActiveIndex=-1; current.updated=nowISO();
-    await ghPutFile(current,"archive: from-active");
-    renderAll();
-  }catch(e){ alert("Fehler (Archivieren):\n"+e.message); }
+  await ghSave(d=>{
+    const u=d.active[i];
+    d.archived=d.archived||[];
+    d.archived.unshift({url:u,archived_at:nowISO()});
+    d.active.splice(i,1);
+    selectedActiveIndex=-1;
+  },"archive: from-active");
 }
 async function restoreFromArchive(i){
-  try{
-    await ensureLoaded();
-    const u=current.archived[i].url;
-    if(current.active.length>=MAX_ACTIVE) return alert(`Schon ${MAX_ACTIVE} aktive Videos.`);
-    if(!current.active.includes(u)) current.active.push(u);
-    current.archived.splice(i,1);
-    current.updated=nowISO();
-    await ghPutFile(current,"restore: archive->active");
-    renderAll();
-  }catch(e){ alert("Fehler (Zurückholen):\n"+e.message); }
+  await ghSave(d=>{
+    const u=d.archived[i].url;
+    d.active=d.active||[];
+    if(d.active.length>=MAX_ACTIVE){ alert(`Schon ${MAX_ACTIVE} aktive Videos.`); return false; }
+    if(!d.active.includes(u)) d.active.push(u);
+    d.archived.splice(i,1);
+  },"restore: archive->active");
 }
 async function removeFromArchive(i){
-  try{
-    await ensureLoaded();
-    current.archived.splice(i,1);
-    current.updated=nowISO();
-    await ghPutFile(current,"remove: archive");
-    renderAll();
-  }catch(e){ alert("Fehler (Archiv entfernen):\n"+e.message); }
+  await ghSave(d=>{ d.archived.splice(i,1); },"remove: archive");
 }
 
 /* Vorschau/Rotation – Teil 2 */
@@ -433,29 +420,23 @@ function startRotation(){
 }
 function pauseRotation(){if(rotateTimer)clearInterval(rotateTimer); rotateTimer=null; byId("statusMsg").textContent="Rotation pausiert";}
 async function saveInterval(){
-  try{
-    await ensureLoaded();
-    const sec=Math.max(3,parseInt(byId("intervalSec").value||"60",10));
-    current.interval=sec; current.updated=nowISO();
-    await ghPutFile(current,"update: interval");
-    byId("intervalLabel").textContent=sec; byId("statusMsg").textContent="Intervall gespeichert";
-  }catch(e){ alert("Fehler beim Speichern des Intervalls:\n"+e.message); }
+  const sec=Math.max(3,parseInt(byId("intervalSec").value||"60",10));
+  await ghSave(d=>{ d.interval=sec; },"update: interval");
+  byId("intervalLabel").textContent=sec; byId("statusMsg").textContent="Intervall gespeichert";
 }
 
 /* Kino – Teil 3 */
 function kinoPreview(){const u=byId("kinoUrl").value.trim(); if(!u) return alert("Bitte Kino/Embed URL eintragen."); byId("preview").src=u; byId("statusMsg").textContent="Kino-Vorschau läuft";}
 function kinoClear(){byId("kinoUrl").value=""; byId("playlistUrl").value=""; byId("kinoMode").value="60s"; byId("kinoStart").value=""; byId("statusMsg").textContent="Kino-Felder geleert (noch nicht gespeichert)";}
 async function kinoSave(){
-  try{
-    await ensureLoaded();
-    current.kino={url:byId("kinoUrl").value.trim(),playlist:byId("playlistUrl").value.trim(),mode:byId("kinoMode").value,startISO:toISO(byId("kinoStart").value)};
-    current.fallback={enabled:byId("fallbackEnabled").value==="true",imageUrl:byId("fallbackImage").value.trim()};
-    current.updated=nowISO(); await ghPutFile(current,"update: kino/playlist/fallback");
-    byId("statusMsg").textContent="Kino/Fallback gespeichert";
-  }catch(e){ alert("Fehler beim Speichern Kino:\n"+e.message); }
+  await ghSave(d=>{
+    d.kino={url:byId("kinoUrl").value.trim(),playlist:byId("playlistUrl").value.trim(),mode:byId("kinoMode").value,startISO:toISO(byId("kinoStart").value)};
+    d.fallback={enabled:byId("fallbackEnabled").value==="true",imageUrl:byId("fallbackImage").value.trim()};
+  },"update: kino/playlist/fallback");
+  byId("statusMsg").textContent="Kino/Fallback gespeichert";
 }
 
-/* Verbinden / Laden */
+/* Verbinden / Laden (mit Auto-Repair) */
 async function connect(){
   GH.owner=byId("ghOwner").value.trim();
   GH.repo=byId("ghRepo").value.trim();
@@ -469,24 +450,46 @@ async function connect(){
     if(!ping.ok) throw new Error(`Repo nicht erreichbar (${ping.status})`);
     byId("connStatus").innerHTML=`<span class="ok">Verbunden.</span>`;
     byId("btnReload").disabled=false;
-    await loadOrInit(); // *** automatisch laden ***
-  }catch(e){ byId("connStatus").innerHTML=`<span class="err">Fehler: ${e.message}</span>`; }
+    await loadOrInit(); // automatisch laden
+  }catch(e){
+    byId("connStatus").innerHTML=`<span class="err">Fehler: ${e.message}</span>`;
+  }
 }
+
 async function loadOrInit(){
   byId("connStatus").textContent="Lade rotator.json …";
   try{
-    const r=await ghGetFile();
+    const r=await ghGetFileRaw();
     if(r.status===404){
       current=defaultData();
       await ghPutFile(current,"init rotator.json");
       byId("connStatus").innerHTML=`<span class="warn">rotator.json neu angelegt.</span>`;
     }else{
-      current=r.data; currentSha=r.sha;
-      byId("connStatus").innerHTML=`<span class="ok">rotator.json geladen.</span>`;
+      try{
+        current=JSON.parse(r.content);
+        currentSha=r.sha;
+        byId("connStatus").innerHTML=`<span class="ok">rotator.json geladen.</span>`;
+      }catch(parseErr){
+        const msg=`JSON Parse error: ${parseErr.message}`;
+        byId("connStatus").innerHTML=`<span class="err">Fehler: ${msg}</span>`;
+        const ok = confirm(`${msg}\n\nAutomatisch reparieren?\n(Es wird ein Backup der defekten Datei im Repo angelegt)`);
+        if(ok){
+          const ts=new Date().toISOString().replace(/[:.]/g,"").slice(0,15);
+          const backupPath=GH.path.replace(/\.json$/i,`-broken-${ts}.json`);
+          await ghPutAtPath(backupPath, r.content, `backup broken ${GH.path} (${ts})`);
+          current=defaultData();
+          await ghPutFile(current,"repair: replace invalid rotator.json with default");
+          byId("connStatus").innerHTML=`<span class="ok">Repariert. Backup: ${backupPath}</span>`;
+        }else{
+          current=null; // bewusst leer lassen
+          alert("Daten konnten nicht geladen werden. Bitte reparieren oder neu anlegen.");
+        }
+      }
     }
-    byId("lastLoad").textContent=new Date().toLocaleString();
-    renderAll();
-  }catch(e){ byId("connStatus").innerHTML=`<span class="err">Fehler: ${e.message}</span>`; }
+    if(current){ byId("lastLoad").textContent=new Date().toLocaleString(); renderAll(); }
+  }catch(e){
+    byId("connStatus").innerHTML=`<span class="err">Fehler: ${e.message}</span>`;
+  }
 }
 
 /* Events */
