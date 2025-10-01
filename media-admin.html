@@ -65,31 +65,27 @@
       </div>
     </div>
     <div class="row" style="margin-top:10px">
-      <button class="btn gold" id="btnConnect">🔗 Verbinden</button>
-      <button class="btn ghost" id="btnReload" disabled>🔄 Daten laden / anlegen</button>
-
-      <!-- Neu: Sitzung merken + Logout -->
+      <button class="btn gold" id="btnConnect" type="button">🔗 Verbinden</button>
+      <button class="btn ghost" id="btnReload" type="button" disabled>🔄 Daten laden / anlegen</button>
       <label style="display:flex;align-items:center;gap:8px">
         <input id="rememberSession" type="checkbox"> In dieser Sitzung merken
       </label>
       <button class="btn red" id="btnLogout" type="button">🚪 Abmelden</button>
-
       <span id="connStatus" class="note">Bitte Token einfügen und verbinden.</span>
     </div>
   </div>
 
-  <!-- 📚 Teil 1: Bibliothek / Aktive / Archiv -->
+  <!-- 📚 Teil 1 -->
   <div class="grid g-3" style="margin-top:16px">
-    <!-- Bibliothek -->
     <div class="card">
       <div class="title"><h2>📚 Bibliothek</h2><div class="muted">Globaler Pool deiner Videos</div></div>
       <label>Neue Video-URL (YouTube/Vimeo/Zoom)</label>
       <input id="newUrl" type="text" placeholder="https://youtu.be/… oder https://www.youtube.com/watch?v=…">
       <div class="row" style="margin-top:8px">
-        <button class="btn teal" id="btnAddLib">＋ Zur Bibliothek</button>
-        <button class="btn blue" id="btnAddActive">＋ Direkt in Rotator</button>
-        <button class="btn gold" id="btnPreviewNew">▶️ Vorschau</button>
-        <button class="btn ghost" id="btnStopPreview">⏹️ Vorschau Stop</button>
+        <button class="btn teal"  id="btnAddLib"      type="button">＋ Zur Bibliothek</button>
+        <button class="btn blue"  id="btnAddActive"   type="button">＋ Direkt in Rotator</button>
+        <button class="btn gold"  id="btnPreviewNew"  type="button">▶️ Vorschau</button>
+        <button class="btn ghost" id="btnStopPreview" type="button">⏹️ Vorschau Stop</button>
       </div>
       <div class="hr"></div>
       <div class="stat">
@@ -99,7 +95,6 @@
       <div id="libList" class="list" style="margin-top:10px"></div>
     </div>
 
-    <!-- Aktive -->
     <div class="card">
       <div class="title"><h2>🎛 Aktive Videos (Rotator)</h2><div class="muted">Max. 12 – Reihenfolge zählt</div></div>
       <div class="stat">
@@ -110,40 +105,45 @@
       <div id="activeList" class="list" style="margin-top:10px"></div>
     </div>
 
-    <!-- Archiv -->
     <div class="card">
       <div class="title"><h2>📦 Archiv</h2><div class="muted">Zurückholen möglich</div></div>
       <div id="archList" class="list"></div>
     </div>
   </div>
 
-  <!-- 🖥 Teil 2: Vorschau & Rotation -->
+  <!-- 🖥 Vorschau & Rotation -->
   <div class="card" style="margin-top:16px">
     <div class="title"><h2>🖥 Vorschau & Rotation</h2><div class="muted">Nur Admin-Test – LP liest die gespeicherten Daten</div></div>
     <div class="grid g-2">
       <div>
         <div id="previewBox" class="preview">
-          <iframe id="preview" width="100%" height="100%" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="border:0"></iframe>
+          <!-- WICHTIG: sandbox blockt Top-Navigation (so „wirft nicht mehr raus“) -->
+          <iframe id="preview" width="100%" height="100%"
+                  allow="autoplay; fullscreen; picture-in-picture"
+                  allowfullscreen
+                  sandbox="allow-scripts allow-same-origin allow-presentation allow-popups"
+                  referrerpolicy="no-referrer"
+                  style="border:0"></iframe>
         </div>
         <div class="row" style="margin-top:10px">
-          <button class="btn gold" id="btnTestRotate">✏️ Rotationstest (5s)</button>
-          <button class="btn ghost" id="btnStopAll">⏹️ Test/Rotation beenden</button>
+          <button class="btn gold"  id="btnTestRotate" type="button">✏️ Rotationstest (5s)</button>
+          <button class="btn ghost" id="btnStopAll"    type="button">⏹️ Test/Rotation beenden</button>
         </div>
       </div>
       <div>
         <label>Intervall (Sekunden)</label>
         <input id="intervalSec" type="number" min="3" value="60">
         <div class="row" style="margin-top:10px">
-          <button class="btn teal" id="btnStartRotation">▶️ Start</button>
-          <button class="btn red" id="btnPauseRotation">⏸ Stop</button>
-          <button class="btn blue" id="btnSaveInterval">💾 Intervall merken</button>
+          <button class="btn teal" id="btnStartRotation" type="button">▶️ Start</button>
+          <button class="btn red"  id="btnPauseRotation" type="button">⏸ Stop</button>
+          <button class="btn blue" id="btnSaveInterval"  type="button">💾 Intervall merken</button>
         </div>
 
         <div class="hr"></div>
         <label>Guard-Zeit (Sekunden) – Autowechsel bei Hängern/Werbung</label>
         <input id="guardSec" type="number" min="3" value="12">
         <div class="row" style="margin-top:10px">
-          <button class="btn blue" id="btnSaveGuard">💾 Guard-Zeit merken</button>
+          <button class="btn blue" id="btnSaveGuard" type="button">💾 Guard-Zeit merken</button>
         </div>
 
         <div class="hr"></div>
@@ -153,7 +153,7 @@
             <option value="youtube">YouTube bevorzugt</option>
             <option value="vimeo">Vimeo bevorzugt</option>
           </select>
-          <button class="btn blue" id="btnSavePref">💾 Präferenz merken</button>
+          <button class="btn blue" id="btnSavePref" type="button">💾 Präferenz merken</button>
         </div>
 
         <div class="hr"></div>
@@ -162,7 +162,7 @@
     </div>
   </div>
 
-  <!-- 🎬 Teil 3: Kino / Playlist / Fallback -->
+  <!-- 🎬 Kino / Playlist / Fallback -->
   <div class="card" style="margin-top:16px">
     <div class="title"><h2>🎬 Kino / Playlist / Fallback</h2><div class="muted">Global für LP-„Kino-Fenster“</div></div>
     <div class="grid g-2">
@@ -172,9 +172,9 @@
         <label>Playlist URL (optional)</label>
         <input id="playlistUrl" type="text" placeholder="https://www.youtube.com/playlist?list=...">
         <div class="row" style="margin-top:10px">
-          <button class="btn gold" id="btnKinoPreview">▶️ Kino Vorschau</button>
-          <button class="btn ghost" id="btnKinoClear">🧹 Kino löschen</button>
-          <button class="btn blue" id="btnKinoSave">💾 Kino/Playlist merken</button>
+          <button class="btn gold"  id="btnKinoPreview" type="button">▶️ Kino Vorschau</button>
+          <button class="btn ghost" id="btnKinoClear"   type="button">🧹 Kino löschen</button>
+          <button class="btn blue"  id="btnKinoSave"    type="button">💾 Kino/Playlist merken</button>
         </div>
       </div>
       <div>
@@ -203,10 +203,8 @@
 </div>
 
 <script>
-/* ===== Konstante Limits ===== */
+/* ===== Limits & Helpers ===== */
 const MAX_ACTIVE = 12;
-
-/* ===== Helpers ===== */
 const $ = s => document.querySelector(s);
 const byId = id => document.getElementById(id);
 function shortUrl(u){try{const x=new URL(u);return x.hostname.replace('www.','')+x.pathname+(x.search?'…':'')}catch(e){return u}}
@@ -216,36 +214,25 @@ function fromISOtoLocal(iso){if(!iso) return ""; const d=new Date(iso); if(isNaN
 function toBase64(str){const enc=new TextEncoder().encode(str);let bin="";enc.forEach(b=>bin+=String.fromCharCode(b));return btoa(bin)}
 function fromBase64(b64){const bin=atob(b64);const bytes=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);return new TextDecoder().decode(bytes)}
 
-/* URL ➝ EMBED (YouTube -> nocookie) */
+/* URL ➝ EMBED mit YouTube-nocookie */
 function toEmbed(url){
   if(!url) return "";
   let u = url.trim();
-
-  // YouTube short
-  if(/youtu\.be\//i.test(u)){
-    const id = u.split("youtu.be/")[1].split(/[?&]/)[0];
+  if(/youtu\.be\//i.test(u)){ const id=u.split("youtu.be/")[1].split(/[?&]/)[0];
     return `https://www.youtube-nocookie.com/embed/${id}?rel=0&autoplay=1&mute=1&playsinline=1&modestbranding=1&controls=0`;
   }
-  // YouTube watch
-  if(/youtube\.com\/watch/i.test(u)){
-    const q = new URL(u).searchParams.get("v");
+  if(/youtube\.com\/watch/i.test(u)){ const q=new URL(u).searchParams.get("v");
     if(q) return `https://www.youtube-nocookie.com/embed/${q}?rel=0&autoplay=1&mute=1&playsinline=1&modestbranding=1&controls=0`;
   }
-  // YouTube embed
   if(/youtube\.com\/embed/i.test(u)){
     let v = u.replace("https://www.youtube.com/embed/","https://www.youtube-nocookie.com/embed/");
-    if(!v.includes("autoplay=")) v += (v.includes("?")?"&":"?") + "autoplay=1&mute=1&playsinline=1&modestbranding=1&controls=0";
+    if(!v.includes("autoplay=")) v += (v.includes("?")?"&":"?")+"autoplay=1&mute=1&playsinline=1&modestbranding=1&controls=0";
     return v;
   }
-
-  // Vimeo
-  if(/vimeo\.com\/\d+/.test(u)){
-    const id = (u.match(/vimeo\.com\/(\d+)/)||[])[1];
+  if(/vimeo\.com\/\d+/.test(u)){ const id=(u.match(/vimeo\.com\/(\d+)/)||[])[1];
     if(id) return `https://player.vimeo.com/video/${id}?autoplay=1&muted=1`;
   }
   if(/player\.vimeo\.com\/video/.test(u)) return u;
-
-  // Sonst: durchreichen (z. B. Zoom)
   return u;
 }
 
@@ -257,7 +244,6 @@ function ghHeaders(){
   if(!GH.token) throw new Error("Kein Token");
   return {"Authorization":"Bearer "+GH.token,"Accept":"application/vnd.github+json","Content-Type":"application/json"};
 }
-
 async function ghGetFile(){
   const url=`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${GH.path}?ref=${GH.branch}`;
   const res=await fetch(url,{headers:ghHeaders()});
@@ -275,7 +261,7 @@ async function ghPutFile(data,message){
   const j=await res.json(); currentSha=j.content.sha; byId("lastSave").textContent=new Date().toLocaleString();
 }
 
-/* Defaults (inkl. 4 Test-Videos) */
+/* Defaults inkl. 4 Test-Videos */
 function defaultData(){
   return {
     active:[
@@ -312,44 +298,40 @@ function renderAll(){
   byId("intervalLabel").textContent=current.interval||60;
   byId("guardLabel").textContent=current.guard;
 
-  // Bibliothek
   byId("libList").innerHTML=current.library.map((u,i)=>`
     <div class="item">
       <span class="badge">${i+1}</span>
       <div class="url" title="${u}">${shortUrl(u)}</div>
       <div class="row">
-        <button class="btn small gold" onclick="previewUrl('${encodeURIComponent(u)}')">▶️ Vorschau</button>
-        <button class="btn small teal" onclick="libToActive(${i})">＋ In Rotator</button>
-        <button class="btn small ghost" onclick="removeFromLibrary(${i})">🗑 Entfernen</button>
+        <button class="btn small gold"  type="button" onclick="previewUrl('${encodeURIComponent(u)}')">▶️ Vorschau</button>
+        <button class="btn small teal"  type="button" onclick="libToActive(${i})">＋ In Rotator</button>
+        <button class="btn small ghost" type="button" onclick="removeFromLibrary(${i})">🗑 Entfernen</button>
       </div>
     </div>`).join("");
 
-  // Aktive
   byId("activeList").innerHTML=current.active.map((u,i)=>`
     <div class="item ${i===selectedActiveIndex?'active':''}" onclick="selectActive(${i})">
       <span class="badge">${i+1}</span>
       <div class="url" title="${u}">${shortUrl(u)}</div>
       <div class="row">
-        <button class="btn small gold" onclick="event.stopPropagation(); previewUrl('${encodeURIComponent(u)}')">▶️ Vorschau</button>
-        <button class="btn small ghost" onclick="event.stopPropagation(); moveUp(${i})">▲</button>
-        <button class="btn small ghost" onclick="event.stopPropagation(); moveDown(${i})">▼</button>
-        <button class="btn small blue" onclick="event.stopPropagation(); activeToArchive(${i})">📦 Archiv</button>
+        <button class="btn small gold"  type="button" onclick="event.stopPropagation(); previewUrl('${encodeURIComponent(u)}')">▶️ Vorschau</button>
+        <button class="btn small ghost" type="button" onclick="event.stopPropagation(); moveUp(${i})">▲</button>
+        <button class="btn small ghost" type="button" onclick="event.stopPropagation(); moveDown(${i})">▼</button>
+        <button class="btn small blue"  type="button" onclick="event.stopPropagation(); activeToArchive(${i})">📦 Archiv</button>
       </div>
     </div>`).join("");
 
-  // Archiv
   const ar=current.archived;
   byId("archList").innerHTML=ar.length? ar.map((o,i)=>`
     <div class="item">
       <span class="badge">${i+1}</span>
       <div class="url" title="${o.url}">${shortUrl(o.url)} <span class="muted">· ${o.archived_at?new Date(o.archived_at).toLocaleString():""}</span></div>
       <div class="row">
-        <button class="btn small teal" onclick="restoreFromArchive(${i})">↩︎ Zurückholen</button>
-        <button class="btn small ghost" onclick="removeFromArchive(${i})">🗑 Entfernen</button>
+        <button class="btn small teal"  type="button" onclick="restoreFromArchive(${i})">↩︎ Zurückholen</button>
+        <button class="btn small ghost" type="button" onclick="removeFromArchive(${i})">🗑 Entfernen</button>
       </div>
     </div>`).join(""):`<div class="muted">Noch nichts archiviert.</div>`;
 
-  // Teil 2/3 Formularwerte
   byId("intervalSec").value=current.interval||60;
   byId("guardSec").value=current.guard;
   byId("providerPref").value=current.prefs.provider || "youtube";
@@ -362,8 +344,23 @@ function renderAll(){
   byId("fallbackImage").value=current.fallback?.imageUrl||"";
 }
 
-/* ===== Guards ===== */
+/* ===== Guard / Preview ===== */
 async function ensureLoaded(){ if(current) return; await loadOrInit(); }
+function previewUrl(enc){const u=decodeURIComponent(enc); byId("preview").src=u; byId("statusMsg").textContent="Vorschau läuft";}
+function stopPreview(){byId("preview").src="about:blank"; byId("statusMsg").textContent="Vorschau gestoppt";}
+function setPreviewWithGuard(src, nextFn){
+  byId("preview").src = src;
+  if(guardTimer) clearTimeout(guardTimer);
+  const sec = Math.max(3, parseInt(current?.guard ?? 12, 10));
+  guardTimer = setTimeout(()=>{ if(typeof nextFn === "function") nextFn(); }, sec*1000);
+}
+function stopAllTimers(){
+  if(testTimer) clearInterval(testTimer);
+  if(rotateTimer) clearInterval(rotateTimer);
+  if(guardTimer) clearTimeout(guardTimer);
+  testTimer=null; rotateTimer=null; guardTimer=null;
+  stopPreview();
+}
 
 /* ===== Aktionen – Teil 1 ===== */
 async function addToLibrary(){
@@ -461,25 +458,7 @@ async function removeFromArchive(i){
   }catch(e){ alert("Fehler (Archiv entfernen):\n"+e.message); }
 }
 
-/* ===== Vorschau/Rotation – Teil 2 ===== */
-function previewUrl(enc){const u=decodeURIComponent(enc); byId("preview").src=u; byId("statusMsg").textContent="Vorschau läuft";}
-function stopPreview(){byId("preview").src="about:blank"; byId("statusMsg").textContent="Vorschau gestoppt";}
-
-function setPreviewWithGuard(src, nextFn){
-  byId("preview").src = src;
-  if(guardTimer) clearTimeout(guardTimer);
-  const sec = Math.max(3, parseInt(current?.guard ?? 12, 10));
-  guardTimer = setTimeout(()=>{ if(typeof nextFn === "function") nextFn(); }, sec*1000);
-}
-
-function stopAllTimers(){
-  if(testTimer) clearInterval(testTimer);
-  if(rotateTimer) clearInterval(rotateTimer);
-  if(guardTimer) clearTimeout(guardTimer);
-  testTimer=null; rotateTimer=null; guardTimer=null;
-  stopPreview();
-}
-
+/* ===== Rotation ===== */
 function startTestRotate(){
   stopAllTimers();
   const arr=current?.active||[];
@@ -489,7 +468,6 @@ function startTestRotate(){
   byId("statusMsg").textContent="Rotationstest (5s) …";
   testTimer=setInterval(()=>{ i=(i+1)%arr.length; setPreviewWithGuard(arr[i], ()=>{}); },5000);
 }
-
 function startRotation(){
   stopAllTimers();
   const arr=current?.active||[];
@@ -502,7 +480,6 @@ function startRotation(){
   rotateTimer=setInterval(jump, sec*1000);
 }
 function pauseRotation(){if(rotateTimer)clearInterval(rotateTimer); rotateTimer=null; byId("statusMsg").textContent="Rotation pausiert";}
-
 async function saveInterval(){
   try{
     await ensureLoaded();
@@ -532,7 +509,7 @@ async function savePref(){
   }catch(e){ alert("Fehler beim Speichern Präferenz:\n"+e.message); }
 }
 
-/* ===== Kino – Teil 3 ===== */
+/* ===== Kino ===== */
 function kinoPreview(){const u=byId("kinoUrl").value.trim(); if(!u) return alert("Bitte Kino/Embed URL eintragen."); byId("preview").src=u; byId("statusMsg").textContent="Kino-Vorschau läuft";}
 function kinoClear(){byId("kinoUrl").value=""; byId("playlistUrl").value=""; byId("kinoMode").value="60s"; byId("kinoStart").value=""; byId("statusMsg").textContent="Kino-Felder geleert (noch nicht gespeichert)";}
 async function kinoSave(){
@@ -561,7 +538,7 @@ async function connect(){
     byId("connStatus").innerHTML=`<span class="ok">Verbunden.</span>`;
     byId("btnReload").disabled=false;
 
-    // Session speichern?
+    // Sitzung merken?
     if(byId("rememberSession").checked){
       sessionStorage.setItem("fsa_media_token", GH.token);
       sessionStorage.setItem("fsa_media_owner", GH.owner);
@@ -572,12 +549,11 @@ async function connect(){
       sessionStorage.removeItem("fsa_media_token");
     }
 
-    await loadOrInit(); // automatisch laden
+    await loadOrInit();
   }catch(e){
     byId("connStatus").innerHTML=`<span class="err">Fehler: ${e.message}</span>`;
   }
 }
-
 async function loadOrInit(){
   byId("connStatus").textContent="Lade rotator.json …";
   try{
@@ -596,7 +572,6 @@ async function loadOrInit(){
     byId("connStatus").innerHTML=`<span class="err">Fehler: ${e.message}</span>`;
   }
 }
-
 function logout(){
   GH.token=""; current=null; currentSha="";
   sessionStorage.removeItem("fsa_media_token");
@@ -606,8 +581,8 @@ function logout(){
   stopAllTimers();
 }
 
-/* ===== Auto-Connect aus Sitzung ===== */
-(function(){
+/* ===== Auto-Reconnect (nur Sitzung) ===== */
+function autoReconnectIfSession(){
   const tok=sessionStorage.getItem("fsa_media_token");
   if(tok){
     byId("ghToken").value=tok;
@@ -616,9 +591,12 @@ function logout(){
     byId("ghRepo").value=sessionStorage.getItem("fsa_media_repo")||byId("ghRepo").value;
     byId("ghBranch").value=sessionStorage.getItem("fsa_media_branch")||byId("ghBranch").value;
     byId("ghPath").value=sessionStorage.getItem("fsa_media_path")||byId("ghPath").value;
-    connect(); // leise verbinden
+    if(!current) connect();
   }
-})();
+}
+// beim Laden + wenn Tab wieder sichtbar wird (Safari iPad)
+autoReconnectIfSession();
+document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible"){ autoReconnectIfSession(); }});
 
 /* ===== Events ===== */
 byId("btnConnect").addEventListener("click",connect);
