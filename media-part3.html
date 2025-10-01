@@ -3,43 +3,82 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Teil 3 · Kino & Fallback</title>
+<title>FSA Admin · Media Part 3 (Rota-Style-003)</title>
 <style>
-  :root{--bg:#0b1220;--card:#111827;--txt:#eaf2ff;--gold:#d4af37;--teal:#1cc2a0;--blue:#38bdf8;--red:#e11d48;--shadow:0 10px 30px rgba(0,0,0,.45)}
-  body{margin:0;background:var(--bg);color:var(--txt);font-family:Inter,system-ui}
-  .wrap{padding:16px}
-  .card{background:var(--card);border:1px solid rgba(212,175,55,.25);border-radius:14px;box-shadow:var(--shadow);padding:16px;max-width:1100px;margin:0 auto}
-  .grid{display:grid;gap:16px;grid-template-columns:1fr 1fr}
-  @media(max-width:1000px){.grid{grid-template-columns:1fr}}
-  label{display:block;margin:8px 0 6px;font-weight:700;color:#dbe3f3}
-  input[type="text"],input[type="datetime-local"],select{
-    width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#0b1325;color:#fff
+  :root{
+    --bg:#0b1220; --card:#111827; --muted:#9aa4b2; --txt:#eaf2ff;
+    --gold:#d4af37; --teal:#1cc2a0; --red:#e11d48; --blue:#38bdf8;
+    --shadow:0 10px 30px rgba(0,0,0,.45); --radius:14px;
   }
+  body{margin:0;background:var(--bg);color:var(--txt);font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif}
+  .wrap{max-width:1100px;margin:24px auto;padding:0 16px}
+  .card{background:var(--card);border:1px solid rgba(212,175,55,.25);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+  .grid{display:grid;gap:16px}
+  .g-2{grid-template-columns:1fr 1fr}
+  @media (max-width:1020px){.g-2{grid-template-columns:1fr}}
+  .title{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+  .title h2{color:var(--gold);font-size:1.2rem;margin:0}
+  .muted{color:var(--muted);font-size:.95rem}
+  .hr{height:1px;background:rgba(255,255,255,.1);margin:12px 0}
+  label{display:block;margin:8px 0 6px;font-weight:700;color:#dbe3f3}
+  input,select{width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#0b1325;color:#fff;outline:none}
   .row{display:flex;gap:10px;flex-wrap:wrap}
   .btn{padding:10px 14px;border:none;border-radius:10px;font-weight:800;cursor:pointer;box-shadow:var(--shadow)}
-  .btn.gold{background:var(--gold);color:#000}.btn.teal{background:var(--teal);color:#001210}.btn.blue{background:var(--blue);color:#001018}.btn.ghost{background:transparent;border:1px dashed rgba(255,255,255,.25);color:#cbd5e1}.btn.red{background:var(--red);color:#fff}
-  .preview{border:2px solid var(--gold);border-radius:12px;overflow:hidden;height:420px;background:#000;margin-top:10px}
-  iframe{width:100%;height:100%;border:0}
-  .muted{color:#9aa4b2}
+  .btn.gold{background:var(--gold);color:#000}.btn.teal{background:var(--teal);color:#001210}
+  .btn.blue{background:var(--blue);color:#001018}.btn.red{background:var(--red);color:#fff}
+  .btn.ghost{background:transparent;border:1px dashed rgba(255,255,255,.25);color:#cbd5e1}
+  .preview{border:2px solid var(--gold);border-radius:12px;overflow:hidden;height:360px;background:#000}
+  .note{font-size:.9rem;color:#b6c3d6}
+  .ok{color:#22c55e}.warn{color:#f59e0b}.err{color:#ef4444}
 </style>
 </head>
 <body>
 <div class="wrap">
+
+  <!-- GitHub Verbindung -->
   <div class="card">
-    <h2 style="margin:0 0 8px;color:var(--gold)">🎬 Kino / Playlist / Fallback</h2>
-    <div class="grid">
-      <div>
-        <label>Kino/Embed URL (YouTube/Zoom …)</label>
-        <input id="kinoUrl" type="text" placeholder="https://www.youtube.com/embed/...">
-        <label>Playlist URL (optional)</label>
-        <input id="playlistUrl" type="text" placeholder="https://www.youtube.com/playlist?list=...">
-        <div class="row" style="margin-top:10px">
-          <button class="btn gold" id="btnPreview">▶️ Kino Vorschau</button>
-          <button class="btn ghost" id="btnClear">🧹 Felder leeren</button>
-          <button class="btn blue" id="btnSave">💾 Kino/Playlist speichern</button>
-        </div>
-        <div class="preview"><iframe id="preview" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div>
+    <div class="title"><h2>🔑 GitHub Verbindung</h2></div>
+    <div class="grid g-2">
+      <div><label>Owner</label><input id="ghOwner" value="Adler-FSA"></div>
+      <div><label>Repo</label><input id="ghRepo" value="FSA-Admin"></div>
+      <div><label>Branch</label><input id="ghBranch" value="main"></div>
+      <div><label>JSON-Pfad</label><input id="ghPath" value="rotator.json"></div>
+      <div style="grid-column:1/-1">
+        <label>Personal Access Token (in-memory, geht verloren bei Reload)</label>
+        <input id="ghToken" type="text" placeholder="ghp_... (contents:read/write)">
       </div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <button class="btn gold" id="btnConnect">🔗 Verbinden & Laden</button>
+      <span id="connStatus" class="note">Bitte Token einfügen und verbinden.</span>
+    </div>
+  </div>
+
+  <!-- Kino / Playlist / Fallback -->
+  <div class="card" style="margin-top:16px">
+    <div class="title">
+      <h2>🎬 Kino / Playlist / Fallback</h2>
+      <div class="muted">Globale Werte für das LP-„Kino-Fenster“</div>
+    </div>
+
+    <div class="grid g-2">
+      <div>
+        <label>Kino/Embed URL (YouTube/Vimeo/Zoom)</label>
+        <input id="kinoUrl" placeholder="https://www.youtube.com/embed/...">
+
+        <label>Playlist URL (optional)</label>
+        <input id="playlistUrl" placeholder="https://www.youtube.com/playlist?list=...">
+
+        <label style="margin-top:8px">Geplanter Start</label>
+        <input id="kinoStart" type="datetime-local">
+
+        <div class="row" style="margin-top:10px">
+          <button class="btn gold" id="btnKinoPreview">▶️ Kino Vorschau</button>
+          <button class="btn ghost" id="btnKinoClear">🧹 Kino löschen</button>
+          <button class="btn blue" id="btnKinoSave">💾 Kino/Playlist merken</button>
+        </div>
+      </div>
+
       <div>
         <label>Modus</label>
         <select id="kinoMode">
@@ -47,95 +86,124 @@
           <option value="daily">📅 täglich</option>
           <option value="3m">📆 alle 3 Monate</option>
         </select>
-        <label>Geplanter Start</label>
-        <input id="kinoStart" type="datetime-local">
-        <div style="height:12px"></div>
+
+        <div class="hr"></div>
+
         <label>Adler-Fallback</label>
         <div class="row">
           <select id="fallbackEnabled">
             <option value="true">🦅 Fallback aktiv</option>
             <option value="false">🦅 Fallback aus</option>
           </select>
-          <input id="fallbackImage" type="text" placeholder="https://…/assets/adler-fallback.jpg">
+          <input id="fallbackImage" placeholder="https://.../assets/adler-fallback.jpg">
         </div>
-        <div class="muted" style="margin-top:12px">Status: <span id="status">—</span></div>
+
+        <div class="hr"></div>
+
+        <div class="preview">
+          <iframe id="kinoPreviewFrame" width="100%" height="100%"
+                  allow="autoplay; encrypted-media; picture-in-picture"
+                  referrerpolicy="no-referrer"
+                  sandbox="allow-same-origin allow-scripts allow-presentation"
+                  style="border:0"></iframe>
+        </div>
+        <div class="note" style="margin-top:8px">Status: <span id="statusMsg">—</span></div>
       </div>
     </div>
   </div>
+
+  <div class="muted" style="margin:14px 4px">Letztes Laden: <span id="lastLoad">—</span> · Letztes Speichern: <span id="lastSave">—</span></div>
 </div>
 
 <script>
-const $=s=>document.querySelector(s);
-let CFG=null,SHA="",STATE={kino:{},fallback:{}};
+/* ===== Helpers ===== */
+const byId = id => document.getElementById(id);
+function nowISO(){return new Date().toISOString()}
+function toISO(v){if(!v) return ""; const d=new Date(v); return isNaN(d)?"":d.toISOString();}
+function fromISOtoLocal(iso){if(!iso) return ""; const d=new Date(iso); if(isNaN(d)) return ""; const z=d.getTimezoneOffset()*60000; return new Date(d - z).toISOString().slice(0,16);}
+function toBase64(str){const enc=new TextEncoder().encode(str);let bin="";enc.forEach(b=>bin+=String.fromCharCode(b));return btoa(bin)}
+function fromBase64(b64){const bin=atob(b64);const bytes=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);return new TextDecoder().decode(bytes)}
 
-function b64e(str){const enc=new TextEncoder().encode(str);let bin="";enc.forEach(b=>bin+=String.fromCharCode(b));return btoa(bin)}
-function b64d(b64){const bin=atob(b64);const bytes=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);return new TextDecoder().decode(bytes)}
-function headers(){return {Authorization:'Bearer '+CFG.token,Accept:'application/vnd.github+json','Content-Type':'application/json'}}
-async function loadJSON(){
-  const url=`https://api.github.com/repos/${CFG.owner}/${CFG.repo}/contents/${CFG.path}?ref=${CFG.branch}`;
-  const r=await fetch(url,{headers:headers()});
-  if(!r.ok) throw new Error('GET '+r.status);
-  const j=await r.json(); SHA=j.sha;
-  const data=JSON.parse(b64d(j.content||""));
-  return {data};
+/* ===== GitHub ===== */
+let GH={owner:"Adler-FSA",repo:"FSA-Admin",branch:"main",path:"rotator.json",token:""};
+let current=null, currentSha="";
+
+function ghHeaders(){ if(!GH.token) throw new Error("Kein Token"); return {"Authorization":"Bearer "+GH.token,"Accept":"application/vnd.github+json","Content-Type":"application/json"};}
+async function ghGetFile(){
+  const url=`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${GH.path}?ref=${GH.branch}`;
+  const res=await fetch(url,{headers:ghHeaders()});
+  if(res.status===404) return {status:404};
+  if(!res.ok) throw new Error(`GET ${res.status}: ${await res.text()}`);
+  const j=await res.json(); const content=fromBase64(j.content||"");
+  return {status:200,sha:j.sha,data:JSON.parse(content)};
 }
-async function saveJSON(data,msg){
-  const url=`https://api.github.com/repos/${CFG.owner}/${CFG.repo}/contents/${CFG.path}`;
-  const body={message:msg||'update',content:b64e(JSON.stringify(data,null,2)),branch:CFG.branch};
-  if(SHA) body.sha=SHA;
-  const r=await fetch(url,{method:'PUT',headers:headers(),body:JSON.stringify(body)});
-  if(r.status===409){ const fresh=await loadJSON(); return await saveJSON(fresh.data,msg); }
-  if(!r.ok) throw new Error('PUT '+r.status);
-  const j=await r.json(); SHA=j.content.sha; return true;
+async function ghPutFile(data,message){
+  const url=`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${GH.path}`;
+  const body={message:message||"update rotator.json",content:toBase64(JSON.stringify(data,null,2)),branch:GH.branch};
+  if(currentSha) body.sha=currentSha;
+  const res=await fetch(url,{method:"PUT",headers:ghHeaders(),body:JSON.stringify(body)});
+  if(!res.ok) throw new Error(`PUT ${res.status}: ${await res.text()}`);
+  const j=await res.json(); currentSha=j.content.sha; byId("lastSave").textContent=new Date().toLocaleString();
 }
 
-function toISO(dtLocalVal){ if(!dtLocalVal) return ""; const d=new Date(dtLocalVal); return isNaN(d)? "": d.toISOString(); }
-function fromISO(iso){ if(!iso) return ""; const d=new Date(iso); if(isNaN(d)) return ""; const z=d.getTimezoneOffset()*60000; return new Date(d - z).toISOString().slice(0,16); }
-
+/* ===== Load / Render ===== */
 function render(){
-  $('#kinoUrl').value = STATE.kino?.url || "";
-  $('#playlistUrl').value = STATE.kino?.playlist || "";
-  $('#kinoMode').value = STATE.kino?.mode || "60s";
-  $('#kinoStart').value = fromISO(STATE.kino?.startISO || "");
-  $('#fallbackEnabled').value = String(STATE.fallback?.enabled ?? true);
-  $('#fallbackImage').value = STATE.fallback?.imageUrl || "";
+  byId("kinoUrl").value = current?.kino?.url || "";
+  byId("playlistUrl").value = current?.kino?.playlist || "";
+  byId("kinoMode").value = current?.kino?.mode || "60s";
+  byId("kinoStart").value = fromISOtoLocal(current?.kino?.startISO || "");
+  byId("fallbackEnabled").value = String(current?.fallback?.enabled ?? true);
+  byId("fallbackImage").value = current?.fallback?.imageUrl || "";
 }
 
-function preview(){ const u=$('#kinoUrl').value.trim(); if(!u) return alert('Bitte Kino/Embed URL eintragen.'); $('#preview').src=u; $('#status').textContent='Kino-Vorschau läuft'; }
-function clearFields(){ $('#kinoUrl').value=""; $('#playlistUrl').value=""; $('#kinoMode').value="60s"; $('#kinoStart').value=""; $('#status').textContent='Eingaben geleert (nicht gespeichert)'; }
-async function saveAll(){
+async function connect(){
+  GH.owner=byId("ghOwner").value.trim();
+  GH.repo =byId("ghRepo").value.trim();
+  GH.branch=byId("ghBranch").value.trim();
+  GH.path  =byId("ghPath").value.trim();
+  GH.token =byId("ghToken").value.trim();
+  byId("connStatus").textContent="Verbinde …";
   try{
-    const {data}=await loadJSON();
-    data.kino = {
-      url: $('#kinoUrl').value.trim(),
-      playlist: $('#playlistUrl').value.trim(),
-      mode: $('#kinoMode').value,
-      startISO: toISO($('#kinoStart').value)
-    };
-    data.fallback = {
-      enabled: $('#fallbackEnabled').value === 'true',
-      imageUrl: $('#fallbackImage').value.trim()
-    };
-    data.updated=new Date().toISOString();
-    await saveJSON(data,'update kino/fallback');
-    $('#status').textContent='Gespeichert';
-  }catch(e){ alert('Fehler: '+e.message); }
+    const ping=await fetch(`https://api.github.com/repos/${GH.owner}/${GH.repo}`,{headers:ghHeaders()});
+    if(!ping.ok) throw new Error(`Repo nicht erreichbar (${ping.status})`);
+    const r=await ghGetFile();
+    if(r.status===404) throw new Error("rotator.json nicht gefunden (erst Part 1 ausführen)");
+    current=r.data; currentSha=r.sha;
+    render();
+    byId("connStatus").innerHTML=`<span class="ok">rotator.json geladen.</span>`;
+    byId("lastLoad").textContent=new Date().toLocaleString();
+  }catch(e){
+    byId("connStatus").innerHTML=`<span class="err">Fehler: ${e.message}</span>`;
+  }
 }
 
-/* Events */
-$('#btnPreview').addEventListener('click', preview);
-$('#btnClear').addEventListener('click', clearFields);
-$('#btnSave').addEventListener('click', saveAll);
+/* ===== Actions ===== */
+function kinoPreview(){
+  const u=byId("kinoUrl").value.trim();
+  if(!u) return alert("Bitte Kino/Embed URL eintragen.");
+  byId("kinoPreviewFrame").src=u;
+  byId("statusMsg").textContent="Kino-Vorschau läuft";
+}
+function kinoClear(){
+  byId("kinoUrl").value=""; byId("playlistUrl").value="";
+  byId("kinoMode").value="60s"; byId("kinoStart").value="";
+  byId("statusMsg").textContent="Kino-Felder geleert (noch nicht gespeichert)";
+}
+async function kinoSave(){
+  try{
+    current.kino={url:byId("kinoUrl").value.trim(),playlist:byId("playlistUrl").value.trim(),mode:byId("kinoMode").value,startISO:toISO(byId("kinoStart").value)};
+    current.fallback={enabled:byId("fallbackEnabled").value==="true",imageUrl:byId("fallbackImage").value.trim()};
+    current.updated=nowISO();
+    await ghPutFile(current,"update: kino/playlist/fallback");
+    byId("statusMsg").textContent="Kino/Fallback gespeichert";
+  }catch(e){ alert("Fehler beim Speichern Kino:\n"+e.message); }
+}
 
-/* Bridge */
-window.addEventListener('message', async (ev)=>{
-  const msg=ev.data; if(!msg||typeof msg!=='object') return;
-  if(msg.type==='FSA_CFG'){ CFG=msg.cfg; window.parent.postMessage({type:'FSA_INFO',text:'Teil 3 lädt JSON …'},'*');
-    try{ const r=await loadJSON(); STATE=r.data; render(); window.parent.postMessage({type:'FSA_INFO',text:'Teil 3: JSON geladen.'},'*'); }catch(e){ window.parent.postMessage({type:'FSA_INFO',text:'Fehler: '+e.message},'*'); }
-  }
-  if(msg.type==='FSA_RELOAD' && CFG){ const r=await loadJSON(); STATE=r.data; render(); }
-});
-window.parent.postMessage({type:'FSA_READY'}, '*');
+/* ===== Events ===== */
+byId("btnConnect").addEventListener("click",connect);
+byId("btnKinoPreview").addEventListener("click",kinoPreview);
+byId("btnKinoClear").addEventListener("click",kinoClear);
+byId("btnKinoSave").addEventListener("click",kinoSave);
 </script>
 </body>
 </html>
