@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Teil 2 · Vorschau & Rotation</title>
+<style>
+  :root{--bg:#0b1220;--card:#111827;--txt:#eaf2ff;--gold:#d4af37;--teal:#1cc2a0;--red:#e11d48;--blue:#38bdf8;--shadow:0 10px 30px rgba(0,0,0,.45)}
+  body{margin:0;background:var(--bg);color:var(--txt);font-family:Inter,system-ui}
+  .wrap{padding:16px}
+  .card{background:var(--card);border:1px solid rgba(212,175,55,.25);border-radius:14px;box-shadow:var(--shadow);padding:16px;max-width:1100px;margin:0 auto}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .btn{padding:10px 14px;border:none;border-radius:10px;font-weight:800;cursor:pointer;box-shadow:var(--shadow)}
+  .btn.gold{background:var(--gold);color:#000}.btn.teal{background:var(--teal);color:#001210}.btn.red{background:var(--red);color:#fff}.btn.blue{background:var(--blue);color:#001018}.btn.ghost{background:transparent;border:1px dashed rgba(255,255,255,.25);color:#cbd5e1}
+  input[type="number"]{padding:10px;border-radius:10px;border:1px solid #334155;background:#0b1325;color:#fff;width:140px}
+  .grid{display:grid;gap:16px;grid-template-columns:1fr 1fr}
+  @media(max-width:1000px){.grid{grid-template-columns:1fr}}
+  .preview{border:2px solid var(--gold);border-radius:12px;overflow:hidden;height:420px;background:#000}
+  iframe{width:100%;height:100%;border:0}
+  .muted{color:#9aa4b2}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <h2 style="margin:0 0 8px;color:var(--gold)">🖥 Vorschau & Rotation</h2>
+    <div class="grid">
+      <div>
+        <div class="preview"><iframe id="preview" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div>
+        <div class="row" style="margin-top:10px">
+          <button class="btn gold" id="btnTest">✏️ Rotationstest (5s)</button>
+          <button class="btn ghost" id="btnStop">⏹️ Test/Rotation beenden</button>
+        </div>
+      </div>
+      <div>
+        <div class="row">
+          <label for="interval" style="align-self:center">Intervall (Sek.):</label>
+          <input id="interval" type="number" min="3" value="60">
+        </div>
+        <div class="row" style="margin-top:10px">
+          <button class="btn teal" id="btnStart">▶️ Start</button>
+          <button class="btn red"  id="btnPause">⏸ Stop</button>
+          <button class="btn blue" id="btnSave">💾 Intervall merken</button>
+        </div>
+        <div style="margin-top:12px" class="muted">Status: <span id="status">—</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+let CFG=null, SHA="", STATE={active:[],interval:60};
+let testTimer=null, rotTimer=null;
+
+function b64e(str){const enc=new TextEncoder().encode(str);let bin="";enc.forEach(b=>bin+=String.fromCharCode(b));return btoa(bin)}
+function b64d(b64){const bin=atob(b64);const bytes=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);return new TextDecoder().decode(bytes)}
+function headers(){return {Authorization:'Bearer '+CFG.token,Accept:'application/vnd.github+json','Content-Type':'application/json'}}
+async function loadJSON(){
+  const url=`https://api.github.com/repos/${CFG.owner}/${CFG.repo}/contents/${CFG.path}?ref=${CFG.branch}`;
+  const r=await fetch(url,{headers:headers()});
+  if(!r.ok) throw new Error('GET '+r.status);
+  const j=await r.json(); SHA=j.sha;
+  const data=JSON.parse(b64d(j.content||""));
+  return {data};
+}
+async function saveJSON(data,msg){
+  const url=`https://api.github.com/repos/${CFG.owner}/${CFG.repo}/contents/${CFG.path}`;
+  const body={message:msg||'update',content:b64e(JSON.stringify(data,null,2)),branch:CFG.branch};
+  if(SHA) body.sha=SHA;
+  const r=await fetch(url,{method:'PUT',headers:headers(),body:JSON.stringify(body)});
+  if(r.status===409){ const fresh=await loadJSON(); return await saveJSON(fresh.data,msg); }
+  if(!r.ok) throw new Error('PUT '+r.status);
+  const j=await r.json(); SHA=j.content.sha; return true;
+}
+
+function toEmbed(u){
+  if(!u) return "";
+  if(/youtu\.be\//i.test(u)){const id=u.split("youtu.be/")[1].split(/[?&]/)[0];return `https://www.youtube.com/embed/${id}?rel=0&autoplay=1&mute=1&playsinline=1`;}
+  if(/youtube\.com\/watch/i.test(u)){try{const q=new URL(u).searchParams.get("v");if(q)return `https://www.youtube.com/embed/${q}?rel=0&autoplay=1&mute=1&playsinline=1`;}catch(e){}}
+  if(/youtube\.com\/embed/i.test(u)) return u;
+  if(/vimeo\.com\/\d+/.test(u)){const m=u.match(/vimeo\.com\/(\d+)/);if(m) return `https://player.vimeo.com/video/${m[1]}?autoplay=1&muted=1`;}
+  if(/player\.vimeo\.com\/video/.test(u)) return u;
+  return u;
+}
+
+/* UI */
+function stopAll(){ if(testTimer){clearInterval(testTimer);testTimer=null} if(rotTimer){clearInterval(rotTimer);rotTimer=null} $('#preview').src='about:blank'; $('#status').textContent='—'; }
+function test(){
+  stopAll();
+  const arr=(STATE.active||[]).map(toEmbed);
+  if(!arr.length) return alert('Keine aktiven Videos.');
+  let i=0; $('#preview').src=arr[0]; $('#status').textContent='Rotationstest (5s)…';
+  testTimer=setInterval(()=>{i=(i+1)%arr.length; $('#preview').src=arr[i];},5000);
+}
+function start(){
+  stopAll();
+  const sec=Math.max(3,parseInt($('#interval').value||STATE.interval||60,10));
+  const arr=(STATE.active||[]).map(toEmbed);
+  if(!arr.length) return alert('Keine aktiven Videos.');
+  let i=0; $('#preview').src=arr[0]; $('#status').textContent=`Rotation aktiv (${sec}s)`;
+  rotTimer=setInterval(()=>{i=(i+1)%arr.length; $('#preview').src=arr[i];},sec*1000);
+}
+function pause(){ if(rotTimer){clearInterval(rotTimer);rotTimer=null} $('#status').textContent='Rotation pausiert'; }
+async function saveInterval(){
+  try{
+    const sec=Math.max(3,parseInt($('#interval').value||"60",10));
+    const {data}=await loadJSON(); data.interval=sec; data.updated=new Date().toISOString();
+    await saveJSON(data,'update interval'); $('#status').textContent='Intervall gespeichert';
+  }catch(e){ alert('Fehler: '+e.message); }
+}
+
+$('#btnTest').addEventListener('click', test);
+$('#btnStop').addEventListener('click', stopAll);
+$('#btnStart').addEventListener('click', start);
+$('#btnPause').addEventListener('click', pause);
+$('#btnSave').addEventListener('click', saveInterval);
+
+/* Bridge */
+window.addEventListener('message', async (ev)=>{
+  const msg=ev.data; if(!msg||typeof msg!=='object') return;
+  if(msg.type==='FSA_CFG'){ CFG=msg.cfg; window.parent.postMessage({type:'FSA_INFO',text:'Teil 2 lädt JSON …'},'*');
+    try{ const r=await loadJSON(); STATE=r.data; $('#interval').value=STATE.interval||60; window.parent.postMessage({type:'FSA_INFO',text:'Teil 2: JSON geladen.'},'*'); }catch(e){ window.parent.postMessage({type:'FSA_INFO',text:'Fehler: '+e.message},'*'); }
+  }
+  if(msg.type==='FSA_RELOAD' && CFG){ const r=await loadJSON(); STATE=r.data; $('#interval').value=STATE.interval||60; }
+});
+window.parent.postMessage({type:'FSA_READY'}, '*');
+</script>
+</body>
+</html>
