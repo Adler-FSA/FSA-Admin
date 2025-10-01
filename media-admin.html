@@ -9,44 +9,63 @@
     --bg:#0b1220; --card:#111827; --muted:#9aa4b2; --txt:#eaf2ff;
     --gold:#d4af37; --teal:#1cc2a0; --red:#e11d48; --blue:#38bdf8;
     --shadow:0 10px 30px rgba(0,0,0,.45); --radius:14px;
+    --chip:#0f1a30; --chip-bd:rgba(255,255,255,.12);
   }
   html,body{height:100%}
-  body{margin:0;background:var(--bg);color:var(--txt);font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif}
+  body{margin:0;background:var(--bg);color:var(--txt);
+       font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif}
   h1,h2,h3{margin:0 0 10px;font-family:Montserrat,system-ui,sans-serif}
+  a{color:var(--blue);text-decoration:none}
+
   .wrap{max-width:1100px;margin:24px auto;padding:0 16px}
-  .card{background:var(--card);border:1px solid rgba(212,175,55,.25);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+  .card{background:var(--card);border:1px solid rgba(212,175,55,.25);
+        border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
   .grid{display:grid;gap:16px}
   .g-2{grid-template-columns:1fr 1fr}
   .g-3{grid-template-columns:1.2fr .8fr}
   @media (max-width:1020px){.g-2,.g-3{grid-template-columns:1fr}}
+
   .title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
   .title h2{color:var(--gold);font-size:1.2rem}
   .muted{color:var(--muted);font-size:.95rem}
   .hr{height:1px;background:rgba(255,255,255,.1);margin:12px 0}
+
   label{display:block;margin:8px 0 6px;font-weight:700;color:#dbe3f3}
-  input[type="text"],input[type="number"],input[type="datetime-local"],select{
-    width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#0b1325;color:#fff;font-size:.98rem;outline:none
-  }
-  .row{display:flex;gap:10px;flex-wrap:wrap}
+  input[type="text"],input[type="number"],input[type="datetime-local"],textarea,select{
+    width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#0b1325;color:#fff;font-size:.98rem;outline:none}
+  textarea{min-height:96px}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
   .btn{padding:10px 14px;border:none;border-radius:10px;font-weight:800;cursor:pointer;box-shadow:var(--shadow)}
   .btn.small{padding:6px 10px;font-weight:700}
-  .gold{background:var(--gold);color:#000}.teal{background:var(--teal);color:#001210}
-  .blue{background:var(--blue);color:#001018}.red{background:var(--red);color:#fff}
-  .ghost{background:transparent;border:1px dashed rgba(255,255,255,.25);color:#cbd5e1}
-  .chip{padding:4px 10px;border-radius:999px;background:#0f1a30;border:1px solid rgba(255,255,255,.12);color:#cbe0ff;font-size:.92rem}
+  .btn.gold{background:var(--gold);color:#000}
+  .btn.teal{background:var(--teal);color:#001210}
+  .btn.blue{background:var(--blue);color:#001018}
+  .btn.red{background:var(--red);color:#fff}
+  .btn.ghost{background:transparent;border:1px dashed rgba(255,255,255,.25);color:#cbd5e1}
+  .btn:disabled{opacity:.55;cursor:not-allowed}
+
   .list{display:grid;gap:10px}
-  .item{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;background:#0e182b;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px}
+  .item{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;
+        background:#0e182b;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px}
   .badge{background:var(--gold);color:#000;border-radius:999px;padding:2px 8px;font-weight:900;font-size:.8rem}
   .item .url{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#dbeafe}
   .item.active{outline:2px solid var(--teal);background:#0e1e2b}
+
   .preview{border:2px solid var(--gold);border-radius:12px;overflow:hidden;height:360px;background:#000}
+
+  .stat{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:.92rem}
+  .chip{padding:4px 10px;border-radius:999px;background:var(--chip);border:1px solid var(--chip-bd);color:#cbe0ff}
+
   .note{font-size:.9rem;color:#b6c3d6}
   .ok{color:#22c55e}.warn{color:#f59e0b}.err{color:#ef4444}
-  .onair{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-  .dot{width:24px;height:24px;border-radius:999px;border:1px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:.8rem;color:#cfe1ff;background:#0f192a}
-  .dot.active{outline:2px solid var(--teal);background:#0e2631}
-  .dot.blink{animation:blink 1s infinite}
-  @keyframes blink{0%,100%{filter:brightness(1)}50%{filter:brightness(1.8)}}
+
+  /* On-Air row */
+  .onair{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:10px 0 6px}
+  .dot{width:28px;height:28px;border-radius:999px;border:1px solid #2b3855;background:#0c1630;
+       display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.85rem;color:#a9c1ff;opacity:.6}
+  .dot.active{border-color:#1cc2a0;color:#0b110f;background:#0c2a24;opacity:1;box-shadow:0 0 0 2px rgba(28,194,160,.25)}
+  .now{font-size:.8rem;padding:2px 8px;border-radius:999px;background:#1b2a47;border:1px solid #2b3b64;color:#cfe3ff}
+  .countdown{font-size:.86rem;color:#cfe3ff}
 </style>
 </head>
 <body>
@@ -65,19 +84,18 @@
         <input id="ghToken" type="text" placeholder="ghp_... (fine-grained: contents read/write)">
       </div>
     </div>
-    <div class="row" style="margin-top:10px;align-items:center">
+    <div class="row" style="margin-top:10px">
       <button class="btn gold" id="btnConnect">🔗 Verbinden</button>
       <button class="btn ghost" id="btnReload" disabled>🔄 Daten laden / anlegen</button>
-      <label class="row" style="align-items:center;gap:8px">
-        <input type="checkbox" id="lockSession">
-        <span class="muted">🔒 Sitzung merken (nur dieser Tab)</span>
+      <label class="row" style="gap:6px;margin-left:8px">
+        <input id="sessionLock" type="checkbox"> <span class="muted">Sitzung merken (nur dieser Tab)</span>
       </label>
-      <button class="btn ghost" id="btnLogout">🔓 Ausloggen</button>
+      <button class="btn red" id="btnLogout">⎋ Ausloggen</button>
       <span id="connStatus" class="note">Bitte Token einfügen und verbinden.</span>
     </div>
   </div>
 
-  <!-- Teil 1: Bibliothek / Aktive / Archiv -->
+  <!-- Teil 1 -->
   <div class="grid g-3" style="margin-top:16px">
     <div class="card">
       <div class="title"><h2>📚 Bibliothek</h2><div class="muted">Globaler Pool deiner Videos</div></div>
@@ -88,20 +106,20 @@
         <button class="btn blue" id="btnAddActive">＋ Direkt in Rotator</button>
         <button class="btn gold" id="btnPreviewNew">▶️ Vorschau</button>
         <button class="btn ghost" id="btnStopPreview">⏹️ Vorschau Stop</button>
+        <button class="btn ghost" id="btnLoadTests">🧪 4 Testvideos laden</button>
       </div>
       <div class="hr"></div>
-      <div class="row">
+      <div class="stat">
         <span class="chip">Einträge: <span id="countLib">0</span></span>
-        <span class="chip">Aktive max: <span id="maxActiveLabel">12</span></span>
-        <button class="btn small ghost" id="btnQuickFill">⚡ 4 Testvideos laden</button>
+        <span class="chip">Aktive max: 12</span>
       </div>
       <div id="libList" class="list" style="margin-top:10px"></div>
     </div>
 
     <div class="card">
       <div class="title"><h2>🎛 Aktive Videos (Rotator)</h2><div class="muted">Max. 12 – Reihenfolge zählt</div></div>
-      <div class="row">
-        <span class="chip">Aktiv: <span id="countActive">0</span>/<span id="maxActiveLabel2">12</span></span>
+      <div class="stat">
+        <span class="chip">Aktiv: <span id="countActive">0</span>/12</span>
         <span class="chip">Intervall: <span id="intervalLabel">60</span>s</span>
       </div>
       <div id="activeList" class="list" style="margin-top:10px"></div>
@@ -113,15 +131,20 @@
     </div>
   </div>
 
-  <!-- Teil 2: Vorschau & Rotation -->
+  <!-- Teil 2 -->
   <div class="card" style="margin-top:16px">
     <div class="title"><h2>🖥 Vorschau & Rotation</h2><div class="muted">Nur Admin-Test – LP liest die gespeicherten Daten</div></div>
     <div class="grid g-2">
       <div>
-        <div id="previewBox" class="preview">
-          <iframe id="preview" width="100%" height="100%" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="border:0"></iframe>
+        <div id="previewBox" class="preview"><iframe id="preview" width="100%" height="100%" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="border:0"></iframe></div>
+
+        <div class="onair" id="onAirRow"></div>
+        <div class="row">
+          <button class="btn ghost small" id="btnPrev">◀︎ Zurück</button>
+          <span class="now" id="nowBadge">Now —</span>
+          <button class="btn ghost small" id="btnNext">Weiter ▶︎</button>
+          <span class="countdown" id="cdInfo">Countdown: —s bis Guard · —s bis Intervall</span>
         </div>
-        <div class="onair" id="onAirDots"></div>
       </div>
       <div>
         <label>Intervall (Sekunden)</label>
@@ -138,8 +161,11 @@
           <button class="btn teal" id="btnStartRotation">▶️ Start</button>
           <button class="btn red"  id="btnPauseRotation">⏸ Stop</button>
           <button class="btn blue" id="btnSaveInterval">💾 Intervall & Guard & Host merken</button>
-          <button class="btn gold" id="btnTestRotate">✏️ Rotationstest (5s)</button>
+          <button class="btn gold" id="btnTestRotate">🧪 Rotationstest (5s)</button>
           <button class="btn ghost" id="btnStopAll">⏹️ Test/Rotation beenden</button>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <label class="row"><input id="autoSkip" type="checkbox" checked> <span class="muted">Verdächtige automatisch überspringen</span></label>
         </div>
         <div class="hr"></div>
         <div class="note">Status: <span id="statusMsg">—</span></div>
@@ -192,40 +218,54 @@
 const MAX_ACTIVE = 12;
 
 /* ===== Helpers ===== */
-const $ = s => document.querySelector(s);
+const $  = s => document.querySelector(s);
 const byId = id => document.getElementById(id);
 function shortUrl(u){try{const x=new URL(u);return x.hostname.replace('www.','')+x.pathname+(x.search?'…':'')}catch(e){return u}}
 function nowISO(){return new Date().toISOString()}
 function toISO(v){if(!v) return ""; const d=new Date(v); return isNaN(d)?"":d.toISOString();}
 function fromISOtoLocal(iso){if(!iso) return ""; const d=new Date(iso); if(isNaN(d)) return ""; const z=d.getTimezoneOffset()*60000; return new Date(d - z).toISOString().slice(0,16);}
+
+/* Base64 UTF-8 */
 function toBase64(str){const enc=new TextEncoder().encode(str);let bin="";enc.forEach(b=>bin+=String.fromCharCode(b));return btoa(bin)}
 function fromBase64(b64){const bin=atob(b64);const bytes=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);return new TextDecoder().decode(bytes)}
 
-/* URL ➝ EMBED (hostPref berücksichtigt) */
-function toEmbed(url){
+/* URL ➝ EMBED (Host-Präferenz optional) */
+function toEmbed(url, pref="auto"){
   if(!url) return "";
-  let u=url.trim();
-  // YT short
-  if(/youtu\.be\//i.test(u)){const id=u.split("youtu.be/")[1].split(/[?&]/)[0];return `https://www.youtube.com/embed/${id}?rel=0&autoplay=1&mute=1&playsinline=1`}
-  // YT watch
-  if(/youtube\.com\/watch/i.test(u)){const q=new URL(u).searchParams.get("v"); if(q) return `https://www.youtube.com/embed/${q}?rel=0&autoplay=1&mute=1&playsinline=1`}
-  // YT embed bleibt
-  if(/youtube\.com\/embed/i.test(u)) return u;
-  // Vimeo normal
-  if(/vimeo\.com\/\d+/.test(u)){const id=(u.match(/vimeo\.com\/(\d+)/)||[])[1]; if(id) return `https://player.vimeo.com/video/${id}?autoplay=1&muted=1`}
-  // Vimeo embed bleibt
-  if(/player\.vimeo\.com\/video/.test(u)) return u;
-  return u;
+  let u = url.trim();
+  const preferYT   = pref==="yt";
+  const preferVimeo= pref==="vimeo";
+
+  // YouTube short/watch/embed
+  if(/youtu\.be\//i.test(u) || /youtube\.com\/watch/i.test(u) || /youtube\.com\/embed/i.test(u)){
+    if(preferVimeo) return u; // nicht umbauen, wenn Vimeo bevorzugt
+    // short
+    if(/youtu\.be\//i.test(u)){ const id=u.split("youtu.be/")[1].split(/[?&]/)[0];
+      return `https://www.youtube.com/embed/${id}?rel=0&autoplay=1&mute=1&playsinline=1`; }
+    // watch
+    if(/youtube\.com\/watch/i.test(u)){ const q=new URL(u).searchParams.get("v");
+      if(q) return `https://www.youtube.com/embed/${q}?rel=0&autoplay=1&mute=1&playsinline=1`; }
+    // embed
+    if(/youtube\.com\/embed/i.test(u)) return u;
+  }
+  // Vimeo
+  if(/vimeo\.com\/\d+/.test(u) || /player\.vimeo\.com\/video/.test(u)){
+    if(preferYT) return u; // nicht umbauen, wenn YT bevorzugt
+    if(/vimeo\.com\/\d+/.test(u)){const id=(u.match(/vimeo\.com\/(\d+)/)||[])[1];
+      if(id) return `https://player.vimeo.com/video/${id}?autoplay=1&muted=1`; }
+    if(/player\.vimeo\.com\/video/.test(u)) return u;
+  }
+  return u; // andere Hosts (Zoom etc.) durchreichen
 }
 
 /* ===== GitHub ===== */
 let GH={owner:"Adler-FSA",repo:"FSA-Admin",branch:"main",path:"rotator.json",token:""};
-let current=null, currentSha="", testTimer=null, rotateTimer=null, selectedActiveIndex=-1, guardTimer=null, onAirIdx=-1;
+let connOK=false;
+let current=null, currentSha="", testTimer=null, rotateTimer=null, selectedActiveIndex=-1;
+let tickTimer=null, tickLeft=0, guardLeft=0, onAirIndex=0;
 
-/* HEADERS */
 function ghHeaders(){ if(!GH.token) throw new Error("Kein Token"); return {"Authorization":"Bearer "+GH.token,"Accept":"application/vnd.github+json","Content-Type":"application/json"};}
 
-/* API */
 async function ghGetFile(){
   const url=`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${GH.path}?ref=${GH.branch}`;
   const res=await fetch(url,{headers:ghHeaders()});
@@ -235,6 +275,7 @@ async function ghGetFile(){
   return {status:200,sha:j.sha,data:JSON.parse(content)};
 }
 async function ghPutFile(data,message){
+  if(!connOK) throw new Error("Nicht verbunden (kein Token).");
   const url=`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${GH.path}`;
   const body={message:message||"update rotator.json",content:toBase64(JSON.stringify(data,null,2)),branch:GH.branch};
   if(currentSha) body.sha=currentSha;
@@ -243,7 +284,7 @@ async function ghPutFile(data,message){
   const j=await res.json(); currentSha=j.content.sha; byId("lastSave").textContent=new Date().toLocaleString();
 }
 
-/* Defaults inkl. 4 Test-Videos */
+/* Defaults (inkl. 4 Test-Videos) */
 function defaultData(){
   return {
     active:[
@@ -259,7 +300,7 @@ function defaultData(){
     ],
     archived:[],
     interval:60,
-    guard:10,
+    guardSec:10,
     hostPref:"auto",
     kino:{url:"",playlist:"",mode:"60s",startISO:""},
     fallback:{enabled:true,imageUrl:""},
@@ -267,30 +308,51 @@ function defaultData(){
   };
 }
 
-/* Render */
-function renderOnAirDots(){
-  const n=(current.active||[]).length;
-  const dots=Array.from({length:MAX_ACTIVE},(_,i)=>i<n?i+1:"").map((lab,i)=>{
-    const active = (i===onAirIdx) ? 'active blink' : (i< n? 'active':'');
-    return `<div class="dot ${active}">${lab?lab:''}</div>`;
-  }).join("");
-  byId("onAirDots").innerHTML=dots;
+/* ====== UI helpers ====== */
+function setConn(ok,msg){
+  connOK=!!ok;
+  $("#btnReload").disabled=!ok;
+  byId("connStatus").innerHTML = ok? `<span class="ok">${msg||"Verbunden."}</span>` : `<span class="err">${msg||"Fehler: Kein Token"}</span>`;
 }
+function renderOnAir(){
+  const a=(current?.active||[]);
+  const row=$("#onAirRow"); row.innerHTML="";
+  for(let i=0;i<MAX_ACTIVE;i++){
+    const d=document.createElement("div");
+    d.className="dot"+(i===onAirIndex?" active":"");
+    d.textContent=(i+1);
+    row.appendChild(d);
+  }
+  byId("nowBadge").textContent = a.length? `Now ${onAirIndex+1}/${a.length}` : "Now —";
+}
+function tickStart(){
+  if(tickTimer) clearInterval(tickTimer);
+  const sec=parseInt(byId("intervalSec").value||"60",10);
+  const g  =parseInt(byId("guardSec").value||"10",10);
+  tickLeft=sec; guardLeft=g;
+  tickTimer=setInterval(()=>{
+    if(tickLeft>0) tickLeft--;
+    if(guardLeft>0) guardLeft--;
+    byId("cdInfo").textContent=`Countdown: ${guardLeft}s bis Guard · ${tickLeft}s bis Intervall`;
+  },1000);
+}
+function tickStop(){ if(tickTimer) clearInterval(tickTimer); tickTimer=null; byId("cdInfo").textContent="Countdown: —s bis Guard · —s bis Intervall";}
+
+/* Render alles */
 function renderAll(){
+  current=current||defaultData();
   current.library=current.library||[];
   current.active=current.active||[];
   current.archived=current.archived||[];
-
-  byId("maxActiveLabel").textContent=MAX_ACTIVE;
-  byId("maxActiveLabel2").textContent=MAX_ACTIVE;
 
   byId("countLib").textContent=current.library.length;
   byId("countActive").textContent=current.active.length;
   byId("intervalLabel").textContent=current.interval||60;
   byId("intervalSec").value=current.interval||60;
-  byId("guardSec").value=current.guard ?? 10;
-  byId("hostPref").value=current.hostPref || "auto";
+  byId("guardSec").value=current.guardSec??10;
+  byId("hostPref").value=current.hostPref||"auto";
 
+  // Bibliothek
   byId("libList").innerHTML=current.library.map((u,i)=>`
     <div class="item">
       <span class="badge">${i+1}</span>
@@ -302,6 +364,7 @@ function renderAll(){
       </div>
     </div>`).join("");
 
+  // Aktiv
   byId("activeList").innerHTML=current.active.map((u,i)=>`
     <div class="item ${i===selectedActiveIndex?'active':''}" onclick="selectActive(${i})">
       <span class="badge">${i+1}</span>
@@ -314,6 +377,7 @@ function renderAll(){
       </div>
     </div>`).join("");
 
+  // Archiv
   const ar=current.archived;
   byId("archList").innerHTML=ar.length? ar.map((o,i)=>`
     <div class="item">
@@ -325,172 +389,199 @@ function renderAll(){
       </div>
     </div>`).join(""):`<div class="muted">Noch nichts archiviert.</div>`;
 
-  renderOnAirDots();
+  // Teil 3
+  byId("kinoUrl").value=current.kino?.url||"";
+  byId("playlistUrl").value=current.kino?.playlist||"";
+  byId("kinoMode").value=current.kino?.mode||"60s";
+  byId("kinoStart").value=fromISOtoLocal(current.kino?.startISO||"");
+  byId("fallbackEnabled").value=String(current.fallback?.enabled??true);
+  byId("fallbackImage").value=current.fallback?.imageUrl||"";
+
+  renderOnAir();
 }
 
-/* Guard: sicherstellen, dass current geladen ist */
-async function ensureLoaded(){ if(current) return; await loadOrInit(); }
+/* Guard: sicherstellen, dass current nutzbar ist */
+async function ensureCurrent(){
+  if(current) return true;
+  try{
+    const r = connOK ? await ghGetFile() : {status:404};
+    if(r.status===404){ current=defaultData(); if(connOK){ await ghPutFile(current,"init rotator.json"); } }
+    else { current=r.data; currentSha=r.sha; }
+    byId("lastLoad").textContent=new Date().toLocaleString();
+    renderAll();
+    return true;
+  }catch(e){
+    // Ohne Verbindung – fallback auf in-memory Default
+    current=defaultData();
+    renderAll();
+    return false;
+  }
+}
 
 /* Aktionen – Teil 1 */
 async function addToLibrary(){
   try{
-    await ensureLoaded();
-    const u=toEmbed(byId("newUrl").value);
+    await ensureCurrent();
+    const pref = byId("hostPref").value||"auto";
+    const u=toEmbed(byId("newUrl").value, pref);
     if(!u) return alert("Bitte gültige URL eingeben.");
     if(!current.library.includes(u)) current.library.push(u);
     current.updated=nowISO();
-    await ghPutFile(current,"add: library");
+    if(connOK) await ghPutFile(current,"add: library");
     renderAll();
   }catch(e){ alert("Fehler (Bibliothek hinzufügen):\n"+e.message); }
 }
 async function addDirectToActive(){
   try{
-    await ensureLoaded();
-    const u=toEmbed(byId("newUrl").value);
+    await ensureCurrent();
+    const pref = byId("hostPref").value||"auto";
+    const u=toEmbed(byId("newUrl").value, pref);
     if(!u) return alert("Bitte gültige URL eingeben.");
     if(current.active.length>=MAX_ACTIVE) return alert(`Maximal ${MAX_ACTIVE} aktive Videos.`);
     if(!current.active.includes(u)) current.active.push(u);
     if(!current.library.includes(u)) current.library.push(u);
     current.updated=nowISO();
-    await ghPutFile(current,"add: direct-to-active");
+    if(connOK) await ghPutFile(current,"add: direct-to-active");
     renderAll();
   }catch(e){ alert("Fehler (Direkt in Rotator):\n"+e.message); }
 }
 async function libToActive(i){
   try{
-    await ensureLoaded();
-    const u=toEmbed(current.library[i]);
+    await ensureCurrent();
+    const pref = byId("hostPref").value||"auto";
+    const u=toEmbed(current.library[i], pref);
     if(current.active.length>=MAX_ACTIVE) return alert(`Maximal ${MAX_ACTIVE} aktive Videos.`);
     if(!current.active.includes(u)) current.active.push(u);
     current.updated=nowISO();
-    await ghPutFile(current,"add: lib->active");
+    if(connOK) await ghPutFile(current,"add: lib->active");
     renderAll();
   }catch(e){ alert("Fehler (lib->active):\n"+e.message); }
 }
 async function removeFromLibrary(i){
   try{
-    await ensureLoaded();
+    await ensureCurrent();
     current.library.splice(i,1);
     current.updated=nowISO();
-    await ghPutFile(current,"remove: library");
+    if(connOK) await ghPutFile(current,"remove: library");
     renderAll();
   }catch(e){ alert("Fehler (Library entfernen):\n"+e.message); }
 }
 function selectActive(i){selectedActiveIndex=i; renderAll();}
-async function moveUp(i){
-  if(i<=0) return;
+async function moveUp(i){ try{
+  await ensureCurrent(); if(i<=0) return;
   const a=current.active; [a[i-1],a[i]]=[a[i],a[i-1]];
   selectedActiveIndex=i-1; current.updated=nowISO();
-  await ghPutFile(current,"reorder: up"); renderAll();
-}
-async function moveDown(i){
-  const a=current.active; if(i>=a.length-1) return;
+  if(connOK) await ghPutFile(current,"reorder: up"); renderAll();
+}catch(e){ alert("Fehler (verschieben):\n"+e.message); }}
+async function moveDown(i){ try{
+  await ensureCurrent(); const a=current.active; if(i>=a.length-1) return;
   [a[i+1],a[i]]=[a[i],a[i+1]];
   selectedActiveIndex=i+1; current.updated=nowISO();
-  await ghPutFile(current,"reorder: down"); renderAll();
-}
+  if(connOK) await ghPutFile(current,"reorder: down"); renderAll();
+}catch(e){ alert("Fehler (verschieben):\n"+e.message); }}
 async function activeToArchive(i){
   try{
-    await ensureLoaded();
+    await ensureCurrent();
     const u=current.active[i];
     current.archived.unshift({url:u,archived_at:nowISO()});
     current.active.splice(i,1);
     selectedActiveIndex=-1; current.updated=nowISO();
-    await ghPutFile(current,"archive: from-active");
+    if(connOK) await ghPutFile(current,"archive: from-active");
     renderAll();
   }catch(e){ alert("Fehler (Archivieren):\n"+e.message); }
 }
 async function restoreFromArchive(i){
   try{
-    await ensureLoaded();
+    await ensureCurrent();
     const u=current.archived[i].url;
     if(current.active.length>=MAX_ACTIVE) return alert(`Schon ${MAX_ACTIVE} aktive Videos.`);
     if(!current.active.includes(u)) current.active.push(u);
     current.archived.splice(i,1);
     current.updated=nowISO();
-    await ghPutFile(current,"restore: archive->active");
+    if(connOK) await ghPutFile(current,"restore: archive->active");
     renderAll();
   }catch(e){ alert("Fehler (Zurückholen):\n"+e.message); }
 }
 async function removeFromArchive(i){
   try{
-    await ensureLoaded();
+    await ensureCurrent();
     current.archived.splice(i,1);
     current.updated=nowISO();
-    await ghPutFile(current,"remove: archive");
+    if(connOK) await ghPutFile(current,"remove: archive");
     renderAll();
   }catch(e){ alert("Fehler (Archiv entfernen):\n"+e.message); }
 }
-async function quickFill(){
-  await ensureLoaded();
-  if((current.active||[]).length>0) return alert("Aktiv ist nicht leer.");
-  const def=defaultData();
-  current.active = def.active.slice(0,4);
-  current.library=[...new Set([...(current.library||[]),...def.library])];
+
+/* Testvideos laden */
+async function loadTestVideos(){
+  await ensureCurrent();
+  const tests = defaultData().active;
+  for(const u of tests){
+    if(!current.active.includes(u) && current.active.length<MAX_ACTIVE) current.active.push(u);
+    const ytWatch = u.replace("/embed/","/watch?v=").replace(/\?.*/,""); // nur grob
+    if(!current.library.includes(ytWatch)) current.library.push(ytWatch);
+  }
   current.updated=nowISO();
-  await ghPutFile(current,"add: quick-fill-4");
+  if(connOK) try{ await ghPutFile(current,"add: load-4-tests"); }catch(e){}
   renderAll();
 }
 
 /* Vorschau/Rotation – Teil 2 */
-function previewUrl(enc){const u=decodeURIComponent(enc); byId("preview").src=u; byId("statusMsg").textContent="Vorschau läuft";}
-function stopPreview(){byId("preview").src="about:blank"; byId("statusMsg").textContent="Vorschau gestoppt";}
-function clearTimers(){if(testTimer)clearInterval(testTimer); if(rotateTimer)clearInterval(rotateTimer); if(guardTimer)clearTimeout(guardTimer); testTimer=null; rotateTimer=null; guardTimer=null;}
-function stopAllTimers(){clearTimers(); stopPreview();}
-function setOnAir(i){onAirIdx=i; renderOnAirDots();}
-
-function hostPrefEmbed(u){
-  const pref=(byId("hostPref").value)||"auto";
-  // Im Moment nur Info – toEmbed normalisiert beides.
-  return toEmbed(u);
+function previewUrl(enc){
+  const u=decodeURIComponent(enc); byId("preview").src=u; byId("statusMsg").textContent="Vorschau läuft";
 }
-
-function runRotation(intervalSec){
-  const arr=(current?.active||[]).map(hostPrefEmbed);
-  if(!arr.length){ alert("Keine aktiven Videos."); return; }
-  let i=0;
-  byId("preview").src=arr[0];
-  setOnAir(0);
-  byId("statusMsg").textContent=`Rotation aktiv (${intervalSec}s)`;
-  const guard = Math.max(0, parseInt(byId("guardSec").value||"0",10))*1000;
-  rotateTimer=setInterval(()=>{
-    i=(i+1)%arr.length;
-    byId("preview").src=arr[i];
-    setOnAir(i);
-    if(guard){ // Anti-Störung: während Guard-Zeit nicht reagieren
-      if(guardTimer) clearTimeout(guardTimer);
-      guardTimer=setTimeout(()=>{},guard);
-    }
-  }, intervalSec*1000);
-}
+function stopPreview(){ byId("preview").src="about:blank"; byId("statusMsg").textContent="Vorschau gestoppt"; }
+function stopAllTimers(){ if(testTimer)clearInterval(testTimer); if(rotateTimer)clearInterval(rotateTimer); testTimer=null; rotateTimer=null; tickStop(); stopPreview(); }
 
 function startTestRotate(){
   stopAllTimers();
-  const arr=(current?.active||[]).map(hostPrefEmbed);
-  if(!arr.length){ alert("Keine aktiven Videos."); return; }
-  let i=0;
-  byId("preview").src=arr[0];
-  setOnAir(0);
-  byId("statusMsg").textContent="Rotationstest (5s) …";
-  testTimer=setInterval(()=>{ i=(i+1)%arr.length; byId("preview").src=arr[i]; setOnAir(i); },5000);
+  const arr=current?.active||[]; if(!arr.length) return alert("Keine aktiven Videos.");
+  let i=0; onAirIndex=0; renderOnAir();
+  byId("preview").src=arr[0]; byId("statusMsg").textContent="Rotationstest (5s) …";
+  testTimer=setInterval(()=>{ i=(i+1)%arr.length; onAirIndex=i; renderOnAir(); byId("preview").src=arr[i]; },5000);
+}
+function stepTo(idx){
+  const arr=current?.active||[]; if(!arr.length) return;
+  onAirIndex = (idx+arr.length)%arr.length; renderOnAir();
+  byId("preview").src = arr[onAirIndex];
 }
 function startRotation(){
   stopAllTimers();
-  const arr=current?.active||[];
-  if(!arr.length){ alert("Keine aktiven Videos."); return; }
+  const arr=current?.active||[]; if(!arr.length) return alert("Keine aktiven Videos.");
   const sec=Math.max(3,parseInt(byId("intervalSec").value||"60",10));
-  runRotation(sec);
+  const g  =Math.max(0,parseInt(byId("guardSec").value||"10",10));
+  let i=0; onAirIndex=0; renderOnAir();
+  byId("preview").src=arr[0]; byId("statusMsg").textContent=`Rotation aktiv (${sec}s)`;
+  tickStart();
+  rotateTimer=setInterval(()=>{
+    i=(i+1)%arr.length; onAirIndex=i; renderOnAir(); byId("preview").src=arr[i];
+    tickStart();
+  },sec*1000);
+
+  // Auto-Skip „verdächtig“: wenn Guard abläuft und iFrame noch blank, einfach weiter
+  const auto=document.getElementById("autoSkip").checked;
+  if(auto){
+    const guardWatch=setInterval(()=>{
+      const src = byId("preview").src;
+      // primitive Heuristik: wenn src leer oder „about:blank“, skippen
+      if(guardLeft===0 && (!src || src.includes("about:blank"))){
+        stepTo(onAirIndex+1);
+        tickStart();
+      }
+      if(!rotateTimer){ clearInterval(guardWatch); }
+    },1000);
+  }
 }
-function pauseRotation(){if(rotateTimer)clearInterval(rotateTimer); rotateTimer=null; byId("statusMsg").textContent="Rotation pausiert";}
+function pauseRotation(){ if(rotateTimer)clearInterval(rotateTimer); rotateTimer=null; tickStop(); byId("statusMsg").textContent="Rotation pausiert"; }
 async function saveInterval(){
   try{
-    await ensureLoaded();
+    await ensureCurrent();
     const sec=Math.max(3,parseInt(byId("intervalSec").value||"60",10));
-    const guard=Math.max(0,parseInt(byId("guardSec").value||"0",10));
-    const pref=byId("hostPref").value||"auto";
-    current.interval=sec; current.guard=guard; current.hostPref=pref; current.updated=nowISO();
-    await ghPutFile(current,"update: interval/guard/host");
-    byId("intervalLabel").textContent=sec; byId("statusMsg").textContent="Einstellungen gespeichert";
+    const g  =Math.max(0,parseInt(byId("guardSec").value||"10",10));
+    const hp = byId("hostPref").value||"auto";
+    current.interval=sec; current.guardSec=g; current.hostPref=hp; current.updated=nowISO();
+    if(connOK) await ghPutFile(current,"update: interval/guard/host");
+    byId("intervalLabel").textContent=sec; byId("statusMsg").textContent="Intervall/Guard/Host gespeichert";
   }catch(e){ alert("Fehler beim Speichern:\n"+e.message); }
 }
 
@@ -499,44 +590,42 @@ function kinoPreview(){const u=byId("kinoUrl").value.trim(); if(!u) return alert
 function kinoClear(){byId("kinoUrl").value=""; byId("playlistUrl").value=""; byId("kinoMode").value="60s"; byId("kinoStart").value=""; byId("statusMsg").textContent="Kino-Felder geleert (noch nicht gespeichert)";}
 async function kinoSave(){
   try{
-    await ensureLoaded();
+    await ensureCurrent();
     current.kino={url:byId("kinoUrl").value.trim(),playlist:byId("playlistUrl").value.trim(),mode:byId("kinoMode").value,startISO:toISO(byId("kinoStart").value)};
     current.fallback={enabled:byId("fallbackEnabled").value==="true",imageUrl:byId("fallbackImage").value.trim()};
-    current.updated=nowISO(); await ghPutFile(current,"update: kino/playlist/fallback");
+    current.updated=nowISO(); if(connOK) await ghPutFile(current,"update: kino/playlist/fallback");
     byId("statusMsg").textContent="Kino/Fallback gespeichert";
   }catch(e){ alert("Fehler beim Speichern Kino:\n"+e.message); }
 }
 
 /* Verbinden / Laden / Session-Lock */
-function restoreSessionTokenIfAny(){
-  const saved=sessionStorage.getItem("fsa_admin_token");
-  if(saved){
-    GH.token=saved;
-    // Feld leer lassen (Token bleibt verborgen)
-    byId("connStatus").textContent="Token aus Sitzung geladen. Verbinde …";
-  }
+function loadTokenFromSession(){
+  try{
+    const t = sessionStorage.getItem("fsa_admin_token") || "";
+    if(t){ byId("ghToken").value=t; byId("sessionLock").checked=true; }
+  }catch(e){}
+}
+function saveTokenToSession(){
+  try{
+    if(byId("sessionLock").checked && GH.token){ sessionStorage.setItem("fsa_admin_token", GH.token); }
+    else{ sessionStorage.removeItem("fsa_admin_token"); }
+  }catch(e){}
 }
 async function connect(){
   GH.owner=byId("ghOwner").value.trim();
   GH.repo=byId("ghRepo").value.trim();
   GH.branch=byId("ghBranch").value.trim();
   GH.path=byId("ghPath").value.trim();
-  const manual=byId("ghToken").value.trim();
-  GH.token = manual || GH.token;
+  GH.token=byId("ghToken").value.trim();
 
-  byId("connStatus").textContent="Verbinde …"; byId("btnReload").disabled=true;
+  byId("connStatus").textContent="Verbinde …"; $("#btnReload").disabled=true;
   try{
     const ping=await fetch(`https://api.github.com/repos/${GH.owner}/${GH.repo}`,{headers:ghHeaders()});
     if(!ping.ok) throw new Error(`Repo nicht erreichbar (${ping.status})`);
-    byId("connStatus").innerHTML=`<span class="ok">Verbunden.</span>`;
-    byId("btnReload").disabled=false;
-
-    // Sitzung merken?
-    if(byId("lockSession").checked && GH.token){
-      sessionStorage.setItem("fsa_admin_token", GH.token);
-    }
-    await loadOrInit(); // automatisch laden
-  }catch(e){ byId("connStatus").innerHTML=`<span class="err">Fehler: ${e.message}</span>`; }
+    setConn(true,"Verbunden.");
+    saveTokenToSession();
+    await loadOrInit();
+  }catch(e){ setConn(false,e.message); }
 }
 async function loadOrInit(){
   byId("connStatus").textContent="Lade rotator.json …";
@@ -552,40 +641,39 @@ async function loadOrInit(){
     }
     byId("lastLoad").textContent=new Date().toLocaleString();
     renderAll();
-  }catch(e){ byId("connStatus").innerHTML=`<span class="err">Fehler: ${e.message}</span>`; }
+  }catch(e){ setConn(false, "Fehler: "+e.message); }
 }
 function logout(){
-  sessionStorage.removeItem("fsa_admin_token");
-  GH.token=""; current=null; currentSha="";
-  byId("ghToken").value="";
-  byId("btnReload").disabled=true;
-  byId("connStatus").innerHTML=`<span class="warn">Abgemeldet. Bitte Token einfügen und verbinden.</span>`;
-  stopAllTimers();
+  GH.token=""; saveTokenToSession(); setConn(false,"Kein Token");
 }
 
 /* Events */
 byId("btnConnect").addEventListener("click",connect);
 byId("btnReload").addEventListener("click",loadOrInit);
 byId("btnLogout").addEventListener("click",logout);
+byId("sessionLock").addEventListener("change",saveTokenToSession);
 
 byId("btnAddLib").addEventListener("click",addToLibrary);
 byId("btnAddActive").addEventListener("click",addDirectToActive);
-byId("btnPreviewNew").addEventListener("click",()=>{const u=toEmbed(byId("newUrl").value); if(!u) return alert("Bitte gültige URL"); previewUrl(encodeURIComponent(u));});
+byId("btnLoadTests").addEventListener("click",loadTestVideos);
+byId("btnPreviewNew").addEventListener("click",()=>{ const pref=byId("hostPref").value||"auto"; const u=toEmbed(byId("newUrl").value, pref); if(!u) return alert("Bitte gültige URL"); previewUrl(encodeURIComponent(u));});
 byId("btnStopPreview").addEventListener("click",stopPreview);
-byId("btnQuickFill").addEventListener("click",quickFill);
 
 byId("btnTestRotate").addEventListener("click",startTestRotate);
 byId("btnStopAll").addEventListener("click",stopAllTimers);
 byId("btnStartRotation").addEventListener("click",startRotation);
 byId("btnPauseRotation").addEventListener("click",pauseRotation);
 byId("btnSaveInterval").addEventListener("click",saveInterval);
+byId("btnPrev").addEventListener("click",()=>stepTo(onAirIndex-1));
+byId("btnNext").addEventListener("click",()=>stepTo(onAirIndex+1));
 
 byId("btnKinoPreview").addEventListener("click",kinoPreview);
 byId("btnKinoClear").addEventListener("click",kinoClear);
 byId("btnKinoSave").addEventListener("click",kinoSave);
 
-/* Beim Laden: Token aus Sitzung verwenden, wenn vorhanden */
-restoreSessionTokenIfAny();
+/* Auto: Token aus Session übernehmen (wenn gewünscht) */
+loadTokenFromSession();
+renderAll();
 </script>
 </body>
 </html>
