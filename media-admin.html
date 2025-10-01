@@ -40,7 +40,7 @@
     font-size:.98rem;outline:none;
   }
   textarea{min-height:96px}
-  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
   .btn{
     padding:10px 14px;border:none;border-radius:10px;font-weight:800;cursor:pointer;box-shadow:var(--shadow)
   }
@@ -68,6 +68,8 @@
 
   .note{font-size:.9rem;color:#b6c3d6}
   .ok{color:#22c55e}.warn{color:#f59e0b}.err{color:#ef4444}
+  .flag{display:inline-flex;align-items:center;gap:6px}
+  .flag input{transform:scale(1.15)}
 </style>
 </head>
 <body>
@@ -117,16 +119,16 @@
       <div class="hr"></div>
       <div class="stat">
         <span class="chip">Einträge: <span id="countLib">0</span></span>
-        <span class="chip">Aktive max: 4</span>
+        <span class="chip">Aktive max: <span id="maxActiveLabel">12</span></span>
       </div>
       <div id="libList" class="list" style="margin-top:10px"></div>
     </div>
 
     <!-- Aktive (Rotator) -->
     <div class="card">
-      <div class="title"><h2>🎛 Aktive Videos (Rotator)</h2><div class="muted">Max. 4 – Reihenfolge zählt</div></div>
+      <div class="title"><h2>🎛 Aktive Videos (Rotator)</h2><div class="muted">Max. 12 – Reihenfolge zählt</div></div>
       <div class="stat">
-        <span class="chip">Aktiv: <span id="countActive">0</span>/4</span>
+        <span class="chip">Aktiv: <span id="countActive">0</span>/<span id="maxActiveLabel2">12</span></span>
         <span class="chip">Intervall: <span id="intervalLabel">60</span>s</span>
       </div>
       <div id="activeList" class="list" style="margin-top:10px"></div>
@@ -212,6 +214,8 @@ const $ = sel => document.querySelector(sel);
 const $$ = sel => Array.from(document.querySelectorAll(sel));
 const byId = id => document.getElementById(id);
 
+const MAX_ACTIVE = 12;
+
 function shortUrl(u){try{const x=new URL(u); return x.hostname.replace('www.','') + x.pathname + (x.search? '…':'');}catch(e){return u}}
 function nowISO(){return new Date().toISOString()}
 function toISO(dtLocalVal){ if(!dtLocalVal) return ""; const d=new Date(dtLocalVal); return isNaN(d)? "": d.toISOString(); }
@@ -221,7 +225,7 @@ function fromISOtoLocal(iso){ if(!iso) return ""; const d=new Date(iso); if(isNa
 function toBase64(str){ const enc = new TextEncoder().encode(str); let bin=""; enc.forEach(b=>bin+=String.fromCharCode(b)); return btoa(bin); }
 function fromBase64(b64){ const bin = atob(b64); const bytes = new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i); return new TextDecoder().decode(bytes); }
 
-/* YouTube/Vimeo Normalisierung -> EMBED mit Autoplay/Mute */
+/* URL ➝ EMBED Normalisierung */
 function toEmbed(url){
   if(!url) return "";
   let u = url.trim();
@@ -232,16 +236,18 @@ function toEmbed(url){
   }
   // YouTube watch
   if(/youtube\.com\/watch/i.test(u)){
-    const q = new URL(u).searchParams.get("v");
-    if(q) return `https://www.youtube.com/embed/${q}?rel=0&autoplay=1&mute=1&playsinline=1`;
+    try{
+      const q = new URL(u).searchParams.get("v");
+      if(q) return `https://www.youtube.com/embed/${q}?rel=0&autoplay=1&mute=1&playsinline=1`;
+    }catch(e){/* ignore */}
   }
   // YouTube embed bleibt
   if(/youtube\.com\/embed/i.test(u)) return u;
 
   // Vimeo
   if(/vimeo\.com\/\d+/.test(u)){
-    const id = u.match(/vimeo\.com\/(\d+)/)[1];
-    return `https://player.vimeo.com/video/${id}?autoplay=1&muted=1`;
+    const m = u.match(/vimeo\.com\/(\d+)/);
+    if(m) return `https://player.vimeo.com/video/${m[1]}?autoplay=1&muted=1`;
   }
   if(/player\.vimeo\.com\/video/.test(u)) return u;
 
@@ -290,19 +296,7 @@ async function ghPutFile(data, message){
   byId("lastSave").textContent = new Date().toLocaleString();
 }
 
-/* Kleine Helper zum Speichern + Status */
-async function persist(label){
-  try{
-    current.updated = nowISO();
-    await ghPutFile(current, label || "update");
-    byId("connStatus").innerHTML = `<span class="ok">Gespeichert: ${label||'update'}</span>`;
-    renderAll();
-  }catch(e){
-    byId("connStatus").innerHTML = `<span class="err">Speicherfehler: ${e.message}</span>`;
-  }
-}
-
-/* ============================== Defaults ============================== */
+/* ============================== Defaults & Normalisierung ============================== */
 function defaultData(){
   return {
     active: [
@@ -324,25 +318,44 @@ function defaultData(){
   };
 }
 
+function normalizeAll(data){
+  const uniq = arr => Array.from(new Set(arr.map(toEmbed)));
+  data.library = uniq(data.library||[]);
+  data.active  = uniq((data.active||[]).filter(u => data.library.includes(toEmbed(u))));
+  if(data.active.length > MAX_ACTIVE) data.active = data.active.slice(0, MAX_ACTIVE);
+  data.archived = (data.archived||[]).map(o=>({url:toEmbed(o.url), archived_at:o.archived_at||nowISO()}));
+  return data;
+}
+
 /* ============================== Rendering ============================== */
 function renderAll(){
+  byId("maxActiveLabel").textContent = MAX_ACTIVE;
+  byId("maxActiveLabel2").textContent = MAX_ACTIVE;
+
   byId("countLib").textContent = (current.library||[]).length;
   byId("countActive").textContent = (current.active||[]).length;
   byId("intervalLabel").textContent = current.interval || 60;
 
   // Bibliothek
   const lib = (current.library||[]);
-  byId("libList").innerHTML = lib.map((u,i)=>`
+  byId("libList").innerHTML = lib.map((u,i)=>{
+    const active = (current.active||[]).includes(u);
+    return `
     <div class="item">
       <span class="badge">${i+1}</span>
       <div class="url" title="${u}">${shortUrl(u)}</div>
       <div class="row">
+        <label class="flag" title="In den Rotator (On-Air)">
+          <input type="checkbox" ${active?'checked':''}
+            onchange="libOnAir(${i}, this.checked)">
+          <span>On-Air</span>
+        </label>
         <button class="btn small gold" onclick="previewUrl('${encodeURIComponent(u)}')">▶️ Vorschau</button>
-        <button class="btn small teal" onclick="libToActive(${i})">＋ In Rotator</button>
-        <button class="btn small ghost" onclick="removeFromLibrary(${i})">🗑 Entfernen</button>
+        <button class="btn small blue" onclick="libToActive(${i})">＋ In Rotator</button>
+        <button class="btn small ghost" onclick="libToArchive(${i})">📦 Archiv</button>
       </div>
-    </div>
-  `).join("");
+    </div>`;
+  }).join("");
 
   // Aktive
   const act = (current.active||[]);
@@ -351,6 +364,9 @@ function renderAll(){
       <span class="badge">${i+1}</span>
       <div class="url" title="${u}">${shortUrl(u)}</div>
       <div class="row">
+        <span class="flag" title="On-Air aktiv">
+          <input type="checkbox" checked disabled><span>On-Air</span>
+        </span>
         <button class="btn small gold" onclick="event.stopPropagation(); previewUrl('${encodeURIComponent(u)}')">▶️ Vorschau</button>
         <button class="btn small ghost" onclick="event.stopPropagation(); moveUp(${i})">▲</button>
         <button class="btn small ghost" onclick="event.stopPropagation(); moveDown(${i})">▼</button>
@@ -383,36 +399,78 @@ function renderAll(){
   byId("fallbackImage").value = current.fallback?.imageUrl || "";
 }
 
-/* ============================== Aktionen – Teil 1 (alle mit Persist) ============================== */
+/* ============================== Speichern (Utility) ============================== */
+async function saveAndRender(message){
+  current.updated = nowISO();
+  await ghPutFile(current, message || "update");
+  renderAll();
+  byId("statusMsg").textContent = "Gespeichert.";
+}
+
+/* ============================== Aktionen – Teil 1 ============================== */
 async function addToLibrary(urlRaw){
-  const u = toEmbed(urlRaw || byId("newUrl").value);
-  if(!u){ alert("Bitte gültige URL eingeben."); return; }
-  current.library = current.library || [];
-  if(!current.library.includes(u)) current.library.push(u);
-  await persist("library: add");
+  try{
+    const u = toEmbed(urlRaw || byId("newUrl").value);
+    if(!u){ alert("Bitte gültige URL eingeben."); return; }
+    current.library = current.library || [];
+    if(!current.library.includes(u)) current.library.push(u);
+    await saveAndRender("add: library");
+  }catch(e){ alert("Fehler (Bibliothek hinzufügen):\n"+e.message); }
 }
 
 async function addDirectToActive(){
-  const u = toEmbed(byId("newUrl").value);
-  if(!u){ alert("Bitte gültige URL eingeben."); return; }
-  current.active = current.active || [];
-  if(current.active.length>=4){ alert("Maximal 4 aktive Videos."); return; }
-  if(!current.active.includes(u)) current.active.push(u);
-  current.library = current.library || [];
-  if(!current.library.includes(u)) current.library.push(u);
-  await persist("active: add (direct) + library: ensure");
+  try{
+    const u = toEmbed(byId("newUrl").value);
+    if(!u){ alert("Bitte gültige URL eingeben."); return; }
+    current.library = current.library || [];
+    if(!current.library.includes(u)) current.library.push(u);
+    current.active = current.active || [];
+    if(current.active.length>=MAX_ACTIVE){ return alert("Maximale Anzahl aktiver Videos erreicht."); }
+    if(!current.active.includes(u)) current.active.push(u);
+    await saveAndRender("add: active+library");
+  }catch(e){ alert("Fehler (Direkt in Rotator):\n"+e.message); }
 }
 
 async function libToActive(i){
-  const u = toEmbed(current.library[i]);
-  if(current.active.length>=4){ alert("Maximal 4 aktive Videos."); return; }
-  if(!current.active.includes(u)) current.active.push(u);
-  await persist("active: add from library");
+  try{
+    const u = toEmbed(current.library[i]);
+    if(current.active.length>=MAX_ACTIVE){ return alert("Maximale Anzahl aktiver Videos erreicht."); }
+    if(!current.active.includes(u)) current.active.push(u);
+    await saveAndRender("add: active from library");
+  }catch(e){ alert("Fehler (In Rotator):\n"+e.message); }
 }
 
-async function removeFromLibrary(i){
-  current.library.splice(i,1);
-  await persist("library: remove");
+async function libOnAir(i, checked){
+  try{
+    const u = toEmbed(current.library[i]);
+    current.active = current.active || [];
+    if(checked){
+      if(current.active.length>=MAX_ACTIVE) {
+        renderAll();
+        return alert("Maximale Anzahl aktiver Videos erreicht.");
+      }
+      if(!current.active.includes(u)) current.active.push(u);
+      await saveAndRender("toggle on-air: add");
+    }else{
+      const idx = current.active.indexOf(u);
+      if(idx>-1) current.active.splice(idx,1);
+      await saveAndRender("toggle on-air: remove");
+    }
+  }catch(e){ alert("Fehler (On-Air):\n"+e.message); }
+}
+
+async function libToArchive(i){
+  try{
+    const u = toEmbed(current.library[i]);
+    // aus active entfernen
+    current.active = (current.active||[]).filter(x=>x!==u);
+    // in archiv
+    current.archived = current.archived || [];
+    current.archived.unshift({url:u, archived_at: nowISO()});
+    // aus library entfernen
+    current.library.splice(i,1);
+    await saveAndRender("archive: from library");
+  }catch(e){ alert("Fehler (Archivieren aus Bibliothek):\n"+e.message); }
 }
 
 function selectActive(i){
@@ -421,38 +479,48 @@ function selectActive(i){
 }
 
 async function moveUp(i){
-  if(i<=0) return;
-  const a=current.active; [a[i-1],a[i]]=[a[i],a[i-1]];
-  selectedActiveIndex = i-1;
-  await persist("active: reorder up");
+  try{
+    if(i<=0) return;
+    const a=current.active; [a[i-1],a[i]]=[a[i],a[i-1]];
+    selectedActiveIndex = i-1;
+    await saveAndRender("reorder active up");
+  }catch(e){ alert("Fehler (hoch):\n"+e.message); }
 }
 async function moveDown(i){
-  const a=current.active; if(i>=a.length-1) return;
-  [a[i+1],a[i]]=[a[i],a[i+1]];
-  selectedActiveIndex = i+1;
-  await persist("active: reorder down");
+  try{
+    const a=current.active; if(i>=a.length-1) return;
+    [a[i+1],a[i]]=[a[i],a[i+1]];
+    selectedActiveIndex = i+1;
+    await saveAndRender("reorder active down");
+  }catch(e){ alert("Fehler (runter):\n"+e.message); }
 }
 
 async function activeToArchive(i){
-  const u = current.active[i];
-  current.archived = current.archived || [];
-  current.archived.unshift({url:u, archived_at: nowISO()});
-  current.active.splice(i,1);
-  selectedActiveIndex = -1;
-  await persist("active -> archive");
+  try{
+    const u = current.active[i];
+    current.archived = current.archived || [];
+    current.archived.unshift({url:u, archived_at: nowISO()});
+    current.active.splice(i,1);
+    selectedActiveIndex = -1;
+    await saveAndRender("archive: from active");
+  }catch(e){ alert("Fehler (Archivieren aus Aktiv):\n"+e.message); }
 }
 
 async function restoreFromArchive(i){
-  const u = current.archived[i].url;
-  if(current.active.length>=4){ alert("Schon 4 aktive Videos gesetzt."); return; }
-  if(!current.active.includes(u)) current.active.push(u);
-  current.archived.splice(i,1);
-  await persist("archive -> active");
+  try{
+    const u = toEmbed(current.archived[i].url);
+    if(current.active.length>=MAX_ACTIVE){ return alert("Schon "+MAX_ACTIVE+" aktive Videos gesetzt."); }
+    if(!current.active.includes(u)) current.active.push(u);
+    current.archived.splice(i,1);
+    await saveAndRender("restore from archive");
+  }catch(e){ alert("Fehler (Zurückholen):\n"+e.message); }
 }
 
 async function removeFromArchive(i){
-  current.archived.splice(i,1);
-  await persist("archive: remove");
+  try{
+    current.archived.splice(i,1);
+    await saveAndRender("remove from archive");
+  }catch(e){ alert("Fehler (Archiv entfernen):\n"+e.message); }
 }
 
 /* ============================== Vorschau/Rotation – Teil 2 ============================== */
@@ -465,7 +533,6 @@ function stopPreview(){
   byId("preview").src = "about:blank";
   byId("statusMsg").textContent = "Vorschau gestoppt";
 }
-
 function startTestRotate(){
   stopAllTimers();
   const arr = current.active||[];
@@ -478,7 +545,6 @@ function startTestRotate(){
     byId("preview").src = arr[i];
   }, 5000);
 }
-
 function startRotation(){
   stopAllTimers();
   const arr = current.active||[];
@@ -509,7 +575,7 @@ async function saveInterval(){
   try{
     const sec = Math.max(3, parseInt(byId("intervalSec").value||"60",10));
     current.interval = sec;
-    await persist("update: interval");
+    await saveAndRender("update: interval");
     byId("intervalLabel").textContent = sec;
     byId("statusMsg").textContent = "Intervall gespeichert";
   }catch(e){ alert("Fehler beim Speichern des Intervalls:\n"+e.message); }
@@ -541,7 +607,7 @@ async function kinoSave(){
       enabled: byId("fallbackEnabled").value === "true",
       imageUrl: byId("fallbackImage").value.trim()
     };
-    await persist("update: kino/playlist/fallback");
+    await saveAndRender("update: kino/playlist/fallback");
     byId("statusMsg").textContent = "Kino/Fallback gespeichert";
   }catch(e){ alert("Fehler beim Speichern Kino:\n"+e.message); }
 }
@@ -572,11 +638,13 @@ async function loadOrInit(){
   try{
     const r = await ghGetFile();
     if(r.status === 404){
-      current = defaultData();
+      current = normalizeAll(defaultData());
       await ghPutFile(current, "init rotator.json");
       byId("connStatus").innerHTML = `<span class="warn">rotator.json neu angelegt.</span>`;
     }else{
-      current = r.data; currentSha = r.sha;
+      current = normalizeAll(r.data); currentSha = r.sha;
+      // Wenn Normalisierung etwas verändert hat, direkt zurückschreiben:
+      await ghPutFile(current, "normalize rotator.json");
       byId("connStatus").innerHTML = `<span class="ok">rotator.json geladen.</span>`;
     }
     byId("lastLoad").textContent = new Date().toLocaleString();
@@ -584,6 +652,12 @@ async function loadOrInit(){
   }catch(e){
     byId("connStatus").innerHTML = `<span class="err">Fehler: ${e.message}</span>`;
   }
+}
+
+async function saveAll(message){
+  try{
+    await saveAndRender(message || "update: all");
+  }catch(e){ alert("Fehler beim Speichern:\n"+e.message); }
 }
 
 /* ============================== Events ============================== */
