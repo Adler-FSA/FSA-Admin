@@ -1,22 +1,18 @@
 {
-  "library": [],
   "active": [
-    { "url": "https://youtu.be/CqesPVWSzao",  "added_at": "2025-10-01T10:00:00Z" },
-    { "url": "https://youtu.be/WcuSPqefQBY",  "added_at": "2025-10-01T10:00:00Z" },
-    { "url": "https://youtu.be/qPlWNJ__Z1Q",  "added_at": "2025-10-01T10:00:00Z" },
-    { "url": "https://www.youtube.com/watch?v=miWBKSszEIw", "added_at": "2025-10-01T10:00:00Z" }
+    "https://www.youtube.com/embed/miWBKSszEIw?rel=0&autoplay=1&mute=1&playsinline=1",
+    "https://www.youtube.com/embed/CqesPVWSzao?rel=0&autoplay=1&mute=1&playsinline=1",
+    "https://www.youtube.com/embed/WcuSPqefQBY?rel=0&autoplay=1&mute=1&playsinline=1",
+    "https://www.youtube.com/embed/qPlWNJ__Z1Q?rel=0&autoplay=1&mute=1&playsinline=1"
   ],
-  "archive": [],
-  "interval_sec": 60,
-
-  "kino": {
-    "embed_url": "",            // leer = Kino aus
-    "playlist_url": "",         // optional
-    "mode": "manual",           // manual | schedule_60s | daily | every_3m
-    "planned_start": "",        // z.B. 2025-10-01T19:30:00Z
-    "fallback": {
-      "enabled": false,
-      "image_url": "assets/adler-fallback.jpg"
-    }
-  }
+  "library": [
+    "https://youtu.be/CqesPVWSzao",
+    "https://youtu.be/WcuSPqefQBY",
+    "https://youtu.be/qPlWNJ__Z1Q"
+  ],
+  "archived": [],
+  "interval": 60,
+  "kino": { "url": "", "playlist": "", "mode": "60s", "startISO": "" },
+  "fallback": { "enabled": true, "imageUrl": "" },
+  "updated": "2025-10-01T00:00:00.000Z"
 }
