@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Teil 3 · Kino & Fallback</title>
+<style>
+  :root{--bg:#0b1220;--card:#111827;--txt:#eaf2ff;--gold:#d4af37;--teal:#1cc2a0;--blue:#38bdf8;--red:#e11d48;--shadow:0 10px 30px rgba(0,0,0,.45)}
+  body{margin:0;background:var(--bg);color:var(--txt);font-family:Inter,system-ui}
+  .wrap{padding:16px}
+  .card{background:var(--card);border:1px solid rgba(212,175,55,.25);border-radius:14px;box-shadow:var(--shadow);padding:16px;max-width:1100px;margin:0 auto}
+  .grid{display:grid;gap:16px;grid-template-columns:1fr 1fr}
+  @media(max-width:1000px){.grid{grid-template-columns:1fr}}
+  label{display:block;margin:8px 0 6px;font-weight:700;color:#dbe3f3}
+  input[type="text"],input[type="datetime-local"],select{
+    width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#0b1325;color:#fff
+  }
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .btn{padding:10px 14px;border:none;border-radius:10px;font-weight:800;cursor:pointer;box-shadow:var(--shadow)}
+  .btn.gold{background:var(--gold);color:#000}.btn.teal{background:var(--teal);color:#001210}.btn.blue{background:var(--blue);color:#001018}.btn.ghost{background:transparent;border:1px dashed rgba(255,255,255,.25);color:#cbd5e1}.btn.red{background:var(--red);color:#fff}
+  .preview{border:2px solid var(--gold);border-radius:12px;overflow:hidden;height:420px;background:#000;margin-top:10px}
+  iframe{width:100%;height:100%;border:0}
+  .muted{color:#9aa4b2}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <h2 style="margin:0 0 8px;color:var(--gold)">🎬 Kino / Playlist / Fallback</h2>
+    <div class="grid">
+      <div>
+        <label>Kino/Embed URL (YouTube/Zoom …)</label>
+        <input id="kinoUrl" type="text" placeholder="https://www.youtube.com/embed/...">
+        <label>Playlist URL (optional)</label>
+        <input id="playlistUrl" type="text" placeholder="https://www.youtube.com/playlist?list=...">
+        <div class="row" style="margin-top:10px">
+          <button class="btn gold" id="btnPreview">▶️ Kino Vorschau</button>
+          <button class="btn ghost" id="btnClear">🧹 Felder leeren</button>
+          <button class="btn blue" id="btnSave">💾 Kino/Playlist speichern</button>
+        </div>
+        <div class="preview"><iframe id="preview" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div>
+      </div>
+      <div>
+        <label>Modus</label>
+        <select id="kinoMode">
+          <option value="60s">⏱ alle 60 Sekunden</option>
+          <option value="daily">📅 täglich</option>
+          <option value="3m">📆 alle 3 Monate</option>
+        </select>
+        <label>Geplanter Start</label>
+        <input id="kinoStart" type="datetime-local">
+        <div style="height:12px"></div>
+        <label>Adler-Fallback</label>
+        <div class="row">
+          <select id="fallbackEnabled">
+            <option value="true">🦅 Fallback aktiv</option>
+            <option value="false">🦅 Fallback aus</option>
+          </select>
+          <input id="fallbackImage" type="text" placeholder="https://…/assets/adler-fallback.jpg">
+        </div>
+        <div class="muted" style="margin-top:12px">Status: <span id="status">—</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+let CFG=null,SHA="",STATE={kino:{},fallback:{}};
+
+function b64e(str){const enc=new TextEncoder().encode(str);let bin="";enc.forEach(b=>bin+=String.fromCharCode(b));return btoa(bin)}
+function b64d(b64){const bin=atob(b64);const bytes=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);return new TextDecoder().decode(bytes)}
+function headers(){return {Authorization:'Bearer '+CFG.token,Accept:'application/vnd.github+json','Content-Type':'application/json'}}
+async function loadJSON(){
+  const url=`https://api.github.com/repos/${CFG.owner}/${CFG.repo}/contents/${CFG.path}?ref=${CFG.branch}`;
+  const r=await fetch(url,{headers:headers()});
+  if(!r.ok) throw new Error('GET '+r.status);
+  const j=await r.json(); SHA=j.sha;
+  const data=JSON.parse(b64d(j.content||""));
+  return {data};
+}
+async function saveJSON(data,msg){
+  const url=`https://api.github.com/repos/${CFG.owner}/${CFG.repo}/contents/${CFG.path}`;
+  const body={message:msg||'update',content:b64e(JSON.stringify(data,null,2)),branch:CFG.branch};
+  if(SHA) body.sha=SHA;
+  const r=await fetch(url,{method:'PUT',headers:headers(),body:JSON.stringify(body)});
+  if(r.status===409){ const fresh=await loadJSON(); return await saveJSON(fresh.data,msg); }
+  if(!r.ok) throw new Error('PUT '+r.status);
+  const j=await r.json(); SHA=j.content.sha; return true;
+}
+
+function toISO(dtLocalVal){ if(!dtLocalVal) return ""; const d=new Date(dtLocalVal); return isNaN(d)? "": d.toISOString(); }
+function fromISO(iso){ if(!iso) return ""; const d=new Date(iso); if(isNaN(d)) return ""; const z=d.getTimezoneOffset()*60000; return new Date(d - z).toISOString().slice(0,16); }
+
+function render(){
+  $('#kinoUrl').value = STATE.kino?.url || "";
+  $('#playlistUrl').value = STATE.kino?.playlist || "";
+  $('#kinoMode').value = STATE.kino?.mode || "60s";
+  $('#kinoStart').value = fromISO(STATE.kino?.startISO || "");
+  $('#fallbackEnabled').value = String(STATE.fallback?.enabled ?? true);
+  $('#fallbackImage').value = STATE.fallback?.imageUrl || "";
+}
+
+function preview(){ const u=$('#kinoUrl').value.trim(); if(!u) return alert('Bitte Kino/Embed URL eintragen.'); $('#preview').src=u; $('#status').textContent='Kino-Vorschau läuft'; }
+function clearFields(){ $('#kinoUrl').value=""; $('#playlistUrl').value=""; $('#kinoMode').value="60s"; $('#kinoStart').value=""; $('#status').textContent='Eingaben geleert (nicht gespeichert)'; }
+async function saveAll(){
+  try{
+    const {data}=await loadJSON();
+    data.kino = {
+      url: $('#kinoUrl').value.trim(),
+      playlist: $('#playlistUrl').value.trim(),
+      mode: $('#kinoMode').value,
+      startISO: toISO($('#kinoStart').value)
+    };
+    data.fallback = {
+      enabled: $('#fallbackEnabled').value === 'true',
+      imageUrl: $('#fallbackImage').value.trim()
+    };
+    data.updated=new Date().toISOString();
+    await saveJSON(data,'update kino/fallback');
+    $('#status').textContent='Gespeichert';
+  }catch(e){ alert('Fehler: '+e.message); }
+}
+
+/* Events */
+$('#btnPreview').addEventListener('click', preview);
+$('#btnClear').addEventListener('click', clearFields);
+$('#btnSave').addEventListener('click', saveAll);
+
+/* Bridge */
+window.addEventListener('message', async (ev)=>{
+  const msg=ev.data; if(!msg||typeof msg!=='object') return;
+  if(msg.type==='FSA_CFG'){ CFG=msg.cfg; window.parent.postMessage({type:'FSA_INFO',text:'Teil 3 lädt JSON …'},'*');
+    try{ const r=await loadJSON(); STATE=r.data; render(); window.parent.postMessage({type:'FSA_INFO',text:'Teil 3: JSON geladen.'},'*'); }catch(e){ window.parent.postMessage({type:'FSA_INFO',text:'Fehler: '+e.message},'*'); }
+  }
+  if(msg.type==='FSA_RELOAD' && CFG){ const r=await loadJSON(); STATE=r.data; render(); }
+});
+window.parent.postMessage({type:'FSA_READY'}, '*');
+</script>
+</body>
+</html>
