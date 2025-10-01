@@ -14,25 +14,21 @@
   body{margin:0;background:var(--bg);color:var(--txt);font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif}
   h1,h2,h3{margin:0 0 10px;font-family:Montserrat,system-ui,sans-serif}
   a{color:var(--blue);text-decoration:none}
-
   .wrap{max-width:1100px;margin:24px auto;padding:0 16px}
   .card{background:var(--card);border:1px solid rgba(212,175,55,.25);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
   .grid{display:grid;gap:16px}
   .g-2{grid-template-columns:1fr 1fr}
   .g-3{grid-template-columns:1.2fr .8fr}
   @media (max-width:1020px){.g-2,.g-3{grid-template-columns:1fr}}
-
   .title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
   .title h2{color:var(--gold);font-size:1.2rem}
   .muted{color:var(--muted);font-size:.95rem}
   .hr{height:1px;background:rgba(255,255,255,.1);margin:12px 0}
-
   label{display:block;margin:8px 0 6px;font-weight:700;color:#dbe3f3}
-  input[type="text"],input[type="number"],input[type="datetime-local"],textarea,select{
-    width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#0b1325;color:#fff
-  }
+  input[type="text"],input[type="number"],input[type="datetime-local"],select,textarea{
+    width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#0b1325;color:#fff;font-size:.98rem;outline:none}
   textarea{min-height:96px}
-  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
   .btn{padding:10px 14px;border:none;border-radius:10px;font-weight:800;cursor:pointer;box-shadow:var(--shadow)}
   .btn.gold{background:var(--gold);color:#000}
   .btn.teal{background:var(--teal);color:#001210}
@@ -40,17 +36,14 @@
   .btn.red{background:var(--red);color:#fff}
   .btn.ghost{background:transparent;border:1px dashed rgba(255,255,255,.25);color:#cbd5e1}
   .btn.small{padding:6px 10px;font-weight:700}
-
   .list{display:grid;gap:10px}
   .item{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;background:#0e182b;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px}
   .badge{background:var(--gold);color:#000;border-radius:999px;padding:2px 8px;font-weight:900;font-size:.8rem}
   .item .url{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#dbeafe}
   .item.active{outline:2px solid var(--teal);background:#0e1e2b}
-
   .preview{border:2px solid var(--gold);border-radius:12px;overflow:hidden;height:360px;background:#000}
   .stat{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:.92rem}
   .chip{padding:4px 10px;border-radius:999px;background:#0f1a30;border:1px solid rgba(255,255,255,.12);color:#cbe0ff}
-
   .note{font-size:.9rem;color:#b6c3d6}
   .ok{color:#22c55e}.warn{color:#f59e0b}.err{color:#ef4444}
 </style>
@@ -58,7 +51,7 @@
 <body>
 <div class="wrap">
 
-  <!-- GitHub Verbindung -->
+  <!-- 🔑 GitHub Verbindung -->
   <div class="card">
     <div class="title"><h2>🔑 GitHub Verbindung</h2></div>
     <div class="grid g-2">
@@ -74,12 +67,20 @@
     <div class="row" style="margin-top:10px">
       <button class="btn gold" id="btnConnect">🔗 Verbinden</button>
       <button class="btn ghost" id="btnReload" disabled>🔄 Daten laden / anlegen</button>
+
+      <!-- Neu: Sitzung merken + Logout -->
+      <label style="display:flex;align-items:center;gap:8px">
+        <input id="rememberSession" type="checkbox"> In dieser Sitzung merken
+      </label>
+      <button class="btn red" id="btnLogout" type="button">🚪 Abmelden</button>
+
       <span id="connStatus" class="note">Bitte Token einfügen und verbinden.</span>
     </div>
   </div>
 
-  <!-- Teil 1 -->
+  <!-- 📚 Teil 1: Bibliothek / Aktive / Archiv -->
   <div class="grid g-3" style="margin-top:16px">
+    <!-- Bibliothek -->
     <div class="card">
       <div class="title"><h2>📚 Bibliothek</h2><div class="muted">Globaler Pool deiner Videos</div></div>
       <label>Neue Video-URL (YouTube/Vimeo/Zoom)</label>
@@ -98,27 +99,32 @@
       <div id="libList" class="list" style="margin-top:10px"></div>
     </div>
 
+    <!-- Aktive -->
     <div class="card">
       <div class="title"><h2>🎛 Aktive Videos (Rotator)</h2><div class="muted">Max. 12 – Reihenfolge zählt</div></div>
       <div class="stat">
         <span class="chip">Aktiv: <span id="countActive">0</span>/12</span>
         <span class="chip">Intervall: <span id="intervalLabel">60</span>s</span>
+        <span class="chip">Guard: <span id="guardLabel">12</span>s</span>
       </div>
       <div id="activeList" class="list" style="margin-top:10px"></div>
     </div>
 
+    <!-- Archiv -->
     <div class="card">
       <div class="title"><h2>📦 Archiv</h2><div class="muted">Zurückholen möglich</div></div>
       <div id="archList" class="list"></div>
     </div>
   </div>
 
-  <!-- Teil 2 -->
+  <!-- 🖥 Teil 2: Vorschau & Rotation -->
   <div class="card" style="margin-top:16px">
     <div class="title"><h2>🖥 Vorschau & Rotation</h2><div class="muted">Nur Admin-Test – LP liest die gespeicherten Daten</div></div>
     <div class="grid g-2">
       <div>
-        <div id="previewBox" class="preview"><iframe id="preview" width="100%" height="100%" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="border:0"></iframe></div>
+        <div id="previewBox" class="preview">
+          <iframe id="preview" width="100%" height="100%" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="border:0"></iframe>
+        </div>
         <div class="row" style="margin-top:10px">
           <button class="btn gold" id="btnTestRotate">✏️ Rotationstest (5s)</button>
           <button class="btn ghost" id="btnStopAll">⏹️ Test/Rotation beenden</button>
@@ -129,16 +135,34 @@
         <input id="intervalSec" type="number" min="3" value="60">
         <div class="row" style="margin-top:10px">
           <button class="btn teal" id="btnStartRotation">▶️ Start</button>
-          <button class="btn red"  id="btnPauseRotation">⏸ Stop</button>
+          <button class="btn red" id="btnPauseRotation">⏸ Stop</button>
           <button class="btn blue" id="btnSaveInterval">💾 Intervall merken</button>
         </div>
+
+        <div class="hr"></div>
+        <label>Guard-Zeit (Sekunden) – Autowechsel bei Hängern/Werbung</label>
+        <input id="guardSec" type="number" min="3" value="12">
+        <div class="row" style="margin-top:10px">
+          <button class="btn blue" id="btnSaveGuard">💾 Guard-Zeit merken</button>
+        </div>
+
+        <div class="hr"></div>
+        <label>Provider-Präferenz</label>
+        <div class="row">
+          <select id="providerPref">
+            <option value="youtube">YouTube bevorzugt</option>
+            <option value="vimeo">Vimeo bevorzugt</option>
+          </select>
+          <button class="btn blue" id="btnSavePref">💾 Präferenz merken</button>
+        </div>
+
         <div class="hr"></div>
         <div class="note">Status: <span id="statusMsg">—</span></div>
       </div>
     </div>
   </div>
 
-  <!-- Teil 3 -->
+  <!-- 🎬 Teil 3: Kino / Playlist / Fallback -->
   <div class="card" style="margin-top:16px">
     <div class="title"><h2>🎬 Kino / Playlist / Fallback</h2><div class="muted">Global für LP-„Kino-Fenster“</div></div>
     <div class="grid g-2">
@@ -179,7 +203,7 @@
 </div>
 
 <script>
-/* ===== Limits ===== */
+/* ===== Konstante Limits ===== */
 const MAX_ACTIVE = 12;
 
 /* ===== Helpers ===== */
@@ -189,40 +213,59 @@ function shortUrl(u){try{const x=new URL(u);return x.hostname.replace('www.','')
 function nowISO(){return new Date().toISOString()}
 function toISO(v){if(!v) return ""; const d=new Date(v); return isNaN(d)?"":d.toISOString();}
 function fromISOtoLocal(iso){if(!iso) return ""; const d=new Date(iso); if(isNaN(d)) return ""; const z=d.getTimezoneOffset()*60000; return new Date(d - z).toISOString().slice(0,16);}
-
-/* Base64 UTF-8 */
 function toBase64(str){const enc=new TextEncoder().encode(str);let bin="";enc.forEach(b=>bin+=String.fromCharCode(b));return btoa(bin)}
 function fromBase64(b64){const bin=atob(b64);const bytes=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);return new TextDecoder().decode(bytes)}
 
-/* URL ➝ EMBED */
+/* URL ➝ EMBED (YouTube -> nocookie) */
 function toEmbed(url){
   if(!url) return "";
-  let u=url.trim();
-  if(/youtu\.be\//i.test(u)){const id=u.split("youtu.be/")[1].split(/[?&]/)[0];return `https://www.youtube.com/embed/${id}?rel=0&autoplay=1&mute=1&playsinline=1`}
-  if(/youtube\.com\/watch/i.test(u)){const q=new URL(u).searchParams.get("v"); if(q) return `https://www.youtube.com/embed/${q}?rel=0&autoplay=1&mute=1&playsinline=1`}
-  if(/youtube\.com\/embed/i.test(u)) return u;
-  if(/vimeo\.com\/\d+/.test(u)){const id=(u.match(/vimeo\.com\/(\d+)/)||[])[1]; if(id) return `https://player.vimeo.com/video/${id}?autoplay=1&muted=1`}
+  let u = url.trim();
+
+  // YouTube short
+  if(/youtu\.be\//i.test(u)){
+    const id = u.split("youtu.be/")[1].split(/[?&]/)[0];
+    return `https://www.youtube-nocookie.com/embed/${id}?rel=0&autoplay=1&mute=1&playsinline=1&modestbranding=1&controls=0`;
+  }
+  // YouTube watch
+  if(/youtube\.com\/watch/i.test(u)){
+    const q = new URL(u).searchParams.get("v");
+    if(q) return `https://www.youtube-nocookie.com/embed/${q}?rel=0&autoplay=1&mute=1&playsinline=1&modestbranding=1&controls=0`;
+  }
+  // YouTube embed
+  if(/youtube\.com\/embed/i.test(u)){
+    let v = u.replace("https://www.youtube.com/embed/","https://www.youtube-nocookie.com/embed/");
+    if(!v.includes("autoplay=")) v += (v.includes("?")?"&":"?") + "autoplay=1&mute=1&playsinline=1&modestbranding=1&controls=0";
+    return v;
+  }
+
+  // Vimeo
+  if(/vimeo\.com\/\d+/.test(u)){
+    const id = (u.match(/vimeo\.com\/(\d+)/)||[])[1];
+    if(id) return `https://player.vimeo.com/video/${id}?autoplay=1&muted=1`;
+  }
   if(/player\.vimeo\.com\/video/.test(u)) return u;
+
+  // Sonst: durchreichen (z. B. Zoom)
   return u;
 }
 
 /* ===== GitHub ===== */
 let GH={owner:"Adler-FSA",repo:"FSA-Admin",branch:"main",path:"rotator.json",token:""};
-let current=null, currentSha="", testTimer=null, rotateTimer=null, selectedActiveIndex=-1;
+let current=null, currentSha="", testTimer=null, rotateTimer=null, guardTimer=null, selectedActiveIndex=-1;
 
-/* Headers */
-function ghHeaders(){ if(!GH.token) throw new Error("Kein Token"); return {"Authorization":"Bearer "+GH.token,"Accept":"application/vnd.github+json","Content-Type":"application/json"}; }
+function ghHeaders(){
+  if(!GH.token) throw new Error("Kein Token");
+  return {"Authorization":"Bearer "+GH.token,"Accept":"application/vnd.github+json","Content-Type":"application/json"};
+}
 
-/* Rohdatei laden (ohne JSON.parse) */
-async function ghGetFileRaw(){
+async function ghGetFile(){
   const url=`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${GH.path}?ref=${GH.branch}`;
   const res=await fetch(url,{headers:ghHeaders()});
   if(res.status===404) return {status:404};
   if(!res.ok){throw new Error(`GET ${res.status}: ${await res.text()}`)}
-  const j=await res.json(); return {status:200,sha:j.sha,content:fromBase64(j.content||"")};
+  const j=await res.json(); const content=fromBase64(j.content||"");
+  return {status:200,sha:j.sha,data:JSON.parse(content)};
 }
-
-/* Datei speichern (aktueller Pfad) */
 async function ghPutFile(data,message){
   const url=`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${GH.path}`;
   const body={message:message||"update rotator.json",content:toBase64(JSON.stringify(data,null,2)),branch:GH.branch};
@@ -232,35 +275,14 @@ async function ghPutFile(data,message){
   const j=await res.json(); currentSha=j.content.sha; byId("lastSave").textContent=new Date().toLocaleString();
 }
 
-/* Beliebigen Pfad schreiben (für Backups) */
-async function ghPutAtPath(path, contentStr, message){
-  const url=`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${path}`;
-  const body={message:message,content:toBase64(contentStr),branch:GH.branch};
-  const res=await fetch(url,{method:"PUT",headers:ghHeaders(),body:JSON.stringify(body)});
-  if(!res.ok){throw new Error(`PUT ${res.status}: ${await res.text()}`)}
-}
-
-/* zentrales Speichern mit Updater-Funktion */
-async function ghSave(updater, commitMsg){
-  if(!current) await loadOrInit();
-  if(!current) throw new Error("Daten nicht geladen.");
-  const draft=JSON.parse(JSON.stringify(current));
-  const changed = await updater(draft); // optionaler Rückgabewert
-  if(changed===false) return; // nichts zu tun
-  draft.updated=nowISO();
-  current=draft;
-  await ghPutFile(current, commitMsg||"update");
-  renderAll();
-}
-
 /* Defaults (inkl. 4 Test-Videos) */
 function defaultData(){
   return {
     active:[
-      "https://www.youtube.com/embed/miWBKSszEIw?rel=0&autoplay=1&mute=1&playsinline=1",
-      "https://www.youtube.com/embed/J7QYQ-Qj-48?rel=0&autoplay=1&mute=1&playsinline=1",
-      "https://www.youtube.com/embed/CqesPVWSzao?rel=0&autoplay=1&mute=1&playsinline=1",
-      "https://www.youtube.com/embed/WcuSPqefQBY?rel=0&autoplay=1&mute=1&playsinline=1"
+      "https://www.youtube-nocookie.com/embed/miWBKSszEIw?rel=0&autoplay=1&mute=1&playsinline=1&modestbranding=1&controls=0",
+      "https://www.youtube-nocookie.com/embed/J7QYQ-Qj-48?rel=0&autoplay=1&mute=1&playsinline=1&modestbranding=1&controls=0",
+      "https://www.youtube-nocookie.com/embed/CqesPVWSzao?rel=0&autoplay=1&mute=1&playsinline=1&modestbranding=1&controls=0",
+      "https://www.youtube-nocookie.com/embed/WcuSPqefQBY?rel=0&autoplay=1&mute=1&playsinline=1&modestbranding=1&controls=0"
     ],
     library:[
       "https://youtu.be/CqesPVWSzao",
@@ -269,23 +291,28 @@ function defaultData(){
     ],
     archived:[],
     interval:60,
+    guard:12,
+    prefs:{provider:"youtube"},
     kino:{url:"",playlist:"",mode:"60s",startISO:""},
     fallback:{enabled:true,imageUrl:""},
     updated:nowISO()
   };
 }
 
-/* Render */
+/* ===== Rendering ===== */
 function renderAll(){
-  if(!current){ return; }
   current.library=current.library||[];
   current.active=current.active||[];
   current.archived=current.archived||[];
+  current.guard = typeof current.guard==="number" ? current.guard : 12;
+  current.prefs = current.prefs || {provider:"youtube"};
 
   byId("countLib").textContent=current.library.length;
   byId("countActive").textContent=current.active.length;
   byId("intervalLabel").textContent=current.interval||60;
+  byId("guardLabel").textContent=current.guard;
 
+  // Bibliothek
   byId("libList").innerHTML=current.library.map((u,i)=>`
     <div class="item">
       <span class="badge">${i+1}</span>
@@ -297,6 +324,7 @@ function renderAll(){
       </div>
     </div>`).join("");
 
+  // Aktive
   byId("activeList").innerHTML=current.active.map((u,i)=>`
     <div class="item ${i===selectedActiveIndex?'active':''}" onclick="selectActive(${i})">
       <span class="badge">${i+1}</span>
@@ -309,6 +337,7 @@ function renderAll(){
       </div>
     </div>`).join("");
 
+  // Archiv
   const ar=current.archived;
   byId("archList").innerHTML=ar.length? ar.map((o,i)=>`
     <div class="item">
@@ -320,7 +349,11 @@ function renderAll(){
       </div>
     </div>`).join(""):`<div class="muted">Noch nichts archiviert.</div>`;
 
+  // Teil 2/3 Formularwerte
   byId("intervalSec").value=current.interval||60;
+  byId("guardSec").value=current.guard;
+  byId("providerPref").value=current.prefs.provider || "youtube";
+
   byId("kinoUrl").value=current.kino?.url||"";
   byId("playlistUrl").value=current.kino?.playlist||"";
   byId("kinoMode").value=current.kino?.mode||"60s";
@@ -329,114 +362,190 @@ function renderAll(){
   byId("fallbackImage").value=current.fallback?.imageUrl||"";
 }
 
-/* Aktionen – Teil 1 */
+/* ===== Guards ===== */
+async function ensureLoaded(){ if(current) return; await loadOrInit(); }
+
+/* ===== Aktionen – Teil 1 ===== */
 async function addToLibrary(){
-  const raw=byId("newUrl").value;
-  const u=toEmbed(raw);
-  if(!u) return alert("Bitte gültige URL eingeben.");
-  await ghSave(d=>{
-    d.library=d.library||[];
-    if(!d.library.includes(u)) d.library.push(u);
-  },"add: library");
+  try{
+    await ensureLoaded();
+    const u=toEmbed(byId("newUrl").value);
+    if(!u) return alert("Bitte gültige URL eingeben.");
+    if(!current.library.includes(u)) current.library.push(u);
+    current.updated=nowISO();
+    await ghPutFile(current,"add: library");
+    renderAll();
+  }catch(e){ alert("Fehler (Bibliothek hinzufügen):\n"+e.message); }
 }
 async function addDirectToActive(){
-  const raw=byId("newUrl").value;
-  const u=toEmbed(raw);
-  if(!u) return alert("Bitte gültige URL eingeben.");
-  await ghSave(d=>{
-    d.active=d.active||[];
-    if(d.active.length>=MAX_ACTIVE){ alert(`Maximal ${MAX_ACTIVE} aktive Videos.`); return false; }
-    if(!d.active.includes(u)) d.active.push(u);
-    d.library=d.library||[];
-    if(!d.library.includes(u)) d.library.push(u);
-  },"add: direct-to-active");
+  try{
+    await ensureLoaded();
+    const u=toEmbed(byId("newUrl").value);
+    if(!u) return alert("Bitte gültige URL eingeben.");
+    if(current.active.length>=MAX_ACTIVE) return alert(`Maximal ${MAX_ACTIVE} aktive Videos.`);
+    if(!current.active.includes(u)) current.active.push(u);
+    if(!current.library.includes(u)) current.library.push(u);
+    current.updated=nowISO();
+    await ghPutFile(current,"add: direct-to-active");
+    renderAll();
+  }catch(e){ alert("Fehler (Direkt in Rotator):\n"+e.message); }
 }
 async function libToActive(i){
-  await ghSave(d=>{
-    const u=toEmbed(d.library[i]);
-    d.active=d.active||[];
-    if(d.active.length>=MAX_ACTIVE){ alert(`Maximal ${MAX_ACTIVE} aktive Videos.`); return false; }
-    if(!d.active.includes(u)) d.active.push(u);
-  },"add: lib->active");
+  try{
+    await ensureLoaded();
+    const u=toEmbed(current.library[i]);
+    if(current.active.length>=MAX_ACTIVE) return alert(`Maximal ${MAX_ACTIVE} aktive Videos.`);
+    if(!current.active.includes(u)) current.active.push(u);
+    current.updated=nowISO();
+    await ghPutFile(current,"add: lib->active");
+    renderAll();
+  }catch(e){ alert("Fehler (lib->active):\n"+e.message); }
 }
 async function removeFromLibrary(i){
-  await ghSave(d=>{ d.library.splice(i,1); },"remove: library");
+  try{
+    await ensureLoaded();
+    current.library.splice(i,1);
+    current.updated=nowISO();
+    await ghPutFile(current,"remove: library");
+    renderAll();
+  }catch(e){ alert("Fehler (Library entfernen):\n"+e.message); }
 }
-function selectActive(i){ selectedActiveIndex=i; renderAll(); }
+function selectActive(i){selectedActiveIndex=i; renderAll();}
 async function moveUp(i){
-  await ghSave(d=>{
-    if(i<=0) return false;
-    const a=d.active; [a[i-1],a[i]]=[a[i],a[i-1]];
-    selectedActiveIndex=i-1;
-  },"reorder: up");
+  try{
+    if(i<=0) return;
+    const a=current.active; [a[i-1],a[i]]=[a[i],a[i-1]];
+    selectedActiveIndex=i-1; current.updated=nowISO();
+    await ghPutFile(current,"reorder: up"); renderAll();
+  }catch(e){ alert("Fehler (Reorder Up):\n"+e.message); }
 }
 async function moveDown(i){
-  await ghSave(d=>{
-    const a=d.active; if(i>=a.length-1) return false;
+  try{
+    const a=current.active; if(i>=a.length-1) return;
     [a[i+1],a[i]]=[a[i],a[i+1]];
-    selectedActiveIndex=i+1;
-  },"reorder: down");
+    selectedActiveIndex=i+1; current.updated=nowISO();
+    await ghPutFile(current,"reorder: down"); renderAll();
+  }catch(e){ alert("Fehler (Reorder Down):\n"+e.message); }
 }
 async function activeToArchive(i){
-  await ghSave(d=>{
-    const u=d.active[i];
-    d.archived=d.archived||[];
-    d.archived.unshift({url:u,archived_at:nowISO()});
-    d.active.splice(i,1);
-    selectedActiveIndex=-1;
-  },"archive: from-active");
+  try{
+    await ensureLoaded();
+    const u=current.active[i];
+    current.archived=current.archived||[];
+    current.archived.unshift({url:u,archived_at:nowISO()});
+    current.active.splice(i,1);
+    selectedActiveIndex=-1; current.updated=nowISO();
+    await ghPutFile(current,"archive: from-active");
+    renderAll();
+  }catch(e){ alert("Fehler (Archivieren):\n"+e.message); }
 }
 async function restoreFromArchive(i){
-  await ghSave(d=>{
-    const u=d.archived[i].url;
-    d.active=d.active||[];
-    if(d.active.length>=MAX_ACTIVE){ alert(`Schon ${MAX_ACTIVE} aktive Videos.`); return false; }
-    if(!d.active.includes(u)) d.active.push(u);
-    d.archived.splice(i,1);
-  },"restore: archive->active");
+  try{
+    await ensureLoaded();
+    const u=current.archived[i].url;
+    if(current.active.length>=MAX_ACTIVE) return alert(`Schon ${MAX_ACTIVE} aktive Videos.`);
+    if(!current.active.includes(u)) current.active.push(u);
+    current.archived.splice(i,1);
+    current.updated=nowISO();
+    await ghPutFile(current,"restore: archive->active");
+    renderAll();
+  }catch(e){ alert("Fehler (Zurückholen):\n"+e.message); }
 }
 async function removeFromArchive(i){
-  await ghSave(d=>{ d.archived.splice(i,1); },"remove: archive");
+  try{
+    await ensureLoaded();
+    current.archived.splice(i,1);
+    current.updated=nowISO();
+    await ghPutFile(current,"remove: archive");
+    renderAll();
+  }catch(e){ alert("Fehler (Archiv entfernen):\n"+e.message); }
 }
 
-/* Vorschau/Rotation – Teil 2 */
+/* ===== Vorschau/Rotation – Teil 2 ===== */
 function previewUrl(enc){const u=decodeURIComponent(enc); byId("preview").src=u; byId("statusMsg").textContent="Vorschau läuft";}
 function stopPreview(){byId("preview").src="about:blank"; byId("statusMsg").textContent="Vorschau gestoppt";}
-function stopAllTimers(){if(testTimer)clearInterval(testTimer); if(rotateTimer)clearInterval(rotateTimer); testTimer=null; rotateTimer=null; stopPreview();}
+
+function setPreviewWithGuard(src, nextFn){
+  byId("preview").src = src;
+  if(guardTimer) clearTimeout(guardTimer);
+  const sec = Math.max(3, parseInt(current?.guard ?? 12, 10));
+  guardTimer = setTimeout(()=>{ if(typeof nextFn === "function") nextFn(); }, sec*1000);
+}
+
+function stopAllTimers(){
+  if(testTimer) clearInterval(testTimer);
+  if(rotateTimer) clearInterval(rotateTimer);
+  if(guardTimer) clearTimeout(guardTimer);
+  testTimer=null; rotateTimer=null; guardTimer=null;
+  stopPreview();
+}
+
 function startTestRotate(){
   stopAllTimers();
   const arr=current?.active||[];
   if(!arr.length) return alert("Keine aktiven Videos.");
-  let i=0; byId("preview").src=arr[0]; byId("statusMsg").textContent="Rotationstest (5s) …";
-  testTimer=setInterval(()=>{i=(i+1)%arr.length; byId("preview").src=arr[i];},5000);
+  let i=0;
+  setPreviewWithGuard(arr[0], ()=>{ i=(i+1)%arr.length; setPreviewWithGuard(arr[i], ()=>{}); });
+  byId("statusMsg").textContent="Rotationstest (5s) …";
+  testTimer=setInterval(()=>{ i=(i+1)%arr.length; setPreviewWithGuard(arr[i], ()=>{}); },5000);
 }
+
 function startRotation(){
   stopAllTimers();
   const arr=current?.active||[];
   if(!arr.length) return alert("Keine aktiven Videos.");
   const sec=Math.max(3,parseInt(byId("intervalSec").value||"60",10));
-  let i=0; byId("preview").src=arr[0]; byId("statusMsg").textContent=`Rotation aktiv (${sec}s)`;
-  rotateTimer=setInterval(()=>{i=(i+1)%arr.length; byId("preview").src=arr[i];},sec*1000);
+  let i=0;
+  byId("statusMsg").textContent=`Rotation aktiv (${sec}s)`;
+  const jump=()=>{ i=(i+1)%arr.length; setPreviewWithGuard(arr[i], jump); };
+  setPreviewWithGuard(arr[0], jump);
+  rotateTimer=setInterval(jump, sec*1000);
 }
 function pauseRotation(){if(rotateTimer)clearInterval(rotateTimer); rotateTimer=null; byId("statusMsg").textContent="Rotation pausiert";}
+
 async function saveInterval(){
-  const sec=Math.max(3,parseInt(byId("intervalSec").value||"60",10));
-  await ghSave(d=>{ d.interval=sec; },"update: interval");
-  byId("intervalLabel").textContent=sec; byId("statusMsg").textContent="Intervall gespeichert";
+  try{
+    await ensureLoaded();
+    const sec=Math.max(3,parseInt(byId("intervalSec").value||"60",10));
+    current.interval=sec; current.updated=nowISO();
+    await ghPutFile(current,"update: interval");
+    byId("intervalLabel").textContent=sec; byId("statusMsg").textContent="Intervall gespeichert";
+  }catch(e){ alert("Fehler beim Speichern des Intervalls:\n"+e.message); }
+}
+async function saveGuard(){
+  try{
+    await ensureLoaded();
+    const g=Math.max(3,parseInt(byId("guardSec").value||"12",10));
+    current.guard=g; current.updated=nowISO();
+    await ghPutFile(current,"update: guard");
+    byId("guardLabel").textContent=g; byId("statusMsg").textContent="Guard-Zeit gespeichert";
+  }catch(e){ alert("Fehler beim Speichern Guard:\n"+e.message); }
+}
+async function savePref(){
+  try{
+    await ensureLoaded();
+    current.prefs=current.prefs||{};
+    current.prefs.provider = byId("providerPref").value;
+    current.updated=nowISO();
+    await ghPutFile(current,"update: provider-pref");
+    byId("statusMsg").textContent="Präferenz gespeichert";
+  }catch(e){ alert("Fehler beim Speichern Präferenz:\n"+e.message); }
 }
 
-/* Kino – Teil 3 */
+/* ===== Kino – Teil 3 ===== */
 function kinoPreview(){const u=byId("kinoUrl").value.trim(); if(!u) return alert("Bitte Kino/Embed URL eintragen."); byId("preview").src=u; byId("statusMsg").textContent="Kino-Vorschau läuft";}
 function kinoClear(){byId("kinoUrl").value=""; byId("playlistUrl").value=""; byId("kinoMode").value="60s"; byId("kinoStart").value=""; byId("statusMsg").textContent="Kino-Felder geleert (noch nicht gespeichert)";}
 async function kinoSave(){
-  await ghSave(d=>{
-    d.kino={url:byId("kinoUrl").value.trim(),playlist:byId("playlistUrl").value.trim(),mode:byId("kinoMode").value,startISO:toISO(byId("kinoStart").value)};
-    d.fallback={enabled:byId("fallbackEnabled").value==="true",imageUrl:byId("fallbackImage").value.trim()};
-  },"update: kino/playlist/fallback");
-  byId("statusMsg").textContent="Kino/Fallback gespeichert";
+  try{
+    await ensureLoaded();
+    current.kino={url:byId("kinoUrl").value.trim(),playlist:byId("playlistUrl").value.trim(),mode:byId("kinoMode").value,startISO:toISO(byId("kinoStart").value)};
+    current.fallback={enabled:byId("fallbackEnabled").value==="true",imageUrl:byId("fallbackImage").value.trim()};
+    current.updated=nowISO(); await ghPutFile(current,"update: kino/playlist/fallback");
+    byId("statusMsg").textContent="Kino/Fallback gespeichert";
+  }catch(e){ alert("Fehler beim Speichern Kino:\n"+e.message); }
 }
 
-/* Verbinden / Laden (mit Auto-Repair) */
+/* ===== Verbinden / Laden ===== */
 async function connect(){
   GH.owner=byId("ghOwner").value.trim();
   GH.repo=byId("ghRepo").value.trim();
@@ -445,11 +554,24 @@ async function connect(){
   GH.token=byId("ghToken").value.trim();
 
   byId("connStatus").textContent="Verbinde …"; byId("btnReload").disabled=true;
+
   try{
     const ping=await fetch(`https://api.github.com/repos/${GH.owner}/${GH.repo}`,{headers:ghHeaders()});
     if(!ping.ok) throw new Error(`Repo nicht erreichbar (${ping.status})`);
     byId("connStatus").innerHTML=`<span class="ok">Verbunden.</span>`;
     byId("btnReload").disabled=false;
+
+    // Session speichern?
+    if(byId("rememberSession").checked){
+      sessionStorage.setItem("fsa_media_token", GH.token);
+      sessionStorage.setItem("fsa_media_owner", GH.owner);
+      sessionStorage.setItem("fsa_media_repo", GH.repo);
+      sessionStorage.setItem("fsa_media_branch", GH.branch);
+      sessionStorage.setItem("fsa_media_path", GH.path);
+    }else{
+      sessionStorage.removeItem("fsa_media_token");
+    }
+
     await loadOrInit(); // automatisch laden
   }catch(e){
     byId("connStatus").innerHTML=`<span class="err">Fehler: ${e.message}</span>`;
@@ -459,42 +581,49 @@ async function connect(){
 async function loadOrInit(){
   byId("connStatus").textContent="Lade rotator.json …";
   try{
-    const r=await ghGetFileRaw();
+    const r=await ghGetFile();
     if(r.status===404){
       current=defaultData();
       await ghPutFile(current,"init rotator.json");
       byId("connStatus").innerHTML=`<span class="warn">rotator.json neu angelegt.</span>`;
     }else{
-      try{
-        current=JSON.parse(r.content);
-        currentSha=r.sha;
-        byId("connStatus").innerHTML=`<span class="ok">rotator.json geladen.</span>`;
-      }catch(parseErr){
-        const msg=`JSON Parse error: ${parseErr.message}`;
-        byId("connStatus").innerHTML=`<span class="err">Fehler: ${msg}</span>`;
-        const ok = confirm(`${msg}\n\nAutomatisch reparieren?\n(Es wird ein Backup der defekten Datei im Repo angelegt)`);
-        if(ok){
-          const ts=new Date().toISOString().replace(/[:.]/g,"").slice(0,15);
-          const backupPath=GH.path.replace(/\.json$/i,`-broken-${ts}.json`);
-          await ghPutAtPath(backupPath, r.content, `backup broken ${GH.path} (${ts})`);
-          current=defaultData();
-          await ghPutFile(current,"repair: replace invalid rotator.json with default");
-          byId("connStatus").innerHTML=`<span class="ok">Repariert. Backup: ${backupPath}</span>`;
-        }else{
-          current=null; // bewusst leer lassen
-          alert("Daten konnten nicht geladen werden. Bitte reparieren oder neu anlegen.");
-        }
-      }
+      current=r.data; currentSha=r.sha;
+      byId("connStatus").innerHTML=`<span class="ok">rotator.json geladen.</span>`;
     }
-    if(current){ byId("lastLoad").textContent=new Date().toLocaleString(); renderAll(); }
+    byId("lastLoad").textContent=new Date().toLocaleString();
+    renderAll();
   }catch(e){
     byId("connStatus").innerHTML=`<span class="err">Fehler: ${e.message}</span>`;
   }
 }
 
-/* Events */
+function logout(){
+  GH.token=""; current=null; currentSha="";
+  sessionStorage.removeItem("fsa_media_token");
+  byId("ghToken").value="";
+  byId("connStatus").textContent="Abgemeldet. Token entfernt.";
+  byId("btnReload").disabled=true;
+  stopAllTimers();
+}
+
+/* ===== Auto-Connect aus Sitzung ===== */
+(function(){
+  const tok=sessionStorage.getItem("fsa_media_token");
+  if(tok){
+    byId("ghToken").value=tok;
+    byId("rememberSession").checked=true;
+    byId("ghOwner").value=sessionStorage.getItem("fsa_media_owner")||byId("ghOwner").value;
+    byId("ghRepo").value=sessionStorage.getItem("fsa_media_repo")||byId("ghRepo").value;
+    byId("ghBranch").value=sessionStorage.getItem("fsa_media_branch")||byId("ghBranch").value;
+    byId("ghPath").value=sessionStorage.getItem("fsa_media_path")||byId("ghPath").value;
+    connect(); // leise verbinden
+  }
+})();
+
+/* ===== Events ===== */
 byId("btnConnect").addEventListener("click",connect);
 byId("btnReload").addEventListener("click",loadOrInit);
+byId("btnLogout").addEventListener("click",logout);
 
 byId("btnAddLib").addEventListener("click",addToLibrary);
 byId("btnAddActive").addEventListener("click",addDirectToActive);
@@ -506,6 +635,8 @@ byId("btnStopAll").addEventListener("click",stopAllTimers);
 byId("btnStartRotation").addEventListener("click",startRotation);
 byId("btnPauseRotation").addEventListener("click",pauseRotation);
 byId("btnSaveInterval").addEventListener("click",saveInterval);
+byId("btnSaveGuard").addEventListener("click",saveGuard);
+byId("btnSavePref").addEventListener("click",savePref);
 
 byId("btnKinoPreview").addEventListener("click",kinoPreview);
 byId("btnKinoClear").addEventListener("click",kinoClear);
