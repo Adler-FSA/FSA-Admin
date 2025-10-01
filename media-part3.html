@@ -22,7 +22,7 @@
   .hr{height:1px;background:rgba(255,255,255,.1);margin:12px 0}
   label{display:block;margin:8px 0 6px;font-weight:700;color:#dbe3f3}
   input,select{width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#0b1325;color:#fff;outline:none}
-  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
   .btn{padding:10px 14px;border:none;border-radius:10px;font-weight:800;cursor:pointer;box-shadow:var(--shadow)}
   .btn.gold{background:var(--gold);color:#000}.btn.teal{background:var(--teal);color:#001210}
   .btn.blue{background:var(--blue);color:#001018}.btn.red{background:var(--red);color:#fff}
@@ -44,14 +44,21 @@
       <div><label>Branch</label><input id="ghBranch" value="main"></div>
       <div><label>JSON-Pfad</label><input id="ghPath" value="rotator.json"></div>
       <div style="grid-column:1/-1">
-        <label>Personal Access Token (in-memory, geht verloren bei Reload)</label>
+        <label>Personal Access Token</label>
         <input id="ghToken" type="text" placeholder="ghp_... (contents:read/write)">
       </div>
     </div>
-    <div class="row" style="margin-top:10px">
-      <button class="btn gold" id="btnConnect">🔗 Verbinden & Laden</button>
-      <span id="connStatus" class="note">Bitte Token einfügen und verbinden.</span>
+    <div class="row" style="margin-top:10px;justify-content:space-between">
+      <div class="row">
+        <button class="btn gold" id="btnConnect">🔗 Verbinden & Laden</button>
+        <label style="display:flex;gap:8px;align-items:center">
+          <input id="rememberSession" type="checkbox" checked>
+          <span>für diese Sitzung merken</span>
+        </label>
+      </div>
+      <button class="btn ghost" id="btnLogout">🔒 Ausloggen</button>
     </div>
+    <div class="note" id="connStatus" style="margin-top:8px">Bitte Token einfügen und verbinden.</div>
   </div>
 
   <!-- Kino / Playlist / Fallback -->
@@ -124,6 +131,31 @@ function fromISOtoLocal(iso){if(!iso) return ""; const d=new Date(iso); if(isNaN
 function toBase64(str){const enc=new TextEncoder().encode(str);let bin="";enc.forEach(b=>bin+=String.fromCharCode(b));return btoa(bin)}
 function fromBase64(b64){const bin=atob(b64);const bytes=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);return new TextDecoder().decode(bytes)}
 
+/* ===== Session remember (optional, ONLY sessionStorage) ===== */
+const SKEY="fsa_media_conn";
+function rememberIfWanted(GH){
+  if(!byId("rememberSession").checked) return;
+  const payload={owner:GH.owner,repo:GH.repo,branch:GH.branch,path:GH.path,token:GH.token,ts:Date.now()};
+  sessionStorage.setItem(SKEY, JSON.stringify(payload));
+}
+function tryRestoreSession(){
+  try{
+    const raw=sessionStorage.getItem(SKEY);
+    if(!raw) return;
+    const s=JSON.parse(raw);
+    byId("ghOwner").value=s.owner||""; byId("ghRepo").value=s.repo||"";
+    byId("ghBranch").value=s.branch||""; byId("ghPath").value=s.path||"";
+    byId("ghToken").value=s.token||""; byId("rememberSession").checked=true;
+    if(s.token) connect(); // auto-connect
+  }catch(e){}
+}
+function logout(){
+  sessionStorage.removeItem(SKEY);
+  GH={owner:"",repo:"",branch:"",path:"",token:""};
+  byId("ghOwner").value=""; byId("ghRepo").value=""; byId("ghBranch").value=""; byId("ghPath").value=""; byId("ghToken").value="";
+  byId("connStatus").innerHTML='<span class="warn">Abgemeldet. Sitzung geleert.</span>';
+}
+
 /* ===== GitHub ===== */
 let GH={owner:"Adler-FSA",repo:"FSA-Admin",branch:"main",path:"rotator.json",token:""};
 let current=null, currentSha="";
@@ -172,6 +204,7 @@ async function connect(){
     render();
     byId("connStatus").innerHTML=`<span class="ok">rotator.json geladen.</span>`;
     byId("lastLoad").textContent=new Date().toLocaleString();
+    rememberIfWanted(GH);
   }catch(e){
     byId("connStatus").innerHTML=`<span class="err">Fehler: ${e.message}</span>`;
   }
@@ -201,9 +234,13 @@ async function kinoSave(){
 
 /* ===== Events ===== */
 byId("btnConnect").addEventListener("click",connect);
+byId("btnLogout").addEventListener("click",logout);
 byId("btnKinoPreview").addEventListener("click",kinoPreview);
 byId("btnKinoClear").addEventListener("click",kinoClear);
 byId("btnKinoSave").addEventListener("click",kinoSave);
+
+/* Auto-restore (nur Sitzung) */
+tryRestoreSession();
 </script>
 </body>
 </html>
