@@ -4,8 +4,7 @@
     "https://www.youtube.com/embed/CqesPVWSzao?rel=0&autoplay=1&mute=1&playsinline=1",
     "https://www.youtube.com/embed/WcuSPqefQBY?rel=0&autoplay=1&mute=1&playsinline=1",
     "https://www.youtube.com/embed/qPlWNJ__Z1Q?rel=0&autoplay=1&mute=1&playsinline=1",
-    "https://www.youtube.com/embed/qoBnNFhhw4M?rel=0&autoplay=1&mute=1&playsinline=1",
-    "https://www.youtube.com/embed/2OEL4P1Rz04?rel=0&autoplay=1&mute=1&playsinline=1"
+    "https://www.youtube.com/embed/qoBnNFhhw4M?rel=0&autoplay=1&mute=1&playsinline=1"
   ],
   "library": [
     "https://youtu.be/CqesPVWSzao",
@@ -14,7 +13,12 @@
     "https://www.youtube.com/embed/qoBnNFhhw4M?rel=0&autoplay=1&mute=1&playsinline=1",
     "https://www.youtube.com/embed/2OEL4P1Rz04?rel=0&autoplay=1&mute=1&playsinline=1"
   ],
-  "archived": [],
+  "archived": [
+    {
+      "url": "https://www.youtube.com/embed/2OEL4P1Rz04?rel=0&autoplay=1&mute=1&playsinline=1",
+      "archived_at": "2025-10-01T17:29:07.098Z"
+    }
+  ],
   "interval": 15,
   "kino": {
     "url": "",
@@ -26,5 +30,5 @@
     "enabled": true,
     "imageUrl": ""
   },
-  "updated": "2025-10-01T17:27:56.960Z"
+  "updated": "2025-10-01T17:29:07.098Z"
 }
