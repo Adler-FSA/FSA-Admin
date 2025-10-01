@@ -3,67 +3,100 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Teil 1 · Bibliothek & Aktive & Archiv</title>
+<title>FSA Admin · Media – Part 1 (Rota-Style-003)</title>
 <style>
   :root{
     --bg:#0b1220; --card:#111827; --muted:#9aa4b2; --txt:#eaf2ff;
-    --gold:#d4af37; --teal:#1cc2a0; --red:#e11d48; --blue:#38bdf8; --shadow:0 10px 30px rgba(0,0,0,.45); --radius:14px;
+    --gold:#d4af37; --teal:#1cc2a0; --red:#e11d48; --blue:#38bdf8;
+    --shadow:0 10px 30px rgba(0,0,0,.45); --radius:14px;
   }
+  html,body{height:100%}
   body{margin:0;background:var(--bg);color:var(--txt);font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif}
-  .wrap{padding:16px}
-  .grid{display:grid;gap:16px;grid-template-columns:1.2fr .8fr .8fr}
-  @media (max-width:1100px){.grid{grid-template-columns:1fr}}
-  .card{background:var(--card);border:1px solid rgba(212,175,55,.25);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px}
-  .title{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-  .title h2{margin:0;color:var(--gold);font-size:1.05rem}
+  h1,h2,h3{margin:0 0 10px;font-family:Montserrat,system-ui,sans-serif}
+  a{color:var(--blue);text-decoration:none}
+  .wrap{max-width:1100px;margin:24px auto;padding:0 16px}
+  .card{background:var(--card);border:1px solid rgba(212,175,55,.25);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+  .grid{display:grid;gap:16px}
+  .g-2{grid-template-columns:1fr 1fr}
+  .g-3{grid-template-columns:1.2fr .8fr}
+  @media (max-width:1020px){.g-2,.g-3{grid-template-columns:1fr}}
+  .title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+  .title h2{color:var(--gold);font-size:1.2rem}
+  .muted{color:var(--muted);font-size:.95rem}
+  .hr{height:1px;background:rgba(255,255,255,.1);margin:12px 0}
   label{display:block;margin:8px 0 6px;font-weight:700;color:#dbe3f3}
-  input[type="text"]{width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#0b1325;color:#fff}
-  .row{display:flex;gap:8px;flex-wrap:wrap}
-  .btn{padding:8px 12px;border:none;border-radius:10px;font-weight:800;cursor:pointer;box-shadow:var(--shadow)}
+  input[type="text"],input[type="number"],textarea,select{
+    width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#0b1325;color:#fff;font-size:.98rem;outline:none
+  }
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .btn{padding:10px 14px;border:none;border-radius:10px;font-weight:800;cursor:pointer;box-shadow:var(--shadow)}
   .btn.gold{background:var(--gold);color:#000}
   .btn.teal{background:var(--teal);color:#001210}
   .btn.blue{background:var(--blue);color:#001018}
+  .btn.red{background:var(--red);color:#fff}
   .btn.ghost{background:transparent;border:1px dashed rgba(255,255,255,.25);color:#cbd5e1}
-  .btn.small{padding:6px 10px}
+  .btn.small{padding:6px 10px;font-weight:700}
   .list{display:grid;gap:10px}
-  .item{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;background:#0e182b;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px}
+  .item{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;background:#0e182b;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px}
   .badge{background:var(--gold);color:#000;border-radius:999px;padding:2px 8px;font-weight:900;font-size:.8rem}
-  .url{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#dbeafe}
-  .muted{color:var(--muted);font-size:.92rem}
-  .ok{color:#22c55e}.err{color:#ef4444}
-  iframe{width:100%;height:280px;border:0;border-radius:10px}
+  .item .url{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#dbeafe}
+  .item.active{outline:2px solid var(--teal);background:#0e1e2b}
+  .preview{border:2px solid var(--gold);border-radius:12px;overflow:hidden;height:280px;background:#000;margin-top:10px}
+  .note{font-size:.9rem;color:#b6c3d6}
+  .chip{padding:4px 10px;border-radius:999px;background:#0f1a30;border:1px solid rgba(255,255,255,.12);color:#cbe0ff}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="grid">
 
+  <!-- 🔑 GitHub Verbindung -->
+  <div class="card">
+    <div class="title"><h2>🔑 GitHub Verbindung</h2></div>
+    <div class="grid g-2">
+      <div><label>Owner</label><input id="ghOwner" type="text" value="Adler-FSA"></div>
+      <div><label>Repo</label><input id="ghRepo" type="text" value="FSA-Admin"></div>
+      <div><label>Branch</label><input id="ghBranch" type="text" value="main"></div>
+      <div><label>JSON-Pfad</label><input id="ghPath" type="text" value="rotator.json"></div>
+      <div style="grid-column:1/-1">
+        <label>Personal Access Token (wird NICHT gespeichert)</label>
+        <input id="ghToken" type="text" placeholder="ghp_... (fine-grained: contents read/write)">
+      </div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <button class="btn gold" id="btnConnect">🔗 Verbinden</button>
+      <button class="btn ghost" id="btnReload" disabled>🔄 Daten laden / anlegen</button>
+      <span id="connStatus" class="note">Bitte Token einfügen und verbinden.</span>
+    </div>
+  </div>
+
+  <!-- 📚 Bibliothek · 🎛 Aktive · 📦 Archiv -->
+  <div class="grid g-3" style="margin-top:16px">
     <!-- Bibliothek -->
     <div class="card">
-      <div class="title"><h2>📚 Bibliothek</h2><div class="muted">Globaler Pool</div></div>
+      <div class="title"><h2>📚 Bibliothek</h2><div class="muted">Globaler Pool deiner Videos</div></div>
       <label>Neue Video-URL (YouTube/Vimeo/Zoom)</label>
-      <input id="newUrl" type="text" placeholder="https://youtu.be/… oder https://www.youtube.com/watch?v=…">
+      <input id="newUrl" type="text" placeholder="https://youtu.be/... oder https://www.youtube.com/watch?v=...">
       <div class="row" style="margin-top:8px">
         <button class="btn teal" id="btnAddLib">＋ Zur Bibliothek</button>
         <button class="btn blue" id="btnAddActive">＋ Direkt in Rotator</button>
         <button class="btn gold" id="btnPreviewNew">▶️ Vorschau</button>
-        <button class="btn ghost" id="btnStopPreview">⏹️ Stop</button>
+        <button class="btn ghost" id="btnStopPreview">⏹️ Vorschau Stop</button>
       </div>
-      <div class="muted" style="margin-top:6px">Einträge: <span id="countLib">0</span></div>
+      <div class="hr"></div>
+      <div class="row">
+        <span class="chip">Einträge: <span id="countLib">0</span></span>
+        <span class="chip">Aktive max: 12</span>
+      </div>
       <div id="libList" class="list" style="margin-top:10px"></div>
     </div>
 
     <!-- Aktive -->
     <div class="card">
-      <div class="title"><h2>🎛 Aktive (max 4)</h2><div class="muted">Reihenfolge zählt</div></div>
-      <div class="muted">Aktiv: <span id="countActive">0</span>/4</div>
-      <div id="activeList" class="list" style="margin-top:10px"></div>
-      <div style="margin-top:10px"><iframe id="preview" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div>
-      <div class="row" style="margin-top:8px">
-        <button class="btn gold" id="btnTest">✏️ Kurzer Test (5s)</button>
-        <button class="btn ghost" id="btnStop">⏹️ Vorschau/Rotation beenden</button>
+      <div class="title"><h2>🎛 Aktive Videos (Rotator)</h2><div class="muted">Max. 12 – Reihenfolge zählt</div></div>
+      <div class="row">
+        <span class="chip">Aktiv: <span id="countActive">0</span>/12</span>
       </div>
-      <div class="muted" id="status">—</div>
+      <div id="activeList" class="list" style="margin-top:10px"></div>
     </div>
 
     <!-- Archiv -->
@@ -71,294 +104,168 @@
       <div class="title"><h2>📦 Archiv</h2><div class="muted">Zurückholen möglich</div></div>
       <div id="archList" class="list"></div>
     </div>
-
   </div>
+
+  <!-- Vorschau (klein, nur zur Kontrolle) -->
+  <div class="card" style="margin-top:16px">
+    <div class="title"><h2>🖥 Vorschau (nur Part 1)</h2><div class="muted">Zum schnellen Testen einzelner Links</div></div>
+    <div class="preview"><iframe id="preview" width="100%" height="100%"
+      allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
+      allowfullscreen sandbox="allow-scripts allow-same-origin allow-presentation"
+      referrerpolicy="origin-when-cross-origin" style="border:0"></iframe></div>
+  </div>
+
+  <div class="muted" style="margin:14px 4px">Letztes Laden: <span id="lastLoad">—</span> · Letztes Speichern: <span id="lastSave">—</span></div>
 </div>
 
 <script>
-/* ===== Minimal Shared: toEmbed + GitHub helpers (ohne LocalStorage) ===== */
-const $ = s => document.querySelector(s);
-let CFG = null; // vom Parent per postMessage
-let SHA = "";  // remote sha
-let testTimer=null;
-
-/* URL Normalisierung -> EMBED */
-function toEmbed(url){
-  if(!url) return "";
-  let u = url.trim();
-  // YouTube short
-  if(/youtu\.be\//i.test(u)){
-    const id = u.split("youtu.be/")[1].split(/[?&]/)[0];
-    return `https://www.youtube.com/embed/${id}?rel=0&autoplay=1&mute=1&playsinline=1`;
-  }
-  // YouTube watch
-  if(/youtube\.com\/watch/i.test(u)){
-    try{
-      const q = new URL(u).searchParams.get("v");
-      if(q) return `https://www.youtube.com/embed/${q}?rel=0&autoplay=1&mute=1&playsinline=1`;
-    }catch(e){}
-  }
-  // YouTube embed
-  if(/youtube\.com\/embed/i.test(u)) return u;
-  // Vimeo
-  if(/vimeo\.com\/\d+/.test(u)){
-    const m = u.match(/vimeo\.com\/(\d+)/);
-    if(m) return `https://player.vimeo.com/video/${m[1]}?autoplay=1&muted=1`;
-  }
-  if(/player\.vimeo\.com\/video/.test(u)) return u;
+const MAX_ACTIVE=12;
+let current=null, currentSha="", selectedActiveIndex=-1;
+const $=s=>document.querySelector(s); const byId=id=>document.getElementById(id);
+function shortUrl(u){try{const x=new URL(u);return x.hostname.replace('www.','')+x.pathname+(x.search?'…':'')}catch(e){return u}}
+function nowISO(){return new Date().toISOString()}
+function toBase64(str){const enc=new TextEncoder().encode(str);let bin="";enc.forEach(b=>bin+=String.fromCharCode(b));return btoa(bin)}
+function fromBase64(b64){const bin=atob(b64);const bytes=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);return new TextDecoder().decode(bytes)}
+function toEmbed(raw,pref){ if(!raw) return ""; let u=raw.trim(); const P=pref||(current?.hostPref||"auto");
+  if(/youtu\.be\//i.test(u)){const id=u.split("youtu.be/")[1].split(/[?&]/)[0]; return `https://www.youtube.com/embed/${id}?rel=0&autoplay=1&mute=1&playsinline=1&modestbranding=1&controls=0&iv_load_policy=3`}
+  if(/youtube\.com\/watch/i.test(u)){const q=new URL(u).searchParams.get("v"); if(q) return `https://www.youtube.com/embed/${q}?rel=0&autoplay=1&mute=1&playsinline=1&modestbranding=1&controls=0&iv_load_policy=3`}
+  if(/youtube\.com\/embed/i.test(u)){ if(P==="yt"||P==="auto"){ if(!u.includes("autoplay")) u+=(u.includes("?")?"&":"?")+"autoplay=1&mute=1&playsinline=1&modestbranding=1&controls=0&iv_load_policy=3"; } return u;}
+  if(/vimeo\.com\/\d+/.test(u)){const m=u.match(/vimeo\.com\/(\d+)/);const id=m?m[1]:""; return `https://player.vimeo.com/video/${id}?autoplay=1&muted=1&title=0&byline=0&portrait=0`}
+  if(/player\.vimeo\.com\/video/.test(u)){ if(P==="vimeo"||P==="auto"){ if(!u.includes("autoplay")) u+=(u.includes("?")?"&":"?")+"autoplay=1&muted=1&title=0&byline=0&portrait=0"; } return u;}
   return u;
 }
-function b64e(str){const enc=new TextEncoder().encode(str);let bin="";enc.forEach(b=>bin+=String.fromCharCode(b));return btoa(bin)}
-function b64d(b64){const bin=atob(b64);const bytes=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);return new TextDecoder().decode(bytes)}
-function headers(){return {Authorization:'Bearer '+CFG.token,Accept:'application/vnd.github+json','Content-Type':'application/json'}}
-async function loadJSON(){
-  const url=`https://api.github.com/repos/${CFG.owner}/${CFG.repo}/contents/${CFG.path}?ref=${CFG.branch}`;
-  const r=await fetch(url,{headers:headers()});
-  if(r.status===404){
-    const def=defaultData();
-    await saveJSON(def,"init rotator.json");
-    return {data:def};
-  }
-  if(!r.ok){throw new Error('GET '+r.status)}
-  const j=await r.json(); SHA=j.sha;
-  let data=JSON.parse(b64d(j.content||""));
-  // harte Normalisierung (einmalig)
-  data.active = (data.active||[]).map(toEmbed);
-  data.library= (data.library||[]).map(toEmbed);
-  return {data};
-}
-async function saveJSON(data,msg){
-  const url=`https://api.github.com/repos/${CFG.owner}/${CFG.repo}/contents/${CFG.path}`;
-  const body={message:msg||'update rotator.json',content:b64e(JSON.stringify(data,null,2)),branch:CFG.branch};
-  if(SHA) body.sha=SHA;
-  const r=await fetch(url,{method:'PUT',headers:headers(),body:JSON.stringify(body)});
-  if(r.status===409){ // SHA Konflikt -> rebase
-    const fresh=await loadJSON();
-    return await saveJSON(fresh.data,msg);
-  }
-  if(!r.ok){throw new Error('PUT '+r.status)}
-  const j=await r.json();
-  SHA=j.content.sha;
-  return true;
-}
-function defaultData(){
-  return {
-    active:[
-      "https://www.youtube.com/embed/miWBKSszEIw?rel=0&autoplay=1&mute=1&playsinline=1",
-      "https://youtu.be/CqesPVWSzao",
-      "https://youtu.be/WcuSPqefQBY",
-      "https://youtu.be/qPlWNJ__Z1Q"
-    ].map(toEmbed),
-    library:[
-      "https://youtu.be/CqesPVWSzao",
-      "https://youtu.be/WcuSPqefQBY",
-      "https://youtu.be/qPlWNJ__Z1Q"
-    ].map(toEmbed),
-    archived:[],
-    interval:60,
-    kino:{url:"",playlist:"",mode:"60s",startISO:""},
-    fallback:{enabled:true,imageUrl:""},
-    updated:new Date().toISOString()
-  };
-}
 
-/* ===== State + Render ===== */
-let STATE={active:[],library:[],archived:[],interval:60,kino:{},fallback:{}};
-
-function shortUrl(u){try{const x=new URL(u);return x.hostname.replace('www.','')+x.pathname+(x.search?'…':'')}catch(e){return u}}
-function render(){
-  $('#countLib').textContent = (STATE.library||[]).length;
-  $('#countActive').textContent = (STATE.active||[]).length;
-
-  // Bibliothek
-  $('#libList').innerHTML = (STATE.library||[]).map((u,i)=>`
+/* GitHub */
+let GH={owner:"Adler-FSA",repo:"FSA-Admin",branch:"main",path:"rotator.json",token:""};
+function ghHeaders(){ if(!GH.token) throw new Error("Kein Token"); return {"Authorization":"Bearer "+GH.token,"Accept":"application/vnd.github+json","Content-Type":"application/json"}}
+async function ghGetFile(){ const url=`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${GH.path}?ref=${GH.branch}`;
+  const res=await fetch(url,{headers:ghHeaders()}); if(res.status===404) return {status:404};
+  if(!res.ok) throw new Error(`GET ${res.status}: ${await res.text()}`); const j=await res.json(); const content=fromBase64(j.content||""); return {status:200,sha:j.sha,data:JSON.parse(content)};
+}
+async function ghPutFile(data,message){ const url=`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${GH.path}`;
+  const body={message:message||"update rotator.json",content:toBase64(JSON.stringify(data,null,2)),branch:GH.branch}; if(currentSha) body.sha=currentSha;
+  const res=await fetch(url,{method:"PUT",headers:ghHeaders(),body:JSON.stringify(body)}); if(!res.ok) throw new Error(`PUT ${res.status}: ${await res.text()}`);
+  const j=await res.json(); currentSha=j.content.sha; byId("lastSave").textContent=new Date().toLocaleString();
+}
+function defaultData(){return{
+  active:[
+    "https://www.youtube.com/embed/miWBKSszEIw?rel=0&autoplay=1&mute=1&playsinline=1&modestbranding=1&controls=0&iv_load_policy=3",
+    "https://www.youtube.com/embed/J7QYQ-Qj-48?rel=0&autoplay=1&mute=1&playsinline=1&modestbranding=1&controls=0&iv_load_policy=3",
+    "https://www.youtube.com/embed/CqesPVWSzao?rel=0&autoplay=1&mute=1&playsinline=1&modestbranding=1&controls=0&iv_load_policy=3",
+    "https://www.youtube.com/embed/WcuSPqefQBY?rel=0&autoplay=1&mute=1&playsinline=1&modestbranding=1&controls=0&iv_load_policy=3"
+  ],
+  library:["https://youtu.be/CqesPVWSzao","https://youtu.be/WcuSPqefQBY","https://youtu.be/qPlWNJ__Z1Q"],
+  archived:[], interval:60, guard:12, hostPref:"auto",
+  kino:{url:"",playlist:"",mode:"60s",startISO:""}, fallback:{enabled:true,imageUrl:""}, updated:nowISO()
+}}
+function renderAll(){
+  const lib=current.library||[], act=current.active||[], ar=current.archived||[];
+  byId("countLib").textContent=lib.length; byId("countActive").textContent=act.length;
+  byId("libList").innerHTML=lib.map((u,i)=>`
     <div class="item">
       <span class="badge">${i+1}</span>
       <div class="url" title="${u}">${shortUrl(u)}</div>
       <div class="row">
-        <button class="btn small gold" onclick="preview('${encodeURIComponent(u)}')">▶️</button>
-        <button class="btn small teal" onclick="libToActive(${i})">＋ Rotator</button>
-        <button class="btn small ghost" onclick="removeFromLibrary(${i})">🗑</button>
+        <button class="btn small gold" onclick="previewUrl('${encodeURIComponent(toEmbed(u,current.hostPref))}')">▶️ Vorschau</button>
+        <button class="btn small teal" onclick="libToActive(${i})">＋ In Rotator</button>
+        <button class="btn small ghost" onclick="removeFromLibrary(${i})">🗑 Entfernen</button>
       </div>
-    </div>
-  `).join('');
-
-  // Aktive
-  $('#activeList').innerHTML = (STATE.active||[]).map((u,i)=>`
-    <div class="item">
+    </div>`).join("");
+  byId("activeList").innerHTML=act.map((u,i)=>`
+    <div class="item ${i===selectedActiveIndex?'active':''}" onclick="selectActive(${i})">
       <span class="badge">${i+1}</span>
       <div class="url" title="${u}">${shortUrl(u)}</div>
       <div class="row">
-        <button class="btn small gold" onclick="preview('${encodeURIComponent(u)}')">▶️</button>
-        <button class="btn small ghost" onclick="moveUp(${i})">▲</button>
-        <button class="btn small ghost" onclick="moveDown(${i})">▼</button>
-        <button class="btn small blue" onclick="activeToArchive(${i})">📦</button>
+        <button class="btn small gold" onclick="event.stopPropagation(); previewUrl('${encodeURIComponent(u)}')">▶️ Vorschau</button>
+        <button class="btn small ghost" onclick="event.stopPropagation(); moveUp(${i})">▲</button>
+        <button class="btn small ghost" onclick="event.stopPropagation(); moveDown(${i})">▼</button>
+        <button class="btn small blue" onclick="event.stopPropagation(); activeToArchive(${i})">📦 Archiv</button>
       </div>
-    </div>
-  `).join('');
-
-  // Archiv
-  $('#archList').innerHTML = (STATE.archived||[]).length ? (STATE.archived||[]).map((o,i)=>`
+    </div>`).join("");
+  byId("archList").innerHTML=ar.length? ar.map((o,i)=>`
     <div class="item">
       <span class="badge">${i+1}</span>
-      <div class="url" title="${o.url}">${shortUrl(o.url)} <span class="muted">· ${o.archived_at?new Date(o.archived_at).toLocaleString():''}</span></div>
+      <div class="url" title="${o.url}">${shortUrl(o.url)} <span class="muted">· ${o.archived_at?new Date(o.archived_at).toLocaleString():""}</span></div>
       <div class="row">
-        <button class="btn small teal" onclick="restore(${i})">↩︎</button>
-        <button class="btn small ghost" onclick="removeArchive(${i})">🗑</button>
+        <button class="btn small teal" onclick="restoreFromArchive(${i})">↩︎ Zurückholen</button>
+        <button class="btn small ghost" onclick="removeFromArchive(${i})">🗑 Entfernen</button>
       </div>
-    </div>
-  `).join('') : '<div class="muted">Noch nichts archiviert.</div>';
+    </div>`).join(""):`<div class="muted">Noch nichts archiviert.</div>`;
 }
 
-/* ===== Aktionen (alles mit sofortigem Save zu GitHub) ===== */
-async function addToLibrary(){
-  try{
-    const raw = $('#newUrl').value.trim();
-    const u = toEmbed(raw);
-    if(!u) return alert('Bitte gültige URL');
-    const {data} = await loadJSON();
-    data.library = data.library||[];
-    if(!data.library.includes(u)) data.library.push(u);
-    data.updated = new Date().toISOString();
-    await saveJSON(data,'add to library');
-    STATE = (await loadJSON()).data;
-    render();
-  }catch(e){ alert('Fehler: '+e.message); }
-}
-async function addDirect(){
-  try{
-    const u = toEmbed($('#newUrl').value.trim());
-    if(!u) return alert('Bitte gültige URL');
-    const {data} = await loadJSON();
-    data.active = data.active||[];
-    if(data.active.length>=4) return alert('Maximal 4 aktive Videos.');
-    if(!data.active.includes(u)) data.active.push(u);
-    data.library = data.library||[];
-    if(!data.library.includes(u)) data.library.push(u);
-    data.updated = new Date().toISOString();
-    await saveJSON(data,'add direct to active');
-    STATE = (await loadJSON()).data;
-    render();
-  }catch(e){ alert('Fehler: '+e.message); }
-}
-async function libToActive(i){
-  try{
-    const {data} = await loadJSON();
-    const u = data.library[i];
-    data.active = data.active||[];
-    if(data.active.length>=4) return alert('Maximal 4 aktive Videos.');
-    if(!data.active.includes(u)) data.active.push(u);
-    data.updated = new Date().toISOString();
-    await saveJSON(data,'library -> active');
-    STATE = (await loadJSON()).data;
-    render();
-  }catch(e){ alert('Fehler: '+e.message); }
-}
-async function removeFromLibrary(i){
-  try{
-    const {data} = await loadJSON();
-    data.library.splice(i,1);
-    data.updated = new Date().toISOString();
-    await saveJSON(data,'remove library');
-    STATE = (await loadJSON()).data;
-    render();
-  }catch(e){ alert('Fehler: '+e.message); }
-}
-async function moveUp(i){
-  try{
-    const {data}=await loadJSON();
-    if(i<=0) return;
-    [data.active[i-1],data.active[i]]=[data.active[i],data.active[i-1]];
-    data.updated=new Date().toISOString();
-    await saveJSON(data,'move up');
-    STATE=(await loadJSON()).data; render();
-  }catch(e){ alert('Fehler: '+e.message); }
-}
-async function moveDown(i){
-  try{
-    const {data}=await loadJSON();
-    if(i>=data.active.length-1) return;
-    [data.active[i+1],data.active[i]]=[data.active[i],data.active[i+1]];
-    data.updated=new Date().toISOString();
-    await saveJSON(data,'move down');
-    STATE=(await loadJSON()).data; render();
-  }catch(e){ alert('Fehler: '+e.message); }
-}
-async function activeToArchive(i){
-  try{
-    const {data}=await loadJSON();
-    const u=data.active[i];
-    data.archived=data.archived||[];
-    data.archived.unshift({url:u,archived_at:new Date().toISOString()});
-    data.active.splice(i,1);
-    data.updated=new Date().toISOString();
-    await saveJSON(data,'active -> archive');
-    STATE=(await loadJSON()).data; render();
-  }catch(e){ alert('Fehler: '+e.message); }
-}
-async function restore(i){
-  try{
-    const {data}=await loadJSON();
-    const u=data.archived[i].url;
-    data.active=data.active||[];
-    if(data.active.length>=4) return alert('Schon 4 aktive Videos.');
-    if(!data.active.includes(u)) data.active.push(u);
-    data.archived.splice(i,1);
-    data.updated=new Date().toISOString();
-    await saveJSON(data,'restore from archive');
-    STATE=(await loadJSON()).data; render();
-  }catch(e){ alert('Fehler: '+e.message); }
-}
-async function removeArchive(i){
-  try{
-    const {data}=await loadJSON();
-    data.archived.splice(i,1);
-    data.updated=new Date().toISOString();
-    await saveJSON(data,'remove archive');
-    STATE=(await loadJSON()).data; render();
-  }catch(e){ alert('Fehler: '+e.message); }
-}
+/* Helpers */
+async function ensureLoaded(){ if(current) return; await loadOrInit(); }
+function previewUrl(enc){ const u=decodeURIComponent(enc); byId("preview").src=u; }
+function stopPreview(){ byId("preview").src="about:blank"; }
+function selectActive(i){ selectedActiveIndex=i; renderAll(); }
 
-/* Vorschau/Test */
-function preview(enc){ $('#preview').src = decodeURIComponent(enc); $('#status').textContent='Vorschau läuft'; }
-function stopAll(){ if(testTimer){clearInterval(testTimer);testTimer=null} $('#preview').src='about:blank'; $('#status').textContent='—'; }
-function quickTest(){
-  stopAll();
-  const arr = STATE.active||[];
-  if(!arr.length) return alert('Keine aktiven Videos.');
-  let i=0; $('#preview').src = arr[0]; $('#status').textContent='Test (5s)…';
-  testTimer=setInterval(()=>{i=(i+1)%arr.length; $('#preview').src=arr[i];},5000);
+/* Aktionen */
+async function addToLibrary(){ try{
+  await ensureLoaded(); const u=toEmbed(byId("newUrl").value,current.hostPref); if(!u) return alert("Bitte gültige URL");
+  current.library=current.library||[]; if(!current.library.includes(u)) current.library.push(u);
+  current.updated=nowISO(); await ghPutFile(current,"add: library"); renderAll();
+}catch(e){alert("Fehler (Bibliothek): "+e.message)}}
+async function addDirectToActive(){ try{
+  await ensureLoaded(); const u=toEmbed(byId("newUrl").value,current.hostPref); if(!u) return alert("Bitte gültige URL");
+  current.active=current.active||[]; if(current.active.length>=MAX_ACTIVE) return alert(`Maximal ${MAX_ACTIVE} aktive Videos.`);
+  if(!current.active.includes(u)) current.active.push(u);
+  current.library=current.library||[]; if(!current.library.includes(u)) current.library.push(u);
+  current.updated=nowISO(); await ghPutFile(current,"add: direct-to-active"); renderAll();
+}catch(e){alert("Fehler (Rotator direkt): "+e.message)}}
+async function libToActive(i){ try{
+  await ensureLoaded(); const u=toEmbed(current.library[i],current.hostPref);
+  if(current.active.length>=MAX_ACTIVE) return alert(`Maximal ${MAX_ACTIVE} aktive Videos.`);
+  if(!current.active.includes(u)) current.active.push(u);
+  current.updated=nowISO(); await ghPutFile(current,"add: lib->active"); renderAll();
+}catch(e){alert("Fehler (lib->active): "+e.message)}}
+async function removeFromLibrary(i){ try{
+  await ensureLoaded(); current.library.splice(i,1); current.updated=nowISO(); await ghPutFile(current,"remove: library"); renderAll();
+}catch(e){alert("Fehler (Library entfernen): "+e.message)}}
+async function moveUp(i){ if(i<=0) return; const a=current.active; [a[i-1],a[i]]=[a[i],a[i-1]];
+  selectedActiveIndex=i-1; current.updated=nowISO(); await ghPutFile(current,"reorder: up"); renderAll(); }
+async function moveDown(i){ const a=current.active; if(i>=a.length-1) return; [a[i+1],a[i]]=[a[i],a[i+1]];
+  selectedActiveIndex=i+1; current.updated=nowISO(); await ghPutFile(current,"reorder: down"); renderAll(); }
+async function activeToArchive(i){ try{
+  await ensureLoaded(); const u=current.active[i]; current.archived=current.archived||[];
+  current.archived.unshift({url:u,archived_at:nowISO()}); current.active.splice(i,1);
+  selectedActiveIndex=-1; current.updated=nowISO(); await ghPutFile(current,"archive: from-active"); renderAll();
+}catch(e){alert("Fehler (Archivieren): "+e.message)}}
+async function restoreFromArchive(i){ try{
+  await ensureLoaded(); const u=current.archived[i].url;
+  if(current.active.length>=MAX_ACTIVE) return alert(`Schon ${MAX_ACTIVE} aktive Videos.`);
+  if(!current.active.includes(u)) current.active.push(u);
+  current.archived.splice(i,1); current.updated=nowISO(); await ghPutFile(current,"restore: archive->active"); renderAll();
+}catch(e){alert("Fehler (Zurückholen): "+e.message)}}
+async function removeFromArchive(i){ try{
+  await ensureLoaded(); current.archived.splice(i,1); current.updated=nowISO(); await ghPutFile(current,"remove: archive"); renderAll();
+}catch(e){alert("Fehler (Archiv entfernen): "+e.message)}}
+
+/* Connect / Load */
+async function connect(){
+  GH.owner=byId("ghOwner").value.trim(); GH.repo=byId("ghRepo").value.trim(); GH.branch=byId("ghBranch").value.trim(); GH.path=byId("ghPath").value.trim(); GH.token=byId("ghToken").value.trim();
+  byId("connStatus").textContent="Verbinde …"; byId("btnReload").disabled=true;
+  try{ const ping=await fetch(`https://api.github.com/repos/${GH.owner}/${GH.repo}`,{headers:ghHeaders()});
+    if(!ping.ok) throw new Error(`Repo nicht erreichbar (${ping.status})`);
+    byId("connStatus").innerHTML=`<span class="note" style="color:#22c55e">Verbunden.</span>`; byId("btnReload").disabled=false; await loadOrInit();
+  }catch(e){ byId("connStatus").innerHTML=`<span class="note" style="color:#ef4444">Fehler: ${e.message}</span>` }
+}
+async function loadOrInit(){
+  byId("connStatus").textContent="Lade rotator.json …";
+  try{
+    const r=await ghGetFile();
+    if(r.status===404){ current=defaultData(); await ghPutFile(current,"init rotator.json"); byId("connStatus").innerHTML=`<span class="note" style="color:#f59e0b">rotator.json neu angelegt.</span>`; }
+    else{ current=r.data; currentSha=r.sha; byId("connStatus").innerHTML=`<span class="note" style="color:#22c55e">rotator.json geladen.</span>`; }
+    byId("lastLoad").textContent=new Date().toLocaleString(); renderAll();
+  }catch(e){ byId("connStatus").innerHTML=`<span class="note" style="color:#ef4444">Fehler: ${e.message}</span>` }
 }
 
 /* Events */
-$('#btnAddLib').addEventListener('click', addToLibrary);
-$('#btnAddActive').addEventListener('click', addDirect);
-$('#btnPreviewNew').addEventListener('click', ()=>{ const u=toEmbed($('#newUrl').value.trim()); if(!u) return alert('URL?'); preview(encodeURIComponent(u)); });
-$('#btnStopPreview').addEventListener('click', stopAll);
-$('#btnTest').addEventListener('click', quickTest);
-$('#btnStop').addEventListener('click', stopAll);
-
-/* PostMessage Brücke */
-window.addEventListener('message', async (ev)=>{
-  const msg = ev.data;
-  if(!msg || typeof msg!=='object') return;
-  if(msg.type==='FSA_CFG'){
-    CFG = msg.cfg;
-    window.parent.postMessage({type:'FSA_INFO',text:'Teil 1 bereit – lade JSON …'}, '*');
-    try{
-      const r = await loadJSON();
-      STATE = r.data; render();
-      window.parent.postMessage({type:'FSA_INFO',text:'Teil 1: JSON geladen.'}, '*');
-    }catch(e){
-      window.parent.postMessage({type:'FSA_INFO',text:'Fehler: '+e.message}, '*');
-    }
-  }
-  if(msg.type==='FSA_RELOAD' && CFG){
-    const r = await loadJSON(); STATE = r.data; render();
-  }
-});
-// Signal „ich bin da“
-window.parent.postMessage({type:'FSA_READY'}, '*');
+byId("btnConnect").addEventListener("click",connect);
+byId("btnReload").addEventListener("click",loadOrInit);
+byId("btnAddLib").addEventListener("click",addToLibrary);
+byId("btnAddActive").addEventListener("click",addDirectToActive);
+byId("btnPreviewNew").addEventListener("click",()=>{const u=toEmbed(byId("newUrl").value,current?.hostPref||"auto"); if(!u) return alert("Bitte gültige URL"); previewUrl(encodeURIComponent(u));});
+byId("btnStopPreview").addEventListener("click",stopPreview);
 </script>
 </body>
 </html>
