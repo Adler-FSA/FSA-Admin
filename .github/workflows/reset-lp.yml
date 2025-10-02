@@ -14,11 +14,13 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v3
 
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
       - name: Update emails.json
         run: |
           echo "🔄 Setze ${{ github.event.inputs.lp_id }} zurück..."
           FILE="data/emails.json"
-          # emails.json ändern → mode: setup + email null
           cat $FILE | jq --arg id "${{ github.event.inputs.lp_id }}" '
             .[$id].mode = "setup" |
             .[$id].email = null
