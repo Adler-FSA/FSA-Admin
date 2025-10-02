@@ -3,18 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Finanzielle Souveränität – Landingpage</title>
+  <title>Finanzielle Souveränität Akademie</title>
   <style>
-    /* Reset + Basics */
-    * {margin:0; padding:0; box-sizing:border-box;}
     body {
-      font-family: "Segoe UI", Roboto, Arial, sans-serif;
-      color: #fff;
+      margin: 0;
+      font-family: 'Segoe UI', Roboto, Arial, sans-serif;
       background: #000;
+      color: #fff;
       overflow-x: hidden;
     }
 
-    /* Hintergrund-Video (Adler Hero) */
+    /* 🎬 Video-Hintergrund */
     #hero-video {
       position: fixed;
       top: 0; left: 0;
@@ -23,169 +22,196 @@
       z-index: -1;
     }
 
-    /* Navigation */
-    nav {
-      background: rgba(0,0,0,0.6);
+    /* 🌥 Wolken-Effekt Box */
+    .cloud-box {
+      background: rgba(20,20,30,0.55);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px auto;
+      max-width: 900px;
+      box-shadow: 
+        0 0 40px 15px rgba(255,255,255,0.25),
+        0 0 80px 30px rgba(255,215,0,0.15);
       backdrop-filter: blur(6px);
-      display: flex;
-      justify-content: center;
-      padding: 14px;
-      border-bottom: 2px solid rgba(255,165,0,0.6);
-    }
-    nav a {
-      margin: 0 10px;
-      padding: 8px 18px;
-      border-radius: 6px;
-      text-decoration: none;
-      font-weight: 600;
-      color: #fff;
-      background: rgba(40,40,40,0.6);
-      box-shadow: 0 0 12px rgba(255,165,0,0.4);
-      transition: all 0.3s ease;
-    }
-    nav a:hover {
-      background: #ff6600;
-      box-shadow: 0 0 20px rgba(255,200,50,0.9);
+      animation: float 6s ease-in-out infinite;
     }
 
-    /* Container für Content */
-    .content {
-      max-width: 1100px;
-      margin: 60px auto;
-      padding: 20px;
-    }
-
-    /* Schwebende Textboxen */
-    .box {
-      background: rgba(15,15,25,0.65);
-      border-radius: 12px;
-      padding: 24px;
-      margin-bottom: 20px;
-      box-shadow: 0 0 25px rgba(255,200,50,0.25);
-      backdrop-filter: blur(4px);
-    }
-    .box h2, .box h3 {
-      color: #ffcc33;
-      margin-bottom: 12px;
-    }
-    .box p {
-      line-height: 1.6;
-      font-size: 1.05rem;
-    }
-
-    /* Vorteil-Liste */
-    .vorteile li {
-      margin: 8px 0;
-      list-style: none;
-    }
-
-    /* Email Eingabe */
-    .email-block {
-      background: rgba(10,10,20,0.7);
-      border-radius: 12px;
-      padding: 20px;
-      margin-top: 40px;
+    /* 🌤 Menü-Buttons */
+    nav {
       text-align: center;
-      box-shadow: 0 0 18px rgba(255,200,50,0.4);
+      margin: 20px 0;
     }
-    .email-block input {
-      padding: 10px;
-      border-radius: 6px;
+    .cloud-button {
+      display: inline-block;
+      background: rgba(40,40,50,0.65);
       border: none;
-      width: 60%;
-      max-width: 320px;
-      margin-right: 10px;
-    }
-    .email-block button {
+      margin: 0 5px;
       padding: 10px 18px;
-      border: none;
-      border-radius: 6px;
-      background: #ff6600;
+      border-radius: 8px;
       color: #fff;
-      font-weight: 600;
+      font-weight: 500;
       cursor: pointer;
-      box-shadow: 0 0 12px rgba(255,200,50,0.6);
-      transition: all 0.3s ease;
+      box-shadow: 
+        0 0 15px 5px rgba(255,255,255,0.18),
+        0 0 30px 10px rgba(255,215,0,0.08);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      text-decoration: none;
     }
-    .email-block button:hover {
-      background: #ffaa00;
-      box-shadow: 0 0 18px rgba(255,220,100,0.9);
+    .cloud-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 
+        0 0 20px 8px rgba(255,255,255,0.28),
+        0 0 35px 15px rgba(255,215,0,0.15);
     }
 
+    /* 🎵 Musik-Button unten rechts */
+    #music-toggle {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 10px 16px;
+      background: rgba(40,40,50,0.7);
+      border-radius: 12px;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow: 
+        0 0 15px 5px rgba(255,255,255,0.2),
+        0 0 25px 10px rgba(255,215,0,0.1);
+      animation: float 6s ease-in-out infinite;
+    }
+
+    /* 🌊 Float-Animation */
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+
+    /* Footer */
     footer {
       text-align: center;
+      margin: 40px auto;
       padding: 20px;
-      font-size: 0.85rem;
-      color: #aaa;
+      max-width: 900px;
     }
   </style>
 </head>
 <body>
 
-  <!-- Hero-Video -->
+  <!-- 🎬 Video (Fallback Adler) -->
   <video id="hero-video" autoplay muted loop playsinline>
     <source src="media/adler-hero.mp4" type="video/mp4">
-    Dein Browser unterstützt kein HTML5-Video.
+    Dein Browser unterstützt kein Video.
   </video>
 
-  <!-- Navigation -->
+  <!-- 🌐 Menü -->
   <nav>
-    <a href="https://www.finanziellesouveraenitaet.de/startseite">Startseite</a>
-    <a href="https://www.finanziellesouveraenitaet.de/campus">Campus</a>
-    <a href="https://www.finanziellesouveraenitaet.de/grundkurs-anfaenger">Grundkurs/Anfänger</a>
-    <a href="https://www.finanziellesouveraenitaet.de/onboarding">Onboarding</a>
-    <a href="https://www.finanziellesouveraenitaet.de/krypto-glossar-pro">Krypto-Glossar Pro</a>
+    <a href="https://www.finanziellesouveraenitaet.de/startseite" class="cloud-button">Startseite</a>
+    <a href="https://www.finanziellesouveraenitaet.de/campus" class="cloud-button">Campus</a>
+    <a href="https://www.finanziellesouveraenitaet.de/grundkurs-anfaenger" class="cloud-button">Grundkurs/Anfänger</a>
+    <a href="https://www.finanziellesouveraenitaet.de/onboarding" class="cloud-button">Onboarding</a>
+    <a href="https://www.finanziellesouveraenitaet.de/krypto-glossar-pro" class="cloud-button">Krypto-Glossar Pro</a>
   </nav>
 
-  <!-- Content -->
-  <div class="content">
-
-    <div class="box">
-      <h2>Dein Geld. Deine Freiheit.</h2>
-      <p>Die Welt verändert sich: Inflation, KI, Blockchain.<br>
-      Hier lernst du, wie du souverän wirst.<br><br>
-      <b>Nie mehr Fremdbestimmung.</b><br>
-      Wer es wirklich will, folgt der Einladung. Viele Tausende entdecken jeden Tag die Krypto-Welt.<br>
-      Viele haben Angst – weil sie keine Ahnung haben.<br>
-      Genau deshalb gibt es die <b>Finanzielle Souveränitäts Akademie</b>.
-      </p>
-    </div>
-
-    <div class="box">
-      <h3>„Eine Investition in Wissen bringt die besten Zinsen.“ – Franklin</h3>
-    </div>
-
-    <div class="box">
-      <h3>Deine Vorteile</h3>
-      <ul class="vorteile">
-        <li>💰 Vermögen schützen</li>
-        <li>🔑 Zugang zu Krypto</li>
-        <li>🤖 Einkommen mit KI</li>
-        <li>🌐 Klarheit statt Chaos</li>
-      </ul>
-      <p>All das bekommst du schon im kostenlosen Grundkurs.</p>
-    </div>
-
-    <div class="box">
-      <h3>„Das Wichtigste ist, in dich selbst zu investieren.“ – Buffett</h3>
-    </div>
-
-    <!-- E-Mail Eingabe optional -->
-    <div class="email-block">
-      <h3>🔑 Optionale Aktivierung deiner Landingpage</h3>
-      <p>Trage deine eigene E-Mail ein, um deine persönliche LP zu verknüpfen.<br>
-      Du kannst die Seite aber auch ohne Eingabe sofort erleben.</p>
-      <form>
-        <input type="email" placeholder="Deine E-Mail">
-        <button type="submit">Freischalten</button>
-      </form>
-    </div>
-
+  <!-- 🌥 Intro Box -->
+  <div class="cloud-box">
+    <h2>Dein Geld. Deine Freiheit.</h2>
+    <p>Die Welt verändert sich: Inflation, KI, Blockchain.<br>
+    Hier lernst du, wie du souverän wirst.</p>
+    <p><b>Nie mehr Fremdbestimmung.</b><br>
+    Wer es wirklich will, folgt der Einladung.<br>
+    Viele Tausende entdecken jeden Tag die Krypto-Welt.</p>
   </div>
 
-  <footer>
-    © 2025 Finanzielle Souveränität Akademie – Alle Rechte vorbehalten.
+  <!-- 🌥 Zitat -->
+  <div class="cloud-box">
+    „Eine Investition in Wissen bringt die besten Zinsen.“ – Franklin
+  </div>
+
+  <!-- 🌥 Vorteile -->
+  <div class="cloud-box">
+    <h3>Deine Vorteile</h3>
+    <ul>
+      <li>💰 Vermögen schützen</li>
+      <li>🔑 Zugang zu Krypto</li>
+      <li>🤖 Einkommen mit KI</li>
+      <li>🌐 Klarheit statt Chaos</li>
+    </ul>
+    <p>All das bekommst du schon im kostenlosen Grundkurs.</p>
+  </div>
+
+  <!-- 🌥 Zitat -->
+  <div class="cloud-box">
+    „Das Wichtigste ist, in dich selbst zu investieren.“ – Buffett
+  </div>
+
+  <!-- 🌥 Footer -->
+  <footer class="cloud-box">
+    <h3>Finanzbildung für die neue Welt</h3>
+    <p>Dein Geld. Deine Zukunft. Deine Souveränität.</p>
+    <p><b>🚀 Jetzt kostenlos starten – info@finanziellesouveraenitaet.de</b></p>
+    <button class="cloud-button">E-Mail kopieren</button>
   </footer>
+
+  <!-- 🎵 Musik-Button -->
+  <div id="music-toggle">🎵 Musik starten</div>
+  <audio id="bg-music" loop>
+    <!-- 🎵 Standard-Fallback -->
+    <source src="media/terra-mater-inspiring-cinematic-epic-272565.mp3" type="audio/mpeg">
+    Dein Browser unterstützt kein Audio.
+  </audio>
+
+  <script>
+    // 🎵 Musik steuern
+    const toggle = document.getElementById("music-toggle");
+    const audio = document.getElementById("bg-music");
+    let playing = false;
+
+    toggle.addEventListener("click", () => {
+      if (playing) {
+        audio.pause();
+        toggle.textContent = "🎵 Musik starten";
+      } else {
+        audio.play();
+        toggle.textContent = "⏸ Musik stoppen";
+      }
+      playing = !playing;
+    });
+
+    // 🎬 + 🎵 Rotator Integration
+    async function initRotator() {
+      try {
+        let res = await fetch("rotator.json");
+        if (!res.ok) throw new Error("Rotator nicht verfügbar");
+        let data = await res.json();
+
+        // 🎬 Video wechseln
+        if (data.videos && data.videos.length > 0) {
+          let hero = document.getElementById("hero-video");
+          hero.innerHTML = "";
+          let src = document.createElement("source");
+          src.src = data.videos[0].url;
+          src.type = "video/mp4";
+          hero.appendChild(src);
+          hero.load();
+          hero.play();
+        }
+
+        // 🎵 Musik wechseln
+        if (data.music && data.music.length > 0) {
+          let audio = document.getElementById("bg-music");
+          audio.innerHTML = "";
+          let src = document.createElement("source");
+          src.src = data.music[0].url;
+          src.type = "audio/mpeg";
+          audio.appendChild(src);
+          audio.load();
+        }
+      } catch (e) {
+        console.log("Fallback Adler + Fallback Musik aktiv:", e.message);
+      }
+    }
+    initRotator();
+  </script>
 
 </body>
 </html>
