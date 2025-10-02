@@ -30,7 +30,7 @@
     "enabled": true,
     "imageUrl": ""
   },
-  "updated": "2025-10-02T10:25:13.081Z",
+  "updated": "2025-10-02T10:25:18.564Z",
   "settings": {
     "guardSec": 10,
     "hostPref": "auto",
@@ -48,7 +48,7 @@
     {
       "url": "https://youtu.be/5Z_X_hV5Nes?si=HkMHzFAwxCqGZpO1 https://youtu.be/5Z_X_hV5Nes?si=HkMHzFAwxCqGZpO1",
       "startISO": "2025-10-02T10:25:06.263Z",
-      "endISO": "",
+      "endISO": "2025-10-02T10:25:18.564Z",
       "mode": "byDuration"
     }
   ],
