@@ -44,6 +44,16 @@
     "history": [
       {
         "kind": "started",
+        "url": "",
+        "playlist": "",
+        "mode": "60s",
+        "host": "unknown",
+        "played_at": "2025-10-02T07:37:01.653Z",
+        "ended_at": null,
+        "archived_at": "2025-10-02T07:49:11.573Z"
+      },
+      {
+        "kind": "started",
         "url": "https://youtu.be/5Z_X_hV5Nes?si=HkMHzFAwxCqGZpO1",
         "playlist": "",
         "mode": "60s",
@@ -52,18 +62,7 @@
         "ended_at": "2025-10-02T07:50:19.691Z"
       }
     ],
-    "archive": [
-      {
-        "kind": "started",
-        "url": "",
-        "playlist": "",
-        "mode": "60s",
-        "host": "unknown",
-        "played_at": "2025-10-02T07:37:01.653Z",
-        "ended_at": null,
-        "archived_at": "2025-10-02T07:49:11.573Z"
-      }
-    ],
+    "archive": [],
     "preRoll": {
       "enabled": false,
       "images": [],
@@ -82,5 +81,10 @@
     "enabled": true,
     "imageUrl": ""
   },
-  "updated": "2025-10-02T07:50:19.691Z"
+  "updated": "2025-10-02T09:50:08.639Z",
+  "settings": {
+    "guardSec": 10,
+    "hostPref": "auto",
+    "autoSkip": false
+  }
 }
