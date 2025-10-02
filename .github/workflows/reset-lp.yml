@@ -1,0 +1,40 @@
+name: Reset Landingpage
+
+on:
+  workflow_dispatch:
+    inputs:
+      lp_id:
+        description: "ID der Landingpage (z. B. FSA-2025-10-02-0002)"
+        required: true
+
+jobs:
+  reset:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Update emails.json
+        run: |
+          echo "🔄 Setze ${{ github.event.inputs.lp_id }} zurück..."
+          FILE="data/emails.json"
+          # emails.json ändern → mode: setup + email null
+          cat $FILE | jq --arg id "${{ github.event.inputs.lp_id }}" '
+            .[$id].mode = "setup" |
+            .[$id].email = null
+          ' > tmp.json && mv tmp.json $FILE
+
+      - name: Update ledger.json
+        run: |
+          FILE="data/ledger.json"
+          cat $FILE | jq --arg id "${{ github.event.inputs.lp_id }}" '
+            map(if .id == $id then .mode = "setup" | .email = null else . end)
+          ' > tmp.json && mv tmp.json $FILE
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add data/emails.json data/ledger.json
+          git commit -m "Reset LP ${{ github.event.inputs.lp_id }} auf setup"
+          git push
