@@ -41,7 +41,17 @@
         "saved_at": "2025-10-02T07:28:06.503Z"
       }
     ],
-    "history": [],
+    "history": [
+      {
+        "kind": "started",
+        "url": "",
+        "playlist": "",
+        "mode": "60s",
+        "host": "unknown",
+        "played_at": "2025-10-02T07:37:01.653Z",
+        "ended_at": null
+      }
+    ],
     "archive": [],
     "preRoll": {
       "enabled": false,
@@ -54,12 +64,12 @@
         "url": "",
         "volume": 0.25
       },
-      "forceStart": false
+      "forceStart": true
     }
   },
   "fallback": {
     "enabled": true,
     "imageUrl": ""
   },
-  "updated": "2025-10-02T07:35:15.207Z"
+  "updated": "2025-10-02T07:37:01.653Z"
 }
