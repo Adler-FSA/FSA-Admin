@@ -2,54 +2,62 @@
 <html lang="de">
 <head>
   <meta charset="utf-8">
-  <title>LP-Admin – Übersicht</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>FSA LP-Admin</title>
   <style>
-    body {
-      font-family: system-ui, Segoe UI, Roboto, sans-serif;
-      background: #f3f4f6;
-      padding: 20px;
-    }
-    h2 { color: #111827; }
-    table { width:100%; border-collapse:collapse; margin-top:20px; background:#fff; }
-    th, td { border:1px solid #ddd; padding:8px; text-align:left; }
-    th { background:#2563eb; color:#fff; }
+    body { font-family: system-ui, sans-serif; background:#f9fafb; color:#111; margin:0; padding:20px; }
+    h1 { color:#0b1220; margin-bottom:20px; }
+    table { width:100%; border-collapse:collapse; background:#fff; box-shadow:0 4px 12px rgba(0,0,0,.1); }
+    th, td { padding:10px; border-bottom:1px solid #ddd; text-align:left; }
+    th { background:#0b1220; color:#fff; }
+    button { background:#ef4444; color:#fff; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; }
+    button:hover { background:#dc2626; }
+    .live { color:green; font-weight:600; }
+    .setup { color:orange; font-weight:600; }
   </style>
 </head>
 <body>
-  <h2>📋 LP-Admin – Globale Übersicht</h2>
-  <p>Alle Landingpages mit aktuellem Status:</p>
+  <h1>🦅 FSA Landingpage Admin</h1>
+  <p>Hier kannst du alle LPs einsehen und bei Bedarf zurücksetzen.</p>
 
-  <table>
+  <table id="lpTable">
     <thead>
       <tr>
         <th>ID</th>
         <th>Status</th>
-        <th>E-Mail</th>
+        <th>Email</th>
+        <th>Aktionen</th>
       </tr>
     </thead>
-    <tbody id="lp-list"></tbody>
+    <tbody></tbody>
   </table>
 
   <script>
-  (async function(){
-    try {
-      const res = await fetch("config.json");
-      const config = await res.json();
-      const tbody = document.getElementById("lp-list");
+    async function loadData(){
+      const res = await fetch("data/emails.json?cache=" + Date.now());
+      const data = await res.json();
+      const tbody = document.querySelector("#lpTable tbody");
+      tbody.innerHTML = "";
 
-      Object.entries(config.pages).forEach(([id,data])=>{
-        const row = `
-          <tr>
-            <td>${id}</td>
-            <td style="color:${data.status==="frei"?"green":"#2563eb"}; font-weight:bold;">${data.status}</td>
-            <td>${data.email}</td>
-          </tr>`;
-        tbody.insertAdjacentHTML("beforeend", row);
+      Object.entries(data).forEach(([id, entry])=>{
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${id}</td>
+          <td class="${entry.mode}">${entry.mode}</td>
+          <td>${entry.email ? entry.email : "-"}</td>
+          <td>
+            <button onclick="resetLP('${id}')">Reset</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
       });
-    } catch(e){
-      document.getElementById("lp-list").innerHTML = "<tr><td colspan='3'>⚠️ config.json nicht gefunden.</td></tr>";
     }
-  })();
+
+    function resetLP(id){
+      alert("🔄 LP " + id + " wird zurückgesetzt.\n\nDa wir keine direkte Schreibrechte aus dem Browser haben, musst du die emails.json im Repo öffnen und den mode auf 'setup' setzen.\n\nSpäter können wir das hier automatisieren.");
+    }
+
+    loadData();
   </script>
 </body>
 </html>
