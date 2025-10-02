@@ -2,153 +2,421 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FSA · Kino</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Finanzielle Souveränität – Landingpage (Template 002)</title>
+<meta name="color-scheme" content="dark light">
 <style>
-  :root{--bg:#0b1220;--card:#111827;--txt:#eaf2ff;--gold:#d4af37;--muted:#9aa4b2}
-  body{margin:0;background:var(--bg);color:var(--txt);font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif}
-  .wrap{max-width:1100px;margin:20px auto;padding:0 16px}
-  .card{background:var(--card);border:1px solid rgba(212,175,55,.3);border-radius:14px;padding:16px}
-  h1,h2,h3{margin:0 0 10px}
-  .muted{color:var(--muted)}
-  .grid{display:grid;gap:16px;grid-template-columns:2fr 1fr}
-  @media (max-width:980px){.grid{grid-template-columns:1fr}}
-  #playerBox{aspect-ratio:16/9;background:#000;border:2px solid var(--gold);border-radius:12px;overflow:hidden}
-  iframe{width:100%;height:100%;border:0}
-  ul{margin:8px 0 0 18px}
-  .live{display:inline-block;margin-left:8px;padding:3px 8px;border-radius:999px;background:#16a34a;color:#041b10;font-weight:800}
+  :root{
+    --bg-card: rgba(17,17,21,0.62);      /* wolkig, halbtransparent */
+    --bg-card-strong: rgba(17,17,21,0.75);
+    --text: #f2f2f2;
+    --muted: #b9c0c7;
+    --accent: #e6c34f;                   /* CTA-Gelb */
+    --accent-2:#20d6bd;                  /* Türkis */
+    --radius: 18px;
+    --shadow-deep: 0 30px 80px rgba(0,0,0,.55);
+    --glow: 0 0 40px rgba(230,195,79,.35), 0 0 12px rgba(230,195,79,.25);
+    --glow-soft: 0 0 26px rgba(230,195,79,.25), 0 0 8px rgba(230,195,79,.18);
+    --maxw: 1200px;
+  }
+
+  /* Grundlayout */
+  html,body{height:100%;margin:0}
+  body{
+    font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color:var(--text); background:#000; overflow-x:hidden;
+  }
+
+  /* Hintergrundvideo (Adler, Loop) */
+  .bg-wrap{position:fixed; inset:0; z-index:-2; overflow:hidden}
+  .bg-video{width:100%; height:100%; object-fit:cover; filter:brightness(.82);}
+
+  /* Menü (Position wie bei Akademie) */
+  header{
+    position:sticky; top:0; z-index:20;
+    backdrop-filter: blur(10px);
+    background: rgba(0,0,0,.55);
+    border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+  .nav{
+    max-width:var(--maxw); margin:0 auto; padding:14px 18px;
+    display:flex; gap:16px; align-items:center; justify-content:center;
+  }
+  .nav a{
+    display:inline-block; padding:10px 16px; border-radius:999px;
+    background:rgba(0,0,0,.55); color:#fff; text-decoration:none; font-weight:600;
+    box-shadow: var(--glow-soft);
+  }
+  .nav a:hover{ transform:translateY(-1px); box-shadow: var(--glow); }
+
+  /* Sektionen + Cards */
+  section{ padding:72px 0; position:relative; z-index:1; }
+  .wrap{ max-width:var(--maxw); margin:0 auto; padding:0 20px; }
+  .grid{ display:grid; gap:28px; }
+  .cols-2{ grid-template-columns: 1fr 1fr; }
+  @media (max-width: 980px){ .cols-2{ grid-template-columns: 1fr; } }
+
+  .card{
+    background:var(--bg-card); 
+    border-radius:var(--radius);
+    padding:28px;
+    box-shadow: var(--glow), var(--shadow-deep);
+    backdrop-filter: blur(8px) saturate(110%);
+  }
+  .card.emph{ background:var(--bg-card-strong); }
+
+  h1,h2,h3{ margin:0 0 14px; line-height:1.22; font-weight:800; letter-spacing:.2px; }
+  .ey{ color:var(--accent-2); font-weight:800; }
+  p{ margin:0 0 10px; color:#e5e7eb; }
+  .muted{ color:var(--muted); }
+
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center;
+    background:var(--accent); color:#000; border:none;
+    border-radius:999px; padding:14px 22px; font-weight:800; cursor:pointer;
+    text-decoration:none; box-shadow: var(--glow);
+  }
+  .btn:hover{ transform:translateY(-1px); filter:brightness(1.06); }
+
+  /* Zitate */
+  .quote{ font-style:italic; text-align:center; }
+
+  /* Begrüßungs-Overlay */
+  .overlay{
+    position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+    background: radial-gradient(ellipse at center, rgba(0,0,0,.55), rgba(0,0,0,.78));
+    z-index:30;
+  }
+  .welcome{
+    width:min(680px, calc(100% - 36px));
+    background:var(--bg-card-strong); border-radius:22px; padding:28px 24px;
+    box-shadow: var(--glow), var(--shadow-deep);
+    text-align:center;
+  }
+  .welcome h3{ margin-bottom:8px; }
+  .welcome p{ color:#d9dde3 }
+  .welcome .row{ display:flex; gap:10px; margin-top:14px; }
+  .welcome input{
+    flex:1; min-width:220px; padding:14px 16px; border-radius:12px; border:1px solid rgba(255,255,255,.12);
+    background:#0f1014; color:#fff; outline:none;
+  }
+
+  /* Musik-Toggle */
+  .music{
+    position:fixed; right:18px; bottom:18px; z-index:25;
+    background:rgba(0,0,0,.62); backdrop-filter: blur(8px);
+    border-radius:999px; padding:10px 14px; box-shadow: var(--glow-soft);
+    display:flex; gap:8px; align-items:center; color:#fff; cursor:pointer; user-select:none;
+  }
+  .music:hover{ box-shadow: var(--glow); }
+  .music .dot{ width:8px; height:8px; border-radius:50%; background:#c33; box-shadow:0 0 8px rgba(255,0,0,.6); }
+
+  /* Kino-Fenster Platzhalter */
+  .kino{
+    margin-top:38px;
+    border-radius:20px;
+    min-height:300px;
+    background: linear-gradient(180deg, rgba(20,20,25,.28), rgba(18,18,22,.36));
+    box-shadow: var(--glow), var(--shadow-deep);
+    backdrop-filter: blur(10px) saturate(110%);
+    display:flex; align-items:center; justify-content:center;
+    text-align:center; color:#cfd6dc;
+    border: 1px solid rgba(255,255,255,.06);
+  }
+  .kino .hint{ opacity:.9; }
+
+  /* Feinlayout für Zeilenumbruch des CTA-Buttons (keine „hängenden“ Wörter) */
+  .nowrap{ white-space:nowrap; }
+  .cta-mail{ font-weight:700; color:var(--accent); }
+
+  /* Abstände Header -> 1. Sektion vergrößern */
+  .spacer-top{ height:28px; }
+
 </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>🎬 FSA Kino <span id="liveTag" class="live" style="display:none">LIVE</span></h1>
-  <div class="muted" id="metaLine">Lädt …</div>
-  <div class="grid" style="margin-top:12px">
-    <div class="card" id="playerBox">
-      <!-- Player wird per JS eingesetzt -->
+
+<!-- Hintergrund (Adler-Video, Loop) -->
+<div class="bg-wrap">
+  <video id="bgVideo" class="bg-video" autoplay muted playsinline loop preload="auto" poster="">
+    <!-- Quellen werden via JS gesetzt (erste funktionierende wird benutzt) -->
+  </video>
+</div>
+
+<!-- Musik -->
+<audio id="bgMusic" preload="auto" loop></audio>
+<div id="musicBtn" class="music" role="button" aria-pressed="false" title="Musik starten/stoppen">
+  <span class="dot" id="musicDot"></span> <span id="musicLabel">🎵 Musik starten</span>
+</div>
+
+<!-- Begrüßungs-Overlay (ohne LocalStorage) -->
+<div id="welcomeOverlay" class="overlay" aria-modal="true" role="dialog">
+  <div class="welcome">
+    <h3>Willkommen! 🦅</h3>
+    <p>Aktiviere jetzt deine persönliche Landingpage.</p>
+    <p><strong>Gib deine eigene seriöse E-Mail</strong> ein. Sie wird mit dieser Seite verbunden.</p>
+    <div class="row">
+      <input id="emailInput" type="email" placeholder="dein.name@mail.de" inputmode="email" autocomplete="email" />
+      <button class="btn" id="btnActivate">✅ Freischalten</button>
+      <button class="btn" id="btnLater" style="background:#2b2f33;color:#eef3f7">⏳ Später ansehen</button>
     </div>
-    <div class="card">
-      <h3>Programm</h3>
-      <div id="progTitle" class="muted" style="margin-bottom:6px"></div>
-      <ul id="progList"></ul>
-    </div>
+    <p class="muted" style="margin-top:10px">Du kannst die Seite erst in Ruhe ansehen und später die E-Mail eintragen.</p>
+    <p id="welcomeMsg" class="muted" style="margin-top:6px"></p>
   </div>
 </div>
 
-<!-- APIs für Auto-Weiter -->
-<script src="https://www.youtube.com/iframe_api"></script>
-<script src="https://player.vimeo.com/api/player.js"></script>
+<header>
+  <div class="nav">
+    <a href="https://www.finanziellesouveraenitaet.de/startseite" target="_blank" rel="noopener">Startseite</a>
+    <a href="https://www.finanziellesouveraenitaet.de/campus" target="_blank" rel="noopener">Campus</a>
+    <a href="https://www.finanziellesouveraenitaet.de/grundkurs-anfaenger" target="_blank" rel="noopener">Grundkurs/Anfänger</a>
+    <a href="https://www.finanziellesouveraenitaet.de/onboarding" target="_blank" rel="noopener">Onboarding</a>
+    <a href="https://www.finanziellesouveraenitaet.de/krypto-glossar-pro" target="_blank" rel="noopener">Krypto-Glossar Pro</a>
+  </div>
+</header>
+
+<div class="spacer-top"></div>
+
+<!-- HERO / Vorteile (Template 002 Inhalte) -->
+<section id="hero">
+  <div class="wrap grid cols-2">
+    <div class="card emph">
+      <h1>Dein Geld.<br><span class="ey">Deine Freiheit.</span></h1>
+      <p>Die Welt verändert sich: Inflation, KI, Blockchain. Hier lernst du, wie du souverän wirst.</p>
+      <p><strong>Nie mehr Fremdbestimmung.</strong></p>
+      <p>Wer es wirklich will, folgt der Einladung. Viele Tausende entdecken jeden Tag die Krypto-Welt.</p>
+      <p>Viele haben Angst – weil sie eben keine Ahnung haben. Genau deshalb gibt es die <strong>Finanzielle Souveränität Online Akademie</strong>.</p>
+      <a href="#cta" class="btn" style="margin-top:8px">Jetzt starten</a>
+    </div>
+
+    <div class="grid" style="gap:22px">
+      <div class="card quote">„Eine Investition in Wissen bringt die besten Zinsen.“ – Franklin</div>
+
+      <div class="card emph">
+        <h2>Deine Vorteile</h2>
+        <ul style="margin:10px 0 0 0; padding-left:1.1rem; line-height:1.7">
+          <li>💰 Vermögen schützen</li>
+          <li>🔑 Zugang zu Krypto</li>
+          <li>🤖 Einkommen mit KI</li>
+          <li>🌐 Klarheit statt Chaos</li>
+        </ul>
+        <p class="muted" style="margin-top:12px"><strong>All das bekommst du schon im kostenlosen Grundkurs.</strong></p>
+      </div>
+
+      <div class="card quote">„Das Wichtigste ist, in dich selbst zu investieren.“ – Buffett</div>
+    </div>
+  </div>
+</section>
+
+<!-- Mentor -->
+<section id="mentor">
+  <div class="wrap">
+    <div class="card">
+      <h2 style="text-align:center">Dein Digitaler Mentor</h2>
+      <p style="text-align:center">
+        Dein persönlicher Begleiter durch die Akademie: Er zeigt dir Schritt für Schritt, wie du Ängste überwindest,
+        Wissen aufbaust und souverän in der neuen Welt bestehst.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Reise / Akkordeon (statisch, wie im Template 002 Text) -->
+<section id="reise">
+  <div class="wrap">
+    <div class="card">
+      <h2>Deine Reise zur finanziellen Souveränität</h2>
+      <div style="height:10px"></div>
+      <div class="muted" style="border-top:1px solid rgba(255,255,255,.12); padding-top:14px">
+        <p>🚀 <strong>Nie mehr Fremdbestimmung</strong></p>
+        <p>Starte deinen eigenen Weg. Wer losgeht, entdeckt die Chancen, die in Blockchain, KI und Krypto stecken.</p>
+        <hr style="border:none;border-top:1px solid rgba(255,255,255,.12); margin:14px 0">
+
+        <p>🎆 <strong>Wer es wirklich will, folgt der Einladung</strong></p>
+        <p>Du bist nicht allein – viele Menschen gehen diesen Weg. Die Community wächst täglich.</p>
+        <hr style="border:none;border-top:1px solid rgba(255,255,255,.12); margin:14px 0">
+
+        <p>🧠 <strong>Viele Tausende entdecken täglich die Krypto-Welt</strong></p>
+        <p>Die Zukunft ist digital. Blockchain, Krypto und KI eröffnen dir neue Einkommensmöglichkeiten.</p>
+        <hr style="border:none;border-top:1px solid rgba(255,255,255,.12); margin:14px 0">
+
+        <p>😨 <strong>Angst entsteht aus Unwissenheit</strong></p>
+        <p>Wissen schafft Sicherheit. Genau deshalb gibt es diesen Kurs.</p>
+        <hr style="border:none;border-top:1px solid rgba(255,255,255,.12); margin:14px 0">
+
+        <p>📚 <strong>Deshalb gibt es die Finanzielle Souveränität Online Akademie</strong></p>
+        <p>Hier bekommst du alles, was du brauchst: Klarheit, Praxiswissen und die Tools für deine Freiheit.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="wrap">
+    <div class="card emph" style="max-width:820px; margin:0 auto; text-align:center; padding:42px 28px">
+      <h2 style="font-size:2rem">Finanzbildung für die neue Welt</h2>
+      <p style="font-size:1.15rem; font-weight:700; color:var(--accent-2)">Dein Geld. Deine Zukunft. Deine Souveränität.</p>
+
+      <a id="ctaStart" href="mailto:EMAIL_PLACEHOLDER" class="btn" style="display:block; margin:18px auto 8px; max-width:640px; padding:18px 16px; font-size:1.05rem">
+        🚀 Jetzt kostenlos starten – <span class="nowrap">EMAIL_PLACEHOLDER</span>
+      </a>
+
+      <p class="muted" style="margin-top:10px">Oder kopiere die Adresse direkt:</p>
+      <p class="cta-mail">EMAIL_PLACEHOLDER</p>
+      <button class="btn" id="btnCopy" style="margin-top:6px; background:#e6c34f">📋 E-Mail kopieren</button>
+
+      <p class="muted" style="margin-top:14px">👉 Über diese E-Mail erhältst du direkten Kontakt zu einem menschlichen Mentor, der die Akademie bereits erfolgreich abgeschlossen hat.</p>
+      <p style="margin-top:6px; color:#26e0c6; font-weight:800">✅ Von deinem Mentor erhältst du außerdem deine persönlichen Zugangsdaten zum Grundkurs.</p>
+    </div>
+
+    <!-- Kino-Fenster (leer, Glow, wird später durch Mediensteuerung befüllt) -->
+    <div class="kino" id="kinoBox" aria-label="Kino-Fenster">
+      <div class="hint">🎬 Kino-Fenster – Inhalte werden über das Admin-Tool geladen.<br>(Der Rahmen bleibt schwebend; Adler-Video läuft als Hintergrund.)</div>
+    </div>
+  </div>
+</section>
+
+<footer class="wrap" style="text-align:center; color:#c8cfd6; padding:28px 0 60px; opacity:.9">
+  <div style="height:8px; border-top:1px solid rgba(255,255,255,.14); margin-bottom:16px"></div>
+  <div>Finanzbildung für die neue Welt</div>
+  <div style="opacity:.85; font-style:italic">„Wissen ist Macht – angewandtes Wissen ist Freiheit.“</div>
+  <div style="margin-top:6px; opacity:.8">© 2025 Finanzielle Souveränitäts Akademie</div>
+</footer>
+
 <script>
-const RAW_JSON_URL = './rotator.json'; // gleicher Host (GH Pages)
+/* ========= Utility ========= */
+const $ = (sel) => document.querySelector(sel);
 
-let cfg=null, queue=[], playMode='interval', hostPref='auto';
-let curIndex=0, ytPlayer=null, vmPlayer=null, live=false;
+/* ========= Quellen-Fallbacks (Video & Musik) ========= */
+/* Passe die Kandidaten gerne auf eure tatsächlichen Dateinamen an.
+   Der Loader nimmt den ersten Pfad, der wirklich lädt. */
+const VIDEO_CANDIDATES = [
+  'media/adler-hero.mp4',
+  'media/adler_hero.mp4',
+  'media/hero-adler.mp4',
+  'assets/adler-hero.mp4',
+  'assets/video/adler-hero.mp4'
+];
+const MUSIC_CANDIDATES = [
+  'media/terra-mater-inspiring-cinematic-epic-272565.mp3',
+  'media/epic-inspiring.mp3',
+  'assets/audio/terra-mater-inspiring-cinematic-epic-272565.mp3',
+  'assets/music/bg.mp3'
+];
 
-function short(u){try{const x=new URL(u);return x.hostname.replace('www.','')+x.pathname;}catch(e){return u}}
-
-async function loadJSON(){
-  const res = await fetch(RAW_JSON_URL, {cache:'no-store'});
-  if(!res.ok) throw new Error('rotator.json nicht erreichbar');
-  cfg = await res.json();
+/* tryLoad: findet die erste funktionierende Quelle */
+function tryLoad(mediaEl, sources){
+  return new Promise((resolve) => {
+    const tryNext = (i) => {
+      if(i >= sources.length){ resolve(false); return; }
+      const src = sources[i];
+      mediaEl.src = src;
+      const onOk = () => { cleanup(); resolve(src); };
+      const onErr = () => { cleanup(); tryNext(i+1); };
+      const cleanup = () => {
+        mediaEl.removeEventListener('loadeddata', onOk);
+        mediaEl.removeEventListener('error', onErr);
+      };
+      mediaEl.addEventListener('loadeddata', onOk, {once:true});
+      mediaEl.addEventListener('error', onErr, {once:true});
+      // force load
+      try { mediaEl.load(); } catch(e){}
+    };
+    tryNext(0);
+  });
 }
 
-function fillProgram(){
-  const k = cfg.kino||{};
-  const prog = (k.program && Array.isArray(k.program.items) && k.program.items.length)? k.program : null;
+/* ========= Musik-Autostart mit Fallback-Button ========= */
+const music = $('#bgMusic');
+const musicBtn = $('#musicBtn');
+const musicDot = $('#musicDot');
+const musicLabel = $('#musicLabel');
 
-  if(prog){
-    queue = prog.items.map(it=>({url:it.url, title:it.title||short(it.url)}));
-    playMode = (prog.playMode||'full');
-    byId('progTitle').textContent = prog.title||'';
-  }else if(k.url){
-    queue = [{url:k.url, title:short(k.url)}];
-    playMode = (k.mode==='full'?'full':'interval');
-    byId('progTitle').textContent = '';
-  }else{
-    queue = [];
-  }
-
-  const ul = byId('progList');
-  ul.innerHTML = queue.length? queue.map((it,i)=>`<li>${i+1}. ${it.title}</li>`).join('') : '<li class="muted">Kein Programm hinterlegt.</li>';
-
-  const meta = [];
-  if(k.startISO){ meta.push('Start: '+new Date(k.startISO).toLocaleString()); }
-  if(queue.length){ meta.push('Beiträge: '+queue.length); }
-  byId('metaLine').textContent = meta.join(' · ') || '—';
+function setMusicUI(on){
+  musicBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+  musicDot.style.background = on ? '#27d17b' : '#c33';
+  musicDot.style.boxShadow = on ? '0 0 10px rgba(39,209,123,.7)' : '0 0 8px rgba(255,0,0,.6)';
+  musicLabel.textContent = on ? '🎵 Musik läuft' : '🎵 Musik starten';
 }
 
-function byId(id){return document.getElementById(id)}
-
-function toEmbed(u){
-  if(/youtu\.be\//i.test(u)){const id=u.split('youtu.be/')[1].split(/[?&]/)[0];return {host:'youtube', id}}
-  if(/youtube\.com\/watch/i.test(u)){const q=new URL(u).searchParams.get('v'); if(q) return {host:'youtube', id:q}}
-  if(/youtube\.com\/embed\/([^?]+)/i.test(u)){return {host:'youtube', id:u.match(/embed\/([^?]+)/i)[1]}}
-  if(/vimeo\.com\/(\d+)/i.test(u)){return {host:'vimeo', id:u.match(/vimeo\.com\/(\d+)/i)[1]}}
-  if(/player\.vimeo\.com\/video\/(\d+)/i.test(u)){return {host:'vimeo', id:u.match(/video\/(\d+)/i)[1]}}
-  if(/zoom\.us|zoom\.com/i.test(u)){return {host:'zoom', url:u}}
-  return {host:'generic', url:u}
-}
-
-function clearBox(){
-  const box = byId('playerBox');
-  box.innerHTML='';
-  if(ytPlayer){try{ytPlayer.destroy()}catch(e){} ytPlayer=null;}
-  if(vmPlayer){try{vmPlayer.unload()}catch(e){} vmPlayer=null;}
-}
-
-function playIndex(i){
-  if(!queue.length) return;
-  curIndex = (i<0?0:(i>=queue.length?0:i));
-
-  const info = toEmbed(queue[curIndex].url);
-  clearBox();
-
-  if(info.host==='youtube'){
-    const div=document.createElement('div'); div.id='ytp'; byId('playerBox').appendChild(div);
-    ytPlayer = new YT.Player('ytp',{
-      videoId: info.id,
-      playerVars:{autoplay:1, rel:0, playsinline:1, mute:0},
-      events:{
-        'onStateChange': e=>{
-          if(e.data===YT.PlayerState.ENDED && playMode==='full'){ playIndex(curIndex+1); }
-        }
-      }
-    });
-  }else if(info.host==='vimeo'){
-    const iframe = document.createElement('iframe');
-    iframe.src=`https://player.vimeo.com/video/${info.id}?autoplay=1`;
-    iframe.allow='autoplay; fullscreen; picture-in-picture';
-    byId('playerBox').appendChild(iframe);
-    vmPlayer = new Vimeo.Player(iframe);
-    vmPlayer.on('ended', ()=>{ if(playMode==='full') playIndex(curIndex+1); });
-  }else{
-    // Zoom oder generisch – ohne End-Event
-    const iframe=document.createElement('iframe');
-    iframe.src= info.url || queue[curIndex].url;
-    iframe.allow='autoplay; fullscreen; picture-in-picture';
-    byId('playerBox').appendChild(iframe);
-    // kein Auto-Weiter möglich
+async function startMusicIfPossible(){
+  const okSrc = await tryLoad(music, MUSIC_CANDIDATES);
+  if(!okSrc){ setMusicUI(false); return; }
+  try{
+    await music.play();          // kann geblockt werden
+    setMusicUI(true);
+  }catch(e){
+    // geblockt -> UI zeigt "starten"
+    setMusicUI(false);
   }
 }
 
-function markLive(){
-  // Live: wenn im History das letzte Item kein ended_at hat
-  const h=(cfg.kino&&cfg.kino.history)||[];
-  live = !!h.find(x=>!x.ended_at);
-  byId('liveTag').style.display = live?'inline-block':'none';
+musicBtn.addEventListener('click', async ()=>{
+  if(music.paused){ try{ await music.play(); setMusicUI(true); }catch(e){} }
+  else { music.pause(); setMusicUI(false); }
+});
+
+/* ========= Hintergrund-Video (Adler) ========= */
+const bgVideo = $('#bgVideo');
+(async ()=>{
+  await tryLoad(bgVideo, VIDEO_CANDIDATES);
+  // Video läuft immer gemutet (wie im Original); Audio liefert der Musik-Track
+})();
+
+/* ========= Begrüßung / E-Mail ========= */
+const overlay = $('#welcomeOverlay');
+const emailInput = $('#emailInput');
+const btnActivate = $('#btnActivate');
+const btnLater = $('#btnLater');
+const welcomeMsg = $('#welcomeMsg');
+
+function isValidEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v).trim()); }
+
+function replaceEmailEverywhere(mail){
+  // Textknoten
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
+  const nodes = [];
+  while(walker.nextNode()){
+    const n = walker.currentNode;
+    if(!n.nodeValue) continue;
+    const p = n.parentNode && n.parentNode.tagName;
+    if(p === 'SCRIPT' || p === 'STYLE') continue;
+    if(n.nodeValue.includes('EMAIL_PLACEHOLDER')) nodes.push(n);
+  }
+  nodes.forEach(n => n.nodeValue = n.nodeValue.split('EMAIL_PLACEHOLDER').join(mail));
+
+  // Links
+  document.querySelectorAll('a[href*="EMAIL_PLACEHOLDER"]').forEach(a=>{
+    a.href = a.href.replace(/EMAIL_PLACEHOLDER/g, mail);
+  });
 }
 
-async function init(){
-  await loadJSON();
-  fillProgram();
-  markLive();
-  if(queue.length) playIndex(0);
-}
+btnActivate.addEventListener('click', ()=>{
+  const mail = emailInput.value.trim();
+  if(!mail){ welcomeMsg.textContent = '⚠️ Bitte eine E-Mail eingeben.'; welcomeMsg.style.color = '#f7c84b'; return; }
+  if(!isValidEmail(mail)){ welcomeMsg.textContent = '⚠️ Ungültige E-Mail.'; welcomeMsg.style.color = '#f78b8b'; return; }
+  replaceEmailEverywhere(mail);
+  welcomeMsg.textContent = '✅ E-Mail live eingesetzt (nur Vorschau). Der Admin setzt sie später final.';
+  welcomeMsg.style.color = '#27d17b';
+  setTimeout(()=>{ overlay.style.display='none'; }, 800);
+});
 
-// YouTube API ruft diese globale Funktion auf:
-function onYouTubeIframeAPIReady(){ /* noop, Player wird dynamisch erstellt */ }
+btnLater.addEventListener('click', ()=>{
+  overlay.style.display='none';  // nur in dieser Sitzung; Reload zeigt Overlay wieder
+});
 
-init();
+/* ========= CTA: Kopieren ========= */
+$('#btnCopy').addEventListener('click', async ()=>{
+  try{
+    const txt = document.querySelector('.cta-mail')?.textContent?.trim() || 'EMAIL_PLACEHOLDER';
+    await navigator.clipboard.writeText(txt);
+    alert('📋 E-Mail kopiert: ' + txt);
+  }catch(e){}
+});
+
+/* ========= Start ========= */
+startMusicIfPossible();
 </script>
 </body>
 </html>
