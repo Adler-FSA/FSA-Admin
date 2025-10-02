@@ -24,13 +24,13 @@
     "url": "https://youtu.be/5Z_X_hV5Nes?si=HkMHzFAwxCqGZpO1 https://youtu.be/5Z_X_hV5Nes?si=HkMHzFAwxCqGZpO1",
     "playlist": "",
     "mode": "byDuration",
-    "startISO": "2025-10-02T10:13:00.000Z"
+    "startISO": "2025-10-03T10:15:00.000Z"
   },
   "fallback": {
     "enabled": true,
     "imageUrl": ""
   },
-  "updated": "2025-10-02T10:24:10.149Z",
+  "updated": "2025-10-02T10:24:37.953Z",
   "settings": {
     "guardSec": 10,
     "hostPref": "auto",
