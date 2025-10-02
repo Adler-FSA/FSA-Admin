@@ -3,103 +3,105 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FSA Admin · Media (Rota-Style-003)</title>
+<title>FSA Admin · Media (Rota-Style-003 · Final)</title>
 <style>
   :root{
-    --bg:#0b1220;--card:#111827;--muted:#9aa4b2;--txt:#eaf2ff;
-    --gold:#d4af37;--teal:#1cc2a0;--red:#e11d48;--blue:#38bdf8;
-    --shadow:0 10px 30px rgba(0,0,0,.45);--radius:14px;
-    --ink:#0f1a30;--line:rgba(255,255,255,.12)
+    --bg:#0b1220; --card:#111827; --muted:#9aa4b2; --txt:#eaf2ff;
+    --gold:#d4af37; --teal:#1cc2a0; --red:#e11d48; --blue:#38bdf8; --amber:#f59e0b;
+    --shadow:0 10px 30px rgba(0,0,0,.45); --radius:14px;
   }
   html,body{height:100%}
   body{margin:0;background:var(--bg);color:var(--txt);font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif}
   h1,h2,h3{margin:0 0 10px;font-family:Montserrat,system-ui,sans-serif}
   a{color:var(--blue);text-decoration:none}
-  .wrap{max-width:1150px;margin:24px auto;padding:0 16px}
+  .wrap{max-width:1180px;margin:24px auto;padding:0 16px}
   .card{background:var(--card);border:1px solid rgba(212,175,55,.25);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
   .grid{display:grid;gap:16px}
   .g-2{grid-template-columns:1fr 1fr}
   .g-3{grid-template-columns:1.2fr .8fr}
-  @media (max-width:1020px){.g-2,.g-3{grid-template-columns:1fr}}
-
+  .g-3b{grid-template-columns:1fr 1fr 1fr}
+  @media (max-width:1080px){.g-2,.g-3,.g-3b{grid-template-columns:1fr}}
   .title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
   .title h2{color:var(--gold);font-size:1.2rem}
   .muted{color:var(--muted);font-size:.95rem}
   .hr{height:1px;background:rgba(255,255,255,.1);margin:12px 0}
-
   label{display:block;margin:8px 0 6px;font-weight:700;color:#dbe3f3}
-  input[type="text"],input[type="number"],input[type="datetime-local"],textarea,select{
-    width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#0b1325;color:#fff
+  input[type="text"], input[type="number"], input[type="datetime-local"], textarea, select{
+    width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#0b1325;color:#fff;font-size:.98rem;outline:none;
   }
   textarea{min-height:96px}
-  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
   .btn{padding:10px 14px;border:none;border-radius:10px;font-weight:800;cursor:pointer;box-shadow:var(--shadow)}
-  .btn.gold{background:var(--gold);color:#000}.btn.teal{background:var(--teal);color:#001210}
-  .btn.blue{background:var(--blue);color:#001018}.btn.red{background:var(--red);color:#fff}
-  .btn.ghost{background:transparent;border:1px dashed rgba(255,255,255,.25);color:#cbd5e1}
+  .btn.gold{background:var(--gold);color:#000}.btn.teal{background:var(--teal);color:#001210}.btn.blue{background:var(--blue);color:#001018}
+  .btn.red{background:var(--red);color:#fff}.btn.ghost{background:transparent;border:1px dashed rgba(255,255,255,.25);color:#cbd5e1}
   .btn.small{padding:6px 10px;font-weight:700}
-
   .list{display:grid;gap:10px}
   .item{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;background:#0e182b;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px;}
   .badge{background:var(--gold);color:#000;border-radius:999px;padding:2px 8px;font-weight:900;font-size:.8rem}
   .item .url{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#dbeafe}
   .item.active{outline:2px solid var(--teal);background:#0e1e2b}
-  .pill{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border:1px dashed rgba(255,255,255,.25);border-radius:999px;color:#cbd5e1}
-
   .preview{border:2px solid var(--gold);border-radius:12px;overflow:hidden;height:360px;background:#000}
-  .preview audio{width:100%}
+  .mini{height:220px}
   .stat{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:.92rem}
-  .chip{padding:4px 10px;border-radius:999px;background:#0f1a30;border:1px solid var(--line);color:#cbe0ff}
-
+  .chip{padding:4px 10px;border-radius:999px;background:#0f1a30;border:1px solid rgba(255,255,255,.12);color:#cbe0ff}
   .note{font-size:.9rem;color:#b6c3d6}
   .ok{color:#22c55e}.warn{color:#f59e0b}.err{color:#ef4444}
-
-  /* On-Air indicator 1..12 */
-  .onair{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-  .dot{width:30px;height:30px;border-radius:999px;background:#0f1a30;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:#cbe0ff;font-weight:800}
-  .dot.live{outline:2px solid var(--gold);background:#13233a}
-  .blink{animation:blink 1.2s linear infinite}
-  @keyframes blink{0%{filter:brightness(1)}50%{filter:brightness(2)}100%{filter:brightness(1)}}
-
-  /* Kino Live Banner */
-  .kino-live{margin:8px 0;padding:8px 12px;border-radius:10px;background:#141e33;border:1px solid rgba(255,255,255,.15);color:#ffe8a3;font-weight:900;letter-spacing:.3px}
-  .kino-live.blink{animation:blink 1.4s linear infinite}
-
-  /* little tags on rows */
-  .tag{font-size:.8rem;padding:3px 8px;border-radius:999px;background:#0f1a30;border:1px solid var(--line);color:#cbe0ff}
+  /* On-Air dots */
+  .dots{display:grid;grid-template-columns:repeat(12,1fr);gap:6px;margin-top:8px}
+  .dot{height:10px;border-radius:999px;background:#23324d;border:1px solid rgba(255,255,255,.1)}
+  .dot.on{background:var(--teal)}
+  .dot.blink{animation:blink1 .9s infinite}
+  @keyframes blink1{0%{opacity:.35}50%{opacity:1}100%{opacity:.35}}
+  /* Kino Banner */
+  .banner{margin:10px 0;padding:10px 12px;border-radius:10px;background:#102238;border:1px solid rgba(56,189,248,.35);box-shadow:0 0 20px rgba(56,189,248,.25) inset,0 6px 22px rgba(0,0,0,.35)}
+  .banner.blink{animation:kb 1.8s ease-in-out infinite}
+  @keyframes kb{0%{box-shadow:0 0 12px rgba(56,189,248,.25) inset}50%{box-shadow:0 0 26px rgba(28,194,160,.45) inset}100%{box-shadow:0 0 12px rgba(56,189,248,.25) inset}}
+  .hidden{display:none}
+  /* Tables simple */
+  table{width:100%;border-collapse:collapse}
+  th,td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left;font-size:.95rem}
+  th{color:#cbd5e1;font-weight:700}
 </style>
 </head>
 <body>
 <div class="wrap">
 
-  <!-- GitHub Verbindung -->
+  <!-- Banner: Kino läuft -->
+  <div id="kinoBanner" class="banner hidden blink">
+    🎬 <b>Kino in der Akademie läuft</b> — <span id="kinoBannerText">—</span>
+  </div>
+
+  <!-- ===== GitHub Verbindung ===== -->
   <div class="card">
-    <div class="title"><h2>🔑 GitHub Verbindung</h2></div>
-    <div class="grid g-2">
+    <div class="title"><h2>🔑 GitHub Verbindung</h2><div class="muted">Nur Token lebt im Speicher dieses Tabs</div></div>
+    <div class="grid g-3b">
       <div><label>Owner</label><input id="ghOwner" type="text" value="Adler-FSA"></div>
       <div><label>Repo</label><input id="ghRepo" type="text" value="FSA-Admin"></div>
       <div><label>Branch</label><input id="ghBranch" type="text" value="main"></div>
       <div><label>JSON-Pfad</label><input id="ghPath" type="text" value="rotator.json"></div>
       <div style="grid-column:1/-1">
         <label>Personal Access Token (wird NICHT gespeichert)</label>
-        <input id="ghToken" type="text" placeholder="ghp_... (fine-grained: contents read/write)">
+        <input id="ghToken" type="text" placeholder="ghp_… (fine-grained: contents read/write)">
       </div>
     </div>
     <div class="row" style="margin-top:10px">
+      <label style="display:flex;align-items:center;gap:8px"><input id="rememberCb" type="checkbox"> Sitzung merken (solange dieser Tab offen ist)</label>
+    </div>
+    <div class="row" style="margin-top:8px">
       <button class="btn gold" id="btnConnect">🔗 Verbinden</button>
       <button class="btn ghost" id="btnReload" disabled>🔄 Daten laden / anlegen</button>
-      <label class="pill"><input id="chkRemember" type="checkbox"> Sitzung merken (nur dieser Tab)</label>
-      <button class="btn red" id="btnLogout">🚪 Ausloggen</button>
+      <button class="btn red" id="btnLogout" disabled>🚪 Ausloggen</button>
       <span id="connStatus" class="note">Bitte Token einfügen und verbinden.</span>
     </div>
   </div>
 
-  <!-- Teil 1: Videos -->
+  <!-- ===== Teil 1: Video-Manager (Bibliothek / Aktiv / Archiv) ===== -->
   <div class="grid g-3" style="margin-top:16px">
+    <!-- Bibliothek -->
     <div class="card">
       <div class="title"><h2>📚 Bibliothek</h2><div class="muted">Globaler Pool deiner Videos</div></div>
-      <label>Neue Video-URL (YouTube/Vimeo/Zoom)</label>
-      <input id="newUrl" type="text" placeholder="https://youtu.be/… oder https://www.youtube.com/watch?v=…">
+      <label>Neue Video-URL (YouTube/Vimeo)</label>
+      <input id="newUrl" type="text" placeholder="https://youtu.be/… oder https://vimeo.com/…">
       <div class="row" style="margin-top:8px">
         <button class="btn teal" id="btnAddLib">＋ Zur Bibliothek</button>
         <button class="btn blue" id="btnAddActive">＋ Direkt in Rotator</button>
@@ -114,8 +116,9 @@
       <div id="libList" class="list" style="margin-top:10px"></div>
     </div>
 
+    <!-- Aktive -->
     <div class="card">
-      <div class="title"><h2>🎛 Aktive Videos (Rotator)</h2><div class="muted">Max. 12 – Reihenfolge zählt</div></div>
+      <div class="title"><h2>🎛 Aktive Videos (Rotator)</h2><div class="muted">Max. 12 — Reihenfolge zählt</div></div>
       <div class="stat">
         <span class="chip">Aktiv: <span id="countActive">0</span>/12</span>
         <span class="chip">Intervall: <span id="intervalLabel">60</span>s</span>
@@ -123,46 +126,43 @@
       <div id="activeList" class="list" style="margin-top:10px"></div>
     </div>
 
+    <!-- Archiv -->
     <div class="card">
       <div class="title"><h2>📦 Archiv</h2><div class="muted">Zurückholen möglich</div></div>
       <div id="archList" class="list"></div>
     </div>
   </div>
 
-  <!-- Teil 2: Vorschau / Rotation -->
+  <!-- ===== Teil 2: Vorschau & Rotation ===== -->
   <div class="card" style="margin-top:16px">
-    <div class="title"><h2>🖥 Vorschau & Rotation</h2><div class="muted">Nur Admin-Test – LP liest die gespeicherten Daten</div></div>
+    <div class="title"><h2>🖥 Vorschau & Rotation</h2><div class="muted">Admin-Test (LP liest rotator.json)</div></div>
     <div class="grid g-2">
       <div>
         <div id="previewBox" class="preview"><iframe id="preview" width="100%" height="100%" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="border:0"></iframe></div>
-        <div class="onair" id="onAirDots"></div>
+        <div class="dots" id="onAirDots"></div>
         <div class="row" style="margin-top:10px">
           <button class="btn gold" id="btnTestRotate">✏️ Rotationstest (5s)</button>
           <button class="btn ghost" id="btnStopAll">⏹️ Test/Rotation beenden</button>
-          <span class="tag" id="nowInfo">Now —/—</span>
         </div>
       </div>
       <div>
         <label>Intervall (Sekunden)</label>
         <input id="intervalSec" type="number" min="3" value="60">
-
-        <label style="margin-top:8px">Guard-Zeit (Sekunden) – Anti-Störung</label>
-        <input id="guardSec" type="number" min="3" value="10">
-
+        <label style="margin-top:8px">Guard-Zeit pro Slot (Sekunden)</label>
+        <input id="guardSec" type="number" min="0" value="10">
         <label style="margin-top:8px">Host-Präferenz</label>
         <select id="hostPref">
-          <option value="auto">Automatisch</option>
+          <option value="auto">Auto</option>
           <option value="yt">YouTube bevorzugt</option>
           <option value="vimeo">Vimeo bevorzugt</option>
         </select>
-
+        <label style="display:flex;align-items:center;gap:8px;margin-top:8px">
+          <input id="skipSuspicious" type="checkbox"> Verdächtige Slots automatisch überspringen
+        </label>
         <div class="row" style="margin-top:10px">
           <button class="btn teal" id="btnStartRotation">▶️ Start</button>
           <button class="btn red"  id="btnPauseRotation">⏸ Stop</button>
-          <button class="btn blue" id="btnSaveInterval">💾 Intervall & Guard & Host merken</button>
-        </div>
-        <div class="row" style="margin-top:10px">
-          <label class="pill"><input id="chkAutoSkip" type="checkbox"> Verdächtige automatisch überspringen</label>
+          <button class="btn blue" id="btnSaveInterval">💾 Intervall + Guard speichern</button>
         </div>
         <div class="hr"></div>
         <div class="note">Status: <span id="statusMsg">—</span></div>
@@ -170,100 +170,86 @@
     </div>
   </div>
 
-  <!-- Teil 3: Kino -->
+  <!-- ===== Teil 3: Kino / Playlist / Archiv ===== -->
   <div class="card" style="margin-top:16px">
-    <div class="title"><h2>🎬 Kino / Playlist / Fallback</h2><div class="muted">Global für LP-„Kino-Fenster“ – separate Vorschau</div></div>
-
-    <div class="kino-live" id="kinoLiveBanner" style="display:none">🎥 Kino in Akademie läuft</div>
-
+    <div class="title"><h2>🎬 Kino</h2><div class="muted">Programm, Vorlagen, Verlauf, Archiv</div></div>
     <div class="grid g-2">
       <div>
-        <label>Kino/Embed URL (YouTube/Zoom …)</label>
-        <input id="kinoUrl" type="text" placeholder="https://www.youtube.com/embed/...  (mehrere durch Leerzeichen)">
-        <label>Playlist URL (optional)</label>
-        <input id="playlistUrl" type="text" placeholder="https://www.youtube.com/playlist?list=...">
+        <div class="preview mini"><iframe id="kinoPreview" width="100%" height="100%" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="border:0"></iframe></div>
         <div class="row" style="margin-top:10px">
-          <button class="btn gold" id="btnKinoPreview">▶️ Kino Vorschau</button>
-          <button class="btn ghost" id="btnKinoPrevStop">⏹️ Kino-Preview Stop</button>
-          <button class="btn blue" id="btnKinoSave">💾 Kino/Playlist merken</button>
+          <button class="btn gold" id="btnKinoPreview">▶️ Mini-Vorschau</button>
+          <button class="btn ghost" id="btnKinoClear">🧹 Felder leeren</button>
         </div>
-        <div class="preview" style="height:260px;margin-top:10px">
-          <iframe id="kinoPrev" width="100%" height="100%" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="border:0"></iframe>
-        </div>
-      </div>
-
-      <div>
-        <label>Modus</label>
+        <div class="hr"></div>
+        <label>Kino Notiz (Bannertext)</label>
+        <input id="kinoNote" type="text" placeholder="z. B. Heute 19:30 Uhr – Einführungskurs">
+        <label style="margin-top:8px">Modus</label>
         <select id="kinoMode">
-          <option value="60s">⏱ alle 60 Sekunden</option>
+          <option value="length">📺 nach Gesamtlänge ausstrahlen</option>
+          <option value="60s">⏱ alle 60 Sekunden (Demo)</option>
           <option value="daily">📅 täglich</option>
           <option value="3m">📆 alle 3 Monate</option>
-          <option value="length">⏲️ nach Gesamtlänge ausstrahlen</option>
         </select>
-        <label>Geplanter Start</label>
+        <label style="margin-top:8px">Geplanter Start</label>
         <input id="kinoStart" type="datetime-local">
-        <div class="hr"></div>
-        <label>Adler-Fallback</label>
-        <div class="row">
-          <select id="fallbackEnabled">
-            <option value="true">🦅 Fallback aktiv</option>
-            <option value="false">🦅 Fallback aus</option>
-          </select>
-          <input id="fallbackImage" type="text" placeholder="https://.../assets/adler-fallback.jpg">
-        </div>
+        <label style="margin-top:8px">Gesamtlänge (Minuten, nur für „nach Gesamtlänge“)</label>
+        <input id="kinoLengthMin" type="number" min="1" value="120">
         <div class="row" style="margin-top:10px">
-          <button class="btn ghost" id="btnKinoAsTemplate">📌 Als Vorlage speichern</button>
-          <button class="btn teal" id="btnKinoStartNow">🟢 Jetzt starten (loggt)</button>
-          <button class="btn red" id="btnKinoEnd">🔴 Event beenden</button>
+          <button class="btn blue" id="btnKinoSave">💾 Kino/Playlist speichern</button>
+          <button class="btn teal" id="btnKinoStart">▶️ Kino starten</button>
+          <button class="btn red" id="btnKinoStop">⏹ Kino beenden</button>
+        </div>
+      </div>
+      <div>
+        <!-- Playlist Builder -->
+        <label>Playlist-Eintrag (Titel)</label>
+        <input id="plTitle" type="text" placeholder="z. B. 1. Der Anfang">
+        <label>Video-URL (YouTube/Vimeo/Zoom Embed empfohlen)</label>
+        <input id="plUrl" type="text" placeholder="https://www.youtube.com/embed/...">
+        <div class="row" style="margin-top:8px">
+          <button class="btn teal" id="btnPlAdd">＋ Zur Playlist</button>
+          <button class="btn ghost" id="btnPlClear">🧹 Eingaben leeren</button>
+        </div>
+        <div class="hr"></div>
+        <div class="stat">
+          <span class="chip">Playlist: <span id="plCount">0</span> Einträge</span>
+        </div>
+        <div id="plList" class="list" style="margin-top:10px"></div>
+
+        <div class="hr"></div>
+        <div class="row">
+          <input id="tplName" type="text" placeholder="Vorlagename speichern/laden">
+          <button class="btn blue" id="btnTplSave">💾 als Vorlage speichern</button>
+          <button class="btn ghost" id="btnTplLoad">📂 Vorlage laden</button>
         </div>
       </div>
     </div>
 
     <div class="hr"></div>
-
+    <!-- Kino Verlauf + Archiv -->
     <div class="grid g-2">
-      <div class="card" style="background:#0e1627">
-        <div class="title"><h2>📚 Vorlagen (Bibliothek)</h2><div class="muted">Kino-Vorlagen speichern/laden</div></div>
-        <div id="kinoTemplates" class="list"></div>
+      <div>
+        <h3 style="color:var(--gold)">⏱ Verlauf (gelaufene Sendungen)</h3>
+        <div id="kinoLog" class="list" style="margin-top:8px"></div>
       </div>
-
-      <div class="card" style="background:#0e1627">
-        <div class="title"><h2>🕒 Verlauf (zuletzt zuerst)</h2><div class="muted">geloggte Sendungen</div></div>
-        <div id="kinoHistory" class="list"></div>
+      <div>
+        <h3 style="color:var(--gold)">📦 Kino-Archiv</h3>
+        <div id="kinoArch" class="list" style="margin-top:8px"></div>
       </div>
-    </div>
-
-    <div class="card" style="background:#0e1627;margin-top:12px">
-      <div class="title"><h2>📦 Kino-Archiv</h2><div class="muted">zur Wiederverwendung</div></div>
-      <div id="kinoArchive" class="list"></div>
     </div>
   </div>
 
-  <!-- Teil 4: Musik -->
+  <!-- ===== Teil 4: Musik-Manager ===== -->
   <div class="card" style="margin-top:16px">
-    <div class="title"><h2>🎵 Musik · Bibliothek / Aktiv / Archiv</h2><div class="muted">Audio für LP-Hintergrund (Standard: aus)</div></div>
-
-    <label>Neue Audio-URL (mp3/ogg/wav)</label>
-    <input id="newMusicUrl" type="text" placeholder="https://…/track.mp3">
-
-    <div class="row" style="margin-top:8px">
-      <button class="btn teal" id="btnAddMusicLib">＋ Zur Bibliothek</button>
-      <button class="btn blue" id="btnAddMusicActive">＋ Direkt aktiv</button>
-      <button class="btn gold" id="btnPrevMusic">▶️ Audio-Vorschau</button>
-      <button class="btn ghost" id="btnPrevMusicStop">⏹️ Stopp</button>
+    <div class="title"><h2>🎵 Musik-Manager</h2><div class="muted">Bibliothek / Aktiv / Archiv · Scan & Upload</div></div>
+    <div class="row">
+      <button class="btn blue" id="btnMusicScan">🔎 Repo scannen (Musik)</button>
+      <input type="file" id="musicFile" accept=".mp3,.ogg,.wav">
+      <button class="btn teal" id="btnMusicUpload">⤴︎ Musik hochladen</button>
     </div>
-
-    <div class="row" style="margin-top:8px">
-      <button class="btn ghost" id="btnScanRepo">🔎 Repo scannen (Musik)</button>
-      <label class="pill"><input type="checkbox" id="scanAll"> alle Ordner</label>
-      <input type="file" id="musicFile" accept="audio/*" style="display:none">
-      <button class="btn gold" id="btnUpload">📤 Datei ins Repo</button>
-      <span class="note">→ /assets/music/</span>
-    </div>
-
     <div class="grid g-3" style="margin-top:10px">
       <div>
-        <div class="stat"><span class="chip">Einträge: <span id="countMusicLib">0</span></span></div>
+        <div class="stat"><span class="chip">Bibliothek: <span id="countMusicLib">0</span></span></div>
         <div id="musicLib" class="list" style="margin-top:8px"></div>
       </div>
       <div>
@@ -271,121 +257,92 @@
         <div id="musicActive" class="list" style="margin-top:8px"></div>
       </div>
       <div>
-        <div class="title"><h2>📦 Archiv</h2></div>
-        <div id="musicArch" class="list"></div>
+        <div class="stat"><span class="chip">Archiv: <span id="countMusicArch">0</span></span></div>
+        <div id="musicArch" class="list" style="margin-top:8px"></div>
       </div>
-    </div>
-
-    <div class="preview" style="height:auto;margin-top:10px;padding:12px">
-      <audio id="audioPrev" controls></audio>
     </div>
   </div>
 
-  <div class="muted" style="margin:14px 4px">Letztes Laden: <span id="lastLoad">—</span> · Letztes Speichern: <span id="lastSave">—</span></div>
+  <!-- Fußzeile -->
+  <div class="muted" style="margin:14px 4px">
+    Letztes Laden: <span id="lastLoad">—</span> · Letztes Speichern: <span id="lastSave">—</span>
+  </div>
+
 </div>
 
 <script>
-/* ===== Konstante Limits ===== */
+/* ============================== Konstanten & Helpers ============================== */
 const MAX_ACTIVE = 12;
-
-/* ===== Helpers ===== */
 const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
 const byId = id => document.getElementById(id);
-const confirmAction = (msg)=> confirm(msg||"Sicher?");
 function shortUrl(u){try{const x=new URL(u);return x.hostname.replace('www.','')+x.pathname+(x.search?'…':'')}catch(e){return u}}
 function nowISO(){return new Date().toISOString()}
 function toISO(v){if(!v) return ""; const d=new Date(v); return isNaN(d)?"":d.toISOString();}
 function fromISOtoLocal(iso){if(!iso) return ""; const d=new Date(iso); if(isNaN(d)) return ""; const z=d.getTimezoneOffset()*60000; return new Date(d - z).toISOString().slice(0,16);}
+function fmt(dt){try{return new Date(dt).toLocaleString()}catch(e){return dt||""}}
 
 /* Base64 UTF-8 */
-function toBase64(str){const enc=new TextEncoder().encode(str);let bin="";enc.forEach(b=>bin+=String.fromCharCode(b));return btoa(bin)}
-function fromBase64(b64){const bin=atob(b64);const bytes=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);return new TextDecoder().decode(bytes)}
+function toBase64Str(str){const enc=new TextEncoder().encode(str);let bin="";enc.forEach(b=>bin+=String.fromCharCode(b));return btoa(bin)}
+function fromBase64Str(b64){const bin=atob(b64);const bytes=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);return new TextDecoder().decode(bytes)}
+async function fileToBase64(file){const buf=await file.arrayBuffer();let bin="";const bytes=new Uint8Array(buf);for(let i=0;i<bytes.length;i++)bin+=String.fromCharCode(bytes[i]);return btoa(bin);}
 
-/* URL ➝ EMBED (unter Beachtung Host-Präferenz) */
-function toEmbed(url, pref='auto'){
+/* YouTube/Vimeo ➝ EMBED */
+function toEmbed(url){
   if(!url) return "";
   let u=url.trim();
-  // Falls mehrere mit Leerzeichen -> nur das erste
-  if(/\s/.test(u)) u = u.split(/\s+/).filter(Boolean)[0];
-
-  const isYou=(x)=>/youtu\.be|youtube\.com/i.test(x);
-  const isVim=(x)=>/vimeo\.com/i.test(x);
-
-  if(pref==='yt' && isVim(u)) return u; // keine Konvertierung möglich
-  if(pref==='vimeo' && isYou(u)) return u;
-
-  if(/youtu\.be\//i.test(u)){const id=u.split("youtu.be/")[1].split(/[?&]/)[0];return `https://www.youtube.com/embed/${id}?rel=0&autoplay=1&mute=1&playsinline=1`}
+  // YouTube short
+  if(/youtu\.be\//i.test(u)){const id=u.split("youtu.be/")[1].split(/[?&]/)[0];return `https://www.youtube.com/embed/${id}?rel=0&autoplay=1&mute=1&playsinline=1`;}
+  // YouTube watch
   if(/youtube\.com\/watch/i.test(u)){try{const q=new URL(u).searchParams.get("v"); if(q) return `https://www.youtube.com/embed/${q}?rel=0&autoplay=1&mute=1&playsinline=1`}catch(e){}}
+  // embed bleibt
   if(/youtube\.com\/embed/i.test(u)) return u;
-  if(/vimeo\.com\/\d+/.test(u)){const id=(u.match(/vimeo\.com\/(\d+)/)||[])[1]; if(id) return `https://player.vimeo.com/video/${id}?autoplay=1&muted=1`}
+  // Vimeo
+  if(/vimeo\.com\/\d+/.test(u)){const m=u.match(/vimeo\.com\/(\d+)/); if(m) return `https://player.vimeo.com/video/${m[1]}?autoplay=1&muted=1`}
   if(/player\.vimeo\.com\/video/.test(u)) return u;
   return u;
 }
 
-/* ===== GitHub ===== */
-let GH={owner:"Adler-FSA",repo:"FSA-Admin",branch:"main",path:"rotator.json",token:""};
-let current=null, currentSha="", testTimer=null, rotateTimer=null, selectedActiveIndex=-1;
-let guardTicker=null, onAirIndex=0, autoSkip=false;
-
-function ghHeaders(){ if(!GH.token) throw new Error("Kein Token"); return {"Authorization":"Bearer "+GH.token,"Accept":"application/vnd.github+json","Content-Type":"application/json"};}
-function pagesBase(){ return `https://${GH.owner.toLowerCase()}.github.io/${GH.repo}/`; }
-function toPagesUrl(path){ return pagesBase()+path.replace(/^\/+/,''); }
+/* ============================== GitHub API ============================== */
+let GH={owner:"Adler-FSA",repo:"FSA-Admin",branch:"main",path:"rotator.json",token:"",remember:false};
+let current=null, currentSha="", testTimer=null, rotateTimer=null, rotateIdx=0, selectedActiveIndex=-1;
+function ghHeaders(){ if(!GH.token) throw new Error("Kein Token");
+  return {"Authorization":"Bearer "+GH.token,"Accept":"application/vnd.github+json","Content-Type":"application/json"};}
 
 async function ghGetFile(){
   const url=`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${GH.path}?ref=${GH.branch}`;
   const res=await fetch(url,{headers:ghHeaders()});
   if(res.status===404) return {status:404};
-  if(!res.ok){throw new Error(`GET ${res.status}: ${await res.text()}`)}
-  const j=await res.json(); const content=fromBase64(j.content||"");
+  if(!res.ok) throw new Error(`GET ${res.status}: ${await res.text()}`);
+  const j=await res.json(); const content=fromBase64Str(j.content||"");
   return {status:200,sha:j.sha,data:JSON.parse(content)};
 }
+
 async function ghPutFile(data,message){
   const url=`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${GH.path}`;
-  const body={message:message||"update rotator.json",content:toBase64(JSON.stringify(data,null,2)),branch:GH.branch};
+  const body={message:message||"update rotator.json",content:toBase64Str(JSON.stringify(data,null,2)),branch:GH.branch};
   if(currentSha) body.sha=currentSha;
   const res=await fetch(url,{method:"PUT",headers:ghHeaders(),body:JSON.stringify(body)});
-  if(!res.ok){throw new Error(`PUT ${res.status}: ${await res.text()}`)}
+  if(!res.ok) throw new Error(`PUT ${res.status}: ${await res.text()}`);
   const j=await res.json(); currentSha=j.content.sha; byId("lastSave").textContent=new Date().toLocaleString();
 }
 
-/* LIST / RECURSIVE for repo */
-async function ghListPath(path){
-  const url=`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${path}?ref=${GH.branch}`;
+async function ghGetTreeRecursive(){
+  const url=`https://api.github.com/repos/${GH.owner}/${GH.repo}/git/trees/${GH.branch}?recursive=1`;
   const res=await fetch(url,{headers:ghHeaders()});
-  if(res.status===404) return [];
-  if(!res.ok) throw new Error(`LIST ${path}: ${res.status} ${await res.text()}`);
-  return await res.json();
-}
-async function ghListRecursive(startPath){
-  const out=[]; const stack=[startPath];
-  while(stack.length){
-    const p=stack.pop();
-    const items=await ghListPath(p);
-    for(const it of items){
-      if(it.type==='dir'){ stack.push(it.path); }
-      else out.push(it);
-    }
-  }
-  return out;
-}
-/* upload binary */
-async function ghGetMeta(path){
-  const url=`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${path}?ref=${GH.branch}`;
-  const res=await fetch(url,{headers:ghHeaders()});
-  if(res.status===404) return null;
-  if(!res.ok) throw new Error(`HEAD ${path}: ${res.status} ${await res.text()}`);
-  return await res.json();
-}
-async function ghUploadBinary(path, base64, message, sha){
-  const url=`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${path}`;
-  const body={message:message||`upload ${path}`, content:base64, branch:GH.branch};
-  if(sha) body.sha=sha;
-  const res=await fetch(url,{method:'PUT', headers:ghHeaders(), body:JSON.stringify(body)});
-  if(!res.ok) throw new Error(`PUT ${path}: ${res.status} ${await res.text()}`);
+  if(!res.ok) throw new Error(`TREE ${res.status}: ${await res.text()}`);
   return await res.json();
 }
 
-/* Defaults (inkl. 4 Test-Videos) */
+async function ghUploadFile(pathInRepo, base64Content, message){
+  const url=`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${pathInRepo}`;
+  const body={message:message||`upload ${pathInRepo}`,content:base64Content,branch:GH.branch};
+  const res=await fetch(url,{method:"PUT",headers:ghHeaders(),body:JSON.stringify(body)});
+  if(!res.ok) throw new Error(`UPLOAD ${res.status}: ${await res.text()}`);
+  const j=await res.json(); return j.content && j.content.path;
+}
+
+/* ============================== Defaults ============================== */
 function defaultData(){
   return {
     active:[
@@ -401,53 +358,59 @@ function defaultData(){
     ],
     archived:[],
     interval:60,
-    guard:10,
-    hostPref:"auto",
-    autoSkip:false,
-    kino:{url:"",playlist:"",mode:"60s",startISO:"", templates:[], history:[], archive:[], running:false},
+    guard_sec:10,
+    host_pref:"auto",
+    skip_suspicious:false,
+    kino:{
+      note:"",
+      mode:"length",
+      startISO:"",
+      length_min:120,
+      playlist:[], /* {title,url} */
+      templates:[], /* {name,playlist[]} */
+      log:[],       /* {id,title,started_at,duration_min} */
+      archive:[]    /* {id,title,playlist,started_at,duration_min} */
+    },
+    music:{
+      library:[],   /* {path,url,title} */
+      active:[],    /* array of path */
+      archived:[]   /* {path, archived_at} */
+    },
     fallback:{enabled:true,imageUrl:""},
-    music:{library:[],active:[],archived:[]},
-    updated:nowISO()
+    updated: nowISO()
   };
 }
 
-/* ===== Render ===== */
-function ensureStruct(){
+/* ============================== Rendering (Videos) ============================== */
+function renderDots(){
+  const wrap=byId("onAirDots"); wrap.innerHTML="";
+  const n=12;
+  for(let i=0;i<n;i++){
+    const d=document.createElement("div");
+    d.className="dot"+(i===rotateIdx?" on blink":"");
+    wrap.appendChild(d);
+  }
+}
+function renderAll(){
+  // guards
   current.library=current.library||[];
   current.active=current.active||[];
   current.archived=current.archived||[];
-  current.interval=current.interval||60;
-  current.guard=current.guard??10;
-  current.hostPref=current.hostPref||"auto";
-  current.autoSkip=!!current.autoSkip;
-  current.kino=current.kino||{url:"",playlist:"",mode:"60s",startISO:"",templates:[],history:[],archive:[],running:false};
-  current.kino.templates=current.kino.templates||[];
-  current.kino.history=current.kino.history||[];
-  current.kino.archive=current.kino.archive||[];
   current.music=current.music||{library:[],active:[],archived:[]};
-}
+  current.kino=current.kino||{playlist:[],templates:[],log:[],archive:[],note:"",mode:"length",startISO:"",length_min:120};
 
-function renderOnAir(){
-  const dots=byId('onAirDots'); dots.innerHTML='';
-  for(let i=1;i<=12;i++){
-    const d=document.createElement('div'); d.className='dot'+(i-1===onAirIndex?' live blink':'');
-    d.textContent=i; dots.appendChild(d);
-  }
-}
-
-function renderAll(){
-  ensureStruct();
-
+  // counters
   byId("countLib").textContent=current.library.length;
   byId("countActive").textContent=current.active.length;
   byId("intervalLabel").textContent=current.interval||60;
 
+  // lists
   byId("libList").innerHTML=current.library.map((u,i)=>`
     <div class="item">
       <span class="badge">${i+1}</span>
       <div class="url" title="${u}">${shortUrl(u)}</div>
       <div class="row">
-        <button class="btn small gold" onclick="previewUrl('${encodeURIComponent(toEmbed(u,current.hostPref))}')">▶️ Vorschau</button>
+        <button class="btn small gold" onclick="previewUrl('${encodeURIComponent(toEmbed(u))}')">▶️ Vorschau</button>
         <button class="btn small teal" onclick="libToActive(${i})">＋ In Rotator</button>
         <button class="btn small ghost" onclick="removeFromLibrary(${i})">🗑 Entfernen</button>
       </div>
@@ -469,45 +432,46 @@ function renderAll(){
   byId("archList").innerHTML=ar.length? ar.map((o,i)=>`
     <div class="item">
       <span class="badge">${i+1}</span>
-      <div class="url" title="${o.url}">${shortUrl(o.url)} <span class="muted">· ${o.archived_at?new Date(o.archived_at).toLocaleString():""}</span></div>
+      <div class="url" title="${o.url}">${shortUrl(o.url)} <span class="muted">· ${o.archived_at? fmt(o.archived_at):""}</span></div>
       <div class="row">
         <button class="btn small teal" onclick="restoreFromArchive(${i})">↩︎ Zurückholen</button>
         <button class="btn small ghost" onclick="removeFromArchive(${i})">🗑 Entfernen</button>
       </div>
     </div>`).join(""):`<div class="muted">Noch nichts archiviert.</div>`;
 
+  // Settings Teil 2
   byId("intervalSec").value=current.interval||60;
-  byId("guardSec").value=current.guard||10;
-  byId("hostPref").value=current.hostPref||"auto";
-  byId("chkAutoSkip").checked=!!current.autoSkip;
+  byId("guardSec").value=current.guard_sec||0;
+  byId("hostPref").value=current.host_pref||"auto";
+  byId("skipSuspicious").checked=!!current.skip_suspicious;
 
   // Kino
-  byId("kinoUrl").value=current.kino?.url||"";
-  byId("playlistUrl").value=current.kino?.playlist||"";
-  byId("kinoMode").value=current.kino?.mode||"60s";
-  byId("kinoStart").value=fromISOtoLocal(current.kino?.startISO||"");
-  byId("fallbackEnabled").value=String(current.fallback?.enabled??true);
-  byId("fallbackImage").value=current.fallback?.imageUrl||"";
-  byId("kinoLiveBanner").style.display=current.kino.running?'block':'none';
-  byId("kinoLiveBanner").classList.toggle('blink',!!current.kino.running);
+  byId("kinoNote").value=current.kino.note||"";
+  byId("kinoMode").value=current.kino.mode||"length";
+  byId("kinoStart").value=fromISOtoLocal(current.kino.startISO||"");
+  byId("kinoLengthMin").value=current.kino.length_min||120;
 
-  renderKinoLists();
+  renderPlaylist();
+  renderKinoLogArch();
+  renderDots();
+
+  // Musik
   renderMusic();
-  renderOnAir();
+  // Banner
+  updateKinoBanner();
 }
 
-/* Guard: sicherstellen, dass current geladen ist */
+/* ============================== Video Actions ============================== */
 async function ensureLoaded(){ if(current) return; await loadOrInit(); }
-
-/* Aktionen – Teil 1: Videos */
 async function addToLibrary(){
   try{
     await ensureLoaded();
-    const u=byId("newUrl").value.trim();
-    const emb=toEmbed(u,current.hostPref);
-    if(!emb) return alert("Bitte gültige URL eingeben.");
-    if(!current.library.includes(u)) current.library.push(u);
+    const raw=byId("newUrl").value.trim();
+    const u=toEmbed(raw);
+    if(!u) return alert("Bitte gültige URL eingeben.");
+    if(!current.library.includes(raw)) current.library.push(raw);
     current.updated=nowISO();
+    if(!confirm("Zur Bibliothek hinzufügen und speichern?")) return;
     await ghPutFile(current,"add: library");
     renderAll();
   }catch(e){ alert("Fehler (Bibliothek hinzufügen):\n"+e.message); }
@@ -515,13 +479,14 @@ async function addToLibrary(){
 async function addDirectToActive(){
   try{
     await ensureLoaded();
-    const u=byId("newUrl").value.trim();
-    const emb=toEmbed(u,current.hostPref);
-    if(!emb) return alert("Bitte gültige URL eingeben.");
+    const raw=byId("newUrl").value.trim();
+    const u=toEmbed(raw);
+    if(!u) return alert("Bitte gültige URL eingeben.");
     if(current.active.length>=MAX_ACTIVE) return alert(`Maximal ${MAX_ACTIVE} aktive Videos.`);
-    if(!current.active.includes(emb)) current.active.push(emb);
-    if(!current.library.includes(u)) current.library.push(u);
+    if(!current.active.includes(u)) current.active.push(u);
+    if(!current.library.includes(raw)) current.library.push(raw);
     current.updated=nowISO();
+    if(!confirm("Direkt in Rotator (und in Bibliothek) speichern?")) return;
     await ghPutFile(current,"add: direct-to-active");
     renderAll();
   }catch(e){ alert("Fehler (Direkt in Rotator):\n"+e.message); }
@@ -529,18 +494,19 @@ async function addDirectToActive(){
 async function libToActive(i){
   try{
     await ensureLoaded();
-    const u=toEmbed(current.library[i],current.hostPref);
+    const u=toEmbed(current.library[i]);
     if(current.active.length>=MAX_ACTIVE) return alert(`Maximal ${MAX_ACTIVE} aktive Videos.`);
     if(!current.active.includes(u)) current.active.push(u);
     current.updated=nowISO();
+    if(!confirm("Aus Bibliothek in Rotator verschieben und speichern?")) return;
     await ghPutFile(current,"add: lib->active");
     renderAll();
   }catch(e){ alert("Fehler (lib->active):\n"+e.message); }
 }
 async function removeFromLibrary(i){
   try{
-    if(!confirmAction("Aus Bibliothek entfernen?")) return;
     await ensureLoaded();
+    if(!confirm("Diesen Bibliothekseintrag endgültig entfernen (Speichern)?")) return;
     current.library.splice(i,1);
     current.updated=nowISO();
     await ghPutFile(current,"remove: library");
@@ -549,23 +515,28 @@ async function removeFromLibrary(i){
 }
 function selectActive(i){selectedActiveIndex=i; renderAll();}
 async function moveUp(i){
-  if(i<=0) return;
-  const a=current.active; [a[i-1],a[i]]=[a[i],a[i-1]];
-  selectedActiveIndex=i-1; current.updated=nowISO();
-  await ghPutFile(current,"reorder: up"); renderAll();
+  try{
+    await ensureLoaded();
+    if(i<=0) return;
+    const a=current.active; [a[i-1],a[i]]=[a[i],a[i-1]];
+    selectedActiveIndex=i-1; current.updated=nowISO();
+    await ghPutFile(current,"reorder: up"); renderAll();
+  }catch(e){ alert("Fehler (Reihenfolge ↑):\n"+e.message); }
 }
 async function moveDown(i){
-  const a=current.active; if(i>=a.length-1) return;
-  [a[i+1],a[i]]=[a[i],a[i+1]];
-  selectedActiveIndex=i+1; current.updated=nowISO();
-  await ghPutFile(current,"reorder: down"); renderAll();
+  try{
+    await ensureLoaded();
+    const a=current.active; if(i>=a.length-1) return;
+    [a[i+1],a[i]]=[a[i],a[i+1]];
+    selectedActiveIndex=i+1; current.updated=nowISO();
+    await ghPutFile(current,"reorder: down"); renderAll();
+  }catch(e){ alert("Fehler (Reihenfolge ↓):\n"+e.message); }
 }
 async function activeToArchive(i){
   try{
-    if(!confirmAction("In Archiv verschieben?")) return;
     await ensureLoaded();
+    if(!confirm("Aktiven Slot ins Archiv verschieben (Speichern)?")) return;
     const u=current.active[i];
-    current.archived=current.archived||[];
     current.archived.unshift({url:u,archived_at:nowISO()});
     current.active.splice(i,1);
     selectedActiveIndex=-1; current.updated=nowISO();
@@ -576,8 +547,9 @@ async function activeToArchive(i){
 async function restoreFromArchive(i){
   try{
     await ensureLoaded();
-    const u=current.archived[i].url;
     if(current.active.length>=MAX_ACTIVE) return alert(`Schon ${MAX_ACTIVE} aktive Videos.`);
+    const u=current.archived[i].url;
+    if(!confirm("Aus Archiv zurück in Aktive (Speichern)?")) return;
     if(!current.active.includes(u)) current.active.push(u);
     current.archived.splice(i,1);
     current.updated=nowISO();
@@ -587,8 +559,8 @@ async function restoreFromArchive(i){
 }
 async function removeFromArchive(i){
   try{
-    if(!confirmAction("Archiv-Eintrag endgültig entfernen?")) return;
     await ensureLoaded();
+    if(!confirm("Diesen Archiv-Eintrag endgültig löschen (Speichern)?")) return;
     current.archived.splice(i,1);
     current.updated=nowISO();
     await ghPutFile(current,"remove: archive");
@@ -596,325 +568,351 @@ async function removeFromArchive(i){
   }catch(e){ alert("Fehler (Archiv entfernen):\n"+e.message); }
 }
 
-/* Vorschau/Rotation – Teil 2 */
+/* ============================== Vorschau/Rotation ============================== */
 function previewUrl(enc){const u=decodeURIComponent(enc); byId("preview").src=u; byId("statusMsg").textContent="Vorschau läuft";}
 function stopPreview(){byId("preview").src="about:blank"; byId("statusMsg").textContent="Vorschau gestoppt";}
-function stopAllTimers(){if(testTimer)clearInterval(testTimer); if(rotateTimer)clearInterval(rotateTimer); if(guardTicker)clearInterval(guardTicker); testTimer=null; rotateTimer=null; guardTicker=null; stopPreview();}
+function stopAllTimers(){if(testTimer)clearInterval(testTimer); if(rotateTimer)clearInterval(rotateTimer); testTimer=null; rotateTimer=null; byId("statusMsg").textContent="—";}
+
 function startTestRotate(){
-  if(!current?.active?.length) return alert("Keine aktiven Videos.");
-  stopAllTimers(); let i=0;
-  const arr=current.active; onAirIndex=0; renderOnAir();
-  byId("preview").src=arr[0]; byId("statusMsg").textContent="Rotationstest (5s) …";
-  byId('nowInfo').textContent=`Now 1/${arr.length}`;
-  testTimer=setInterval(()=>{i=(i+1)%arr.length; onAirIndex=i; renderOnAir(); byId('nowInfo').textContent=`Now ${i+1}/${arr.length}`; byId("preview").src=arr[i];},5000);
+  stopAllTimers();
+  const arr=current?.active||[];
+  if(!arr.length){ alert("Keine aktiven Videos."); return; }
+  rotateIdx=0; byId("preview").src=arr[0]; renderDots();
+  byId("statusMsg").textContent="Rotationstest (5s) …";
+  testTimer=setInterval(()=>{rotateIdx=(rotateIdx+1)%arr.length; renderDots(); byId("preview").src=arr[rotateIdx];},5000);
 }
 function startRotation(){
-  if(!current?.active?.length) return alert("Keine aktiven Videos.");
-  if(!confirmAction("Rotation starten?")) return;
   stopAllTimers();
-  const arr=current.active, sec=Math.max(3,parseInt(byId("intervalSec").value||"60",10));
-  const guard=Math.max(3,parseInt(byId("guardSec").value||"10",10));
-  autoSkip=byId('chkAutoSkip').checked;
-  let i=0; onAirIndex=0; renderOnAir();
-  byId("preview").src=arr[0]; byId("statusMsg").textContent=`Rotation aktiv (${sec}s, Guard ${guard}s)`;
-  byId('nowInfo').textContent=`Now 1/${arr.length}`;
-  rotateTimer=setInterval(()=>{i=(i+1)%arr.length; onAirIndex=i; renderOnAir(); byId('nowInfo').textContent=`Now ${i+1}/${arr.length}`; byId("preview").src=arr[i];},sec*1000);
-
-  // Guard: kurzer Vorzähler, optional skip (annähernd – echte Ad-Detection cross-origin nicht möglich)
-  guardTicker=setInterval(()=>{ if(!autoSkip) return; /* heuristisch: kürzer skippen */ },guard*1000);
+  const arr=current?.active||[];
+  if(!arr.length){ alert("Keine aktiven Videos."); return; }
+  const sec=Math.max(3,parseInt(byId("intervalSec").value||"60",10));
+  const guard=Math.max(0,parseInt(byId("guardSec").value||"0",10));
+  rotateIdx=0; byId("preview").src=arr[0]; renderDots();
+  byId("statusMsg").textContent=`Rotation aktiv (${sec}s, Guard ${guard}s)`;
+  let slotMs=Math.max(sec,guard)*1000;
+  rotateTimer=setInterval(()=>{
+    rotateIdx=(rotateIdx+1)%arr.length; renderDots();
+    byId("preview").src=arr[rotateIdx];
+  }, slotMs);
 }
-function pauseRotation(){ if(!confirmAction("Rotation stoppen?")) return; if(rotateTimer)clearInterval(rotateTimer); if(guardTicker)clearInterval(guardTicker); rotateTimer=null; guardTicker=null; byId("statusMsg").textContent="Rotation pausiert";}
+function pauseRotation(){if(rotateTimer)clearInterval(rotateTimer); rotateTimer=null; byId("statusMsg").textContent="Rotation pausiert";}
 async function saveInterval(){
   try{
     await ensureLoaded();
     const sec=Math.max(3,parseInt(byId("intervalSec").value||"60",10));
-    const guard=Math.max(3,parseInt(byId("guardSec").value||"10",10));
-    current.interval=sec; current.guard=guard;
-    current.hostPref=byId('hostPref').value;
-    current.autoSkip=byId('chkAutoSkip').checked;
+    const guard=Math.max(0,parseInt(byId("guardSec").value||"0",10));
+    current.interval=sec; current.guard_sec=guard;
+    current.host_pref=byId("hostPref").value;
+    current.skip_suspicious=byId("skipSuspicious").checked;
     current.updated=nowISO();
     await ghPutFile(current,"update: interval/guard/host");
     byId("intervalLabel").textContent=sec; byId("statusMsg").textContent="Einstellungen gespeichert";
   }catch(e){ alert("Fehler beim Speichern:\n"+e.message); }
 }
 
-/* Kino – Teil 3 */
-function kinoPreview(){
-  const val=byId("kinoUrl").value.trim();
-  if(!val) return alert("Bitte Kino/Embed URL(s) eintragen.");
-  const first=val.split(/\s+/)[0];
-  byId("kinoPrev").src=toEmbed(first,'auto');
-  byId("statusMsg").textContent="Kino-Vorschau läuft";
+/* ============================== Kino ============================== */
+function renderPlaylist(){
+  const list=current.kino.playlist||[];
+  byId("plCount").textContent=list.length;
+  byId("plList").innerHTML=list.length? list.map((p,i)=>`
+    <div class="item">
+      <span class="badge">${i+1}</span>
+      <div class="url" title="${p.url}"><b>${p.title||"(ohne Titel)"}</b> · ${shortUrl(p.url)}</div>
+      <div class="row">
+        <button class="btn small gold" onclick="kinoPreviewUrl('${encodeURIComponent(p.url)}')">▶️</button>
+        <button class="btn small ghost" onclick="plUp(${i})">▲</button>
+        <button class="btn small ghost" onclick="plDown(${i})">▼</button>
+        <button class="btn small red" onclick="plDel(${i})">🗑</button>
+      </div>
+    </div>`).join(""):`<div class="muted">Playlist leer.</div>`;
 }
-function kinoPrevStop(){ byId("kinoPrev").src="about:blank"; }
-
-function renderKinoLists(){
-  const T=byId('kinoTemplates'), H=byId('kinoHistory'), A=byId('kinoArchive');
-  const tpl=current.kino.templates||[], hist=current.kino.history||[], arc=current.kino.archive||[];
-
-  T.innerHTML = tpl.length? tpl.map((o,i)=>`
-    <div class="item">
-      <span class="badge">${i+1}</span>
-      <div class="url" title="${o.url}">${shortUrl(o.url)} <span class="muted">· gespeichert ${new Date(o.saved_at).toLocaleString()}</span></div>
-      <div class="row">
-        <button class="btn small teal" onclick="kinoLoadTemplate(${i})">⇢ Laden</button>
-        <button class="btn small ghost" onclick="kinoTemplateRemove(${i})">🗑 Entfernen</button>
-      </div>
-    </div>`).join(""):`<div class="muted">Noch keine Vorlagen.</div>`;
-
-  H.innerHTML = hist.length? hist.map((o,i)=>`
-    <div class="item">
-      <span class="badge">${i+1}</span>
-      <div class="url">${shortUrl(o.url||'')} <span class="muted">· start: ${o.start?new Date(o.start).toLocaleString():'—'}${o.end? ' – Ende: '+new Date(o.end).toLocaleString():''}</span></div>
-      <div class="row">
-        <button class="btn small teal" onclick="kinoReplay(${i})">🟢 Wieder senden</button>
-        <button class="btn small blue" onclick="kinoHistToArchive(${i})">📦 Archiv</button>
-      </div>
-    </div>`).join(""):`<div class="muted">Noch kein Verlauf.</div>`;
-
-  A.innerHTML = arc.length? arc.map((o,i)=>`
-    <div class="item">
-      <span class="badge">${i+1}</span>
-      <div class="url">${shortUrl(o.url||'')} <span class="muted">· archiviert ${new Date(o.archived_at).toLocaleString()}</span></div>
-      <div class="row">
-        <button class="btn small teal" onclick="kinoArchiveRestore(${i})">↩︎ Zurückholen</button>
-        <button class="btn small ghost" onclick="kinoArchiveRemove(${i})">🗑 Entfernen</button>
-      </div>
-    </div>`).join(""):`<div class="muted">Kino-Archiv leer.</div>`;
+function kinoPreviewUrl(enc){const u=decodeURIComponent(enc); byId("kinoPreview").src=u; }
+function kinoClearInputs(){byId("plTitle").value=""; byId("plUrl").value="";}
+function updateKinoBanner(){
+  const b=byId("kinoBanner"); const txt=byId("kinoBannerText");
+  const last=current.kino.log?.[0];
+  const running=!!(current._kino_running_until && (new Date(current._kino_running_until)>new Date()));
+  if(running){
+    b.classList.remove("hidden");
+    const until=new Date(current._kino_running_until);
+    const mins=Math.ceil((until - new Date())/60000);
+    txt.textContent=(current.kino.note||"") + (mins>0? ` · endet in ~${mins} Min.`:"");
+  }else{
+    b.classList.add("hidden");
+  }
 }
-
 async function kinoSave(){
   try{
     await ensureLoaded();
-    current.kino={...current.kino,
-      url:byId("kinoUrl").value.trim(),
-      playlist:byId("playlistUrl").value.trim(),
-      mode:byId("kinoMode").value,
-      startISO:toISO(byId("kinoStart").value)
-    };
-    current.fallback={enabled:byId("fallbackEnabled").value==="true",imageUrl:byId("fallbackImage").value.trim()};
-    current.updated=nowISO(); await ghPutFile(current,"update: kino/playlist/fallback");
-    byId("statusMsg").textContent="Kino gespeichert";
-  }catch(e){ alert("Fehler beim Speichern Kino:\n"+e.message); }
+    current.kino.note=byId("kinoNote").value.trim();
+    current.kino.mode=byId("kinoMode").value;
+    current.kino.startISO=toISO(byId("kinoStart").value);
+    current.kino.length_min=Math.max(1,parseInt(byId("kinoLengthMin").value||"120",10));
+    current.updated=nowISO();
+    if(!confirm("Kino/Playlist speichern?")) return;
+    await ghPutFile(current,"update: kino/playlist/settings");
+    renderAll();
+  }catch(e){ alert("Fehler (Kino speichern):\n"+e.message); }
 }
-async function kinoAsTemplate(){
+function plAdd(){
+  const t=byId("plTitle").value.trim();
+  const u=byId("plUrl").value.trim();
+  if(!u) return alert("Bitte URL eintragen.");
+  current.kino.playlist=current.kino.playlist||[];
+  current.kino.playlist.push({title:t||"(ohne Titel)",url:u});
+  kinoClearInputs(); renderPlaylist();
+}
+function plUp(i){if(i<=0) return; const a=current.kino.playlist; [a[i-1],a[i]]=[a[i],a[i-1]]; renderPlaylist();}
+function plDown(i){const a=current.kino.playlist; if(i>=a.length-1) return; [a[i+1],a[i]]=[a[i],a[i+1]]; renderPlaylist();}
+function plDel(i){ if(!confirm("Eintrag aus Playlist entfernen?")) return; current.kino.playlist.splice(i,1); renderPlaylist(); }
+
+async function kinoStart(){
   try{
     await ensureLoaded();
-    const entry={url:byId("kinoUrl").value.trim(), playlist:byId("playlistUrl").value.trim(), mode:byId("kinoMode").value, saved_at:nowISO()};
-    current.kino.templates.unshift(entry);
-    current.updated=nowISO(); await ghPutFile(current,"kino: save template");
-    renderKinoLists();
-  }catch(e){ alert("Fehler Vorlage:\n"+e.message) }
+    const mode=byId("kinoMode").value;
+    let minutes = (mode==="length")? Math.max(1,parseInt(byId("kinoLengthMin").value||"120",10)) : Math.max(1,parseInt(byId("intervalSec").value||"60",10));
+    // set runtime window (nur Admin-Hinweis/Banner)
+    const until=new Date(Date.now()+minutes*60000).toISOString();
+    current._kino_running_until=until; // transient (nicht schlimm, wenn mitgespeichert)
+    const title=(current.kino.playlist && current.kino.playlist.length)? (current.kino.playlist[0].title||"Kino") : "Kino";
+    const id="kino_"+Date.now();
+    current.kino.log=current.kino.log||[];
+    current.kino.log.unshift({id, title, started_at: nowISO(), duration_min: minutes});
+    current.updated=nowISO();
+    if(!confirm("Kino jetzt starten und speichern (Log wird aktualisiert)?")) return;
+    await ghPutFile(current,"kino: start session");
+    renderAll();
+  }catch(e){ alert("Fehler (Kino starten):\n"+e.message); }
 }
-function kinoLoadTemplate(i){
-  const t=current.kino.templates[i];
-  if(!t) return;
-  byId("kinoUrl").value=t.url||"";
-  byId("playlistUrl").value=t.playlist||"";
-  byId("kinoMode").value=t.mode||"60s";
-  kinoPreview();
+async function kinoStop(){
+  try{
+    await ensureLoaded();
+    if(!confirm("Kino jetzt beenden und in Archiv ablegen?")) return;
+    const last=current.kino.log?.[0];
+    if(last){
+      current.kino.archive=current.kino.archive||[];
+      current.kino.archive.unshift({
+        id:last.id,title:last.title,playlist:(current.kino.playlist||[]).slice(0),
+        started_at:last.started_at,duration_min:last.duration_min
+      });
+    }
+    current._kino_running_until=null;
+    current.updated=nowISO();
+    await ghPutFile(current,"kino: stop & archive");
+    renderAll();
+  }catch(e){ alert("Fehler (Kino stoppen):\n"+e.message); }
 }
-async function kinoTemplateRemove(i){
-  if(!confirmAction("Vorlage löschen?")) return;
-  current.kino.templates.splice(i,1);
-  current.updated=nowISO(); await ghPutFile(current,"kino: remove template");
-  renderKinoLists();
+function renderKinoLogArch(){
+  const log=current.kino.log||[];
+  byId("kinoLog").innerHTML=log.length? log.map((e,i)=>`
+    <div class="item">
+      <span class="badge">${i+1}</span>
+      <div class="url"><b>${e.title}</b> · gestartet: ${fmt(e.started_at)} · Dauer ~${e.duration_min} Min.</div>
+      <div class="row">
+        <button class="btn small gold" onclick="kinoPlayFromLog(${i})">▶️ Vorschau</button>
+      </div>
+    </div>`).join(""):`<div class="muted">Noch keine Einträge.</div>`;
+
+  const arch=current.kino.archive||[];
+  byId("kinoArch").innerHTML=arch.length? arch.map((e,i)=>`
+    <div class="item">
+      <span class="badge">${i+1}</span>
+      <div class="url"><b>${e.title}</b> · ${fmt(e.started_at)} · ~${e.duration_min} Min.</div>
+      <div class="row">
+        <button class="btn small teal" onclick="kinoResend(${i})">↩︎ Wieder senden</button>
+        <button class="btn small ghost" onclick="kinoArchDel(${i})">🗑 Entfernen</button>
+      </div>
+    </div>`).join(""):`<div class="muted">Archiv leer.</div>`;
 }
-async function kinoStartNow(){
-  if(!confirmAction("Kino jetzt starten & loggen?")) return;
-  await ensureLoaded();
-  current.kino.running=true;
-  current.kino.history.unshift({url:byId("kinoUrl").value.trim(), start:nowISO()});
-  current.updated=nowISO(); await ghPutFile(current,"kino: start now");
-  byId("kinoLiveBanner").style.display='block'; byId("kinoLiveBanner").classList.add('blink');
-  byId("statusMsg").textContent="Kino gestartet";
+function kinoPlayFromLog(i){
+  const e=current.kino.log[i];
+  const first=current.kino.playlist?.[0];
+  if(first) byId("kinoPreview").src=first.url;
 }
-async function kinoEnd(){
-  if(!confirmAction("Kino-Event beenden?")) return;
-  await ensureLoaded();
-  current.kino.running=false;
-  if(current.kino.history.length){ current.kino.history[0].end=nowISO(); }
-  current.updated=nowISO(); await ghPutFile(current,"kino: end & log");
-  byId("kinoLiveBanner").style.display='none'; byId("kinoLiveBanner").classList.remove('blink');
-  byId("statusMsg").textContent="Kino beendet";
+async function kinoResend(i){
+  try{
+    await ensureLoaded();
+    const e=current.kino.archive[i];
+    if(!confirm(`„${e.title}“ erneut senden und speichern?`)) return;
+    current.kino.playlist=(e.playlist||[]).slice(0);
+    current.kino.note=`Wiederholung: ${e.title}`;
+    current.kino.mode="length"; current.kino.length_min=e.duration_min||120;
+    current.updated=nowISO();
+    await ghPutFile(current,"kino: resend from archive");
+    renderAll();
+  }catch(err){ alert("Fehler (Kino Wieder senden):\n"+err.message); }
 }
-async function kinoReplay(i){
-  if(!confirmAction("Diese Sendung erneut starten?")) return;
-  const h=current.kino.history[i]; if(!h) return;
-  byId("kinoUrl").value=h.url||"";
-  kinoPreview(); await kinoStartNow();
-}
-async function kinoHistToArchive(i){
-  if(!confirmAction("In Kino-Archiv verschieben?")) return;
-  const h=current.kino.history.splice(i,1)[0]; if(!h) return;
-  current.kino.archive.unshift({...h, archived_at:nowISO()});
-  current.updated=nowISO(); await ghPutFile(current,"kino: hist->arch");
-  renderKinoLists();
-}
-async function kinoArchiveRestore(i){
-  if(!confirmAction("Aus Kino-Archiv zurückholen?")) return;
-  const a=current.kino.archive.splice(i,1)[0]; if(!a) return;
-  current.kino.history.unshift({...a}); delete current.kino.history[0].archived_at;
-  current.updated=nowISO(); await ghPutFile(current,"kino: arch->hist");
-  renderKinoLists();
-}
-async function kinoArchiveRemove(i){
-  if(!confirmAction("Archiv-Eintrag entfernen?")) return;
-  current.kino.archive.splice(i,1);
-  current.updated=nowISO(); await ghPutFile(current,"kino: arch remove");
-  renderKinoLists();
+async function kinoArchDel(i){
+  try{
+    await ensureLoaded();
+    if(!confirm("Diesen Archiv-Eintrag endgültig löschen?")) return;
+    current.kino.archive.splice(i,1);
+    current.updated=nowISO();
+    await ghPutFile(current,"kino: archive remove");
+    renderAll();
+  }catch(e){ alert("Fehler (Archiv löschen):\n"+e.message); }
 }
 
-/* ===== Musik ===== */
-function isAudioName(name){ return /\.(mp3|ogg|wav)$/i.test(name) }
+/* ============================== Musik-Manager ============================== */
 function renderMusic(){
-  byId("countMusicLib").textContent=current.music.library.length;
-  byId("countMusicActive").textContent=current.music.active.length;
+  const m=current.music||{library:[],active:[],archived:[]};
+  byId("countMusicLib").textContent=m.library.length;
+  byId("countMusicActive").textContent=m.active.length;
+  byId("countMusicArch").textContent=m.archived.length;
 
-  byId("musicLib").innerHTML=current.music.library.map((u,i)=>`
+  byId("musicLib").innerHTML=m.library.map((o,i)=>`
     <div class="item">
       <span class="badge">${i+1}</span>
-      <div class="url" title="${u}">${shortUrl(u)}</div>
+      <div class="url"><b>${o.title||o.path}</b></div>
       <div class="row">
-        <button class="btn small gold" onclick="musicPreview('${encodeURIComponent(u)}')">▶️</button>
-        <button class="btn small teal" onclick="musicLibToActive(${i})">＋ Aktiv</button>
-        <button class="btn small ghost" onclick="musicLibRemove(${i})">🗑</button>
+        <audio controls preload="none" src="${o.url}" style="height:30px"></audio>
+        <button class="btn small teal" onclick="musicToActive('${o.path.replace(/'/g,"\\'")}')">＋ Aktiv</button>
+        <button class="btn small ghost" onclick="musicArchive('${o.path.replace(/'/g,"\\'")}')">📦 Archiv</button>
       </div>
     </div>`).join("");
 
-  byId("musicActive").innerHTML=current.music.active.map((u,i)=>`
-    <div class="item">
+  byId("musicActive").innerHTML=m.active.map((p,i)=>{
+    const o=m.library.find(x=>x.path===p)||{path:p,title:p,url:p};
+    return `<div class="item">
       <span class="badge">${i+1}</span>
-      <div class="url">${shortUrl(u)}</div>
+      <div class="url"><b>${o.title||o.path}</b></div>
       <div class="row">
-        <button class="btn small gold" onclick="musicPreview('${encodeURIComponent(u)}')">▶️</button>
-        <button class="btn small ghost" onclick="musicMoveUp(${i})">▲</button>
-        <button class="btn small ghost" onclick="musicMoveDown(${i})">▼</button>
-        <button class="btn small blue" onclick="musicActiveToArchive(${i})">📦 Archiv</button>
+        <audio controls preload="none" src="${o.url}" style="height:30px"></audio>
+        <button class="btn small ghost" onclick="musicActiveRemove(${i})">🗑 Entfernen</button>
       </div>
-    </div>`).join("");
+    </div>`;
+  }).join("");
 
-  const A=current.music.archived;
-  byId("musicArch").innerHTML=A.length? A.map((o,i)=>`
-    <div class="item">
+  byId("musicArch").innerHTML=m.archived.length? m.archived.map((o,i)=>{
+    const meta=current.music.library.find(x=>x.path===o.path) || {path:o.path,title:o.path,url:"#"};
+    return `<div class="item">
       <span class="badge">${i+1}</span>
-      <div class="url">${shortUrl(o.url)} <span class="muted">· ${new Date(o.archived_at).toLocaleString()}</span></div>
+      <div class="url"><b>${meta.title}</b> · archiviert: ${fmt(o.archived_at)}</div>
       <div class="row">
-        <button class="btn small teal" onclick="musicRestore(${i})">↩︎</button>
-        <button class="btn small ghost" onclick="musicArchRemove(${i})">🗑</button>
+        <button class="btn small teal" onclick="musicRestore('${o.path.replace(/'/g,"\\'")}')">↩︎ Zurückholen</button>
+        <button class="btn small ghost" onclick="musicArchDel(${i})">🗑 Entfernen</button>
       </div>
-    </div>`).join(""):`<div class="muted">Noch nichts archiviert.</div>`;
+    </div>`;
+  }).join(""):`<div class="muted">Musik-Archiv leer.</div>`;
 }
-async function musicAddLib(){
-  await ensureLoaded();
-  const u=byId('newMusicUrl').value.trim(); if(!u) return alert('Bitte Audio-URL angeben.');
-  if(!current.music.library.includes(u)) current.music.library.push(u);
-  current.updated=nowISO(); await ghPutFile(current,"music: add lib"); renderMusic();
-}
-async function musicAddActive(){
-  await ensureLoaded();
-  const u=byId('newMusicUrl').value.trim(); if(!u) return alert('Bitte Audio-URL angeben.');
-  if(!current.music.active.includes(u)) current.music.active.push(u);
-  if(!current.music.library.includes(u)) current.music.library.push(u);
-  current.updated=nowISO(); await ghPutFile(current,"music: add active"); renderMusic();
-}
-async function musicLibToActive(i){
-  await ensureLoaded();
-  const u=current.music.library[i]; if(!current.music.active.includes(u)) current.music.active.push(u);
-  current.updated=nowISO(); await ghPutFile(current,"music: lib->active"); renderMusic();
-}
-async function musicLibRemove(i){
-  if(!confirmAction("Audio aus Bibliothek entfernen?")) return;
-  current.music.library.splice(i,1); current.updated=nowISO(); await ghPutFile(current,"music: lib remove"); renderMusic();
-}
-function musicMoveUp(i){ if(i<=0) return; const a=current.music.active; [a[i-1],a[i]]=[a[i],a[i-1]]; ghPutFile(current,"music: move up").then(renderMusic) }
-function musicMoveDown(i){ const a=current.music.active; if(i>=a.length-1) return; [a[i+1],a[i]]=[a[i],a[i+1]]; ghPutFile(current,"music: move down").then(renderMusic) }
-async function musicActiveToArchive(i){
-  if(!confirmAction("Audio in Archiv verschieben?")) return;
-  const u=current.music.active[i]; current.music.archived.unshift({url:u,archived_at:nowISO()}); current.music.active.splice(i,1);
-  current.updated=nowISO(); await ghPutFile(current,"music: active->arch"); renderMusic();
-}
-async function musicRestore(i){
-  const u=current.music.archived[i].url; if(!current.music.active.includes(u)) current.music.active.push(u);
-  current.music.archived.splice(i,1); current.updated=nowISO(); await ghPutFile(current,"music: arch->active"); renderMusic();
-}
-async function musicArchRemove(i){
-  if(!confirmAction("Archiv-Eintrag entfernen?")) return;
-  current.music.archived.splice(i,1); current.updated=nowISO(); await ghPutFile(current,"music: arch remove"); renderMusic();
-}
-function musicPreview(enc){ byId('audioPrev').src=decodeURIComponent(enc); byId('audioPrev').play(); }
-function musicPrevStop(){ byId('audioPrev').pause(); byId('audioPrev').currentTime=0; }
-
-/* Scan & Upload */
-async function scanRepoMusic(){
+function rawUrl(path){return `https://raw.githubusercontent.com/${GH.owner}/${GH.repo}/${GH.branch}/${path}`;}
+function pathTitle(p){return p.split("/").pop().replace(/\.(mp3|ogg|wav)$/i,"");}
+async function musicScan(){
   try{
     await ensureLoaded();
-    const deep = byId('scanAll').checked;
-    const primary = await ghListPath('assets/music').catch(()=>[]);
-    let files = primary.filter(f=>f.type==='file' && isAudioName(f.name));
-
-    if(deep){
-      const all = await ghListRecursive('');
-      files = all.filter(f=>f.type==='file' && isAudioName(f.name));
-    }else{
-      const root = await ghListPath('').catch(()=>[]);
-      files = files.concat(root.filter(f=>f.type==='file' && isAudioName(f.name)));
-    }
-
-    let added=0;
+    const tree=await ghGetTreeRecursive();
+    const files=(tree.tree||[]).filter(n=>n.type==="blob" && /\.(mp3|ogg|wav)$/i.test(n.path));
+    const lib=[];
     for(const f of files){
-      const url = toPagesUrl(f.path);
-      if(!current.music.library.includes(url)){ current.music.library.push(url); added++; }
+      lib.push({path:f.path,url:rawUrl(f.path),title:pathTitle(f.path)});
     }
+    // Merge: vorhandene beibehalten, neue hinzufügen
+    const map=new Map((current.music.library||[]).map(x=>[x.path,x]));
+    for(const x of lib){ map.set(x.path,x); }
+    current.music.library=Array.from(map.values());
     current.updated=nowISO();
-    await ghPutFile(current, `music: import ${added} from repo`);
+    if(!confirm(`Gefunden: ${lib.length} Audiodateien. Bibliothek aktualisieren und speichern?`)) return;
+    await ghPutFile(current,"music: scan library");
     renderMusic();
-    alert(added ? `${added} Audio-Datei(en) übernommen.` : 'Keine neuen Audio-Dateien gefunden.');
-  }catch(e){ alert('Fehler (Repo scannen):\n'+e.message) }
+  }catch(e){ alert("Fehler (Repo scannen Musik):\n"+e.message); }
 }
-function sanitizeName(n){ return n.replace(/[^a-z0-9._-]+/gi,'_') }
-byId('btnUpload').addEventListener('click',()=>byId('musicFile').click());
-byId('musicFile').addEventListener('change', async (ev)=>{
+async function musicUpload(){
   try{
     await ensureLoaded();
-    const f=ev.target.files[0]; if(!f) return;
-    const name=sanitizeName(f.name);
-    const path=`assets/music/${name}`;
-    const meta=await ghGetMeta(path);
-    if(meta && !confirmAction(`Datei existiert bereits:\n${path}\nÜberschreiben?`)){ ev.target.value=''; return; }
-
-    const buf=await f.arrayBuffer();
-    let bin=''; const bytes=new Uint8Array(buf); for(let i=0;i<bytes.byteLength;i++) bin+=String.fromCharCode(bytes[i]);
-    const b64=btoa(bin);
-
-    await ghUploadBinary(path, b64, `music upload: ${name}`, meta?.sha);
-    const url=toPagesUrl(path);
-    if(!current.music.library.includes(url)) current.music.library.push(url);
+    const f=byId("musicFile").files[0];
+    if(!f) return alert("Bitte eine Audiodatei wählen.");
+    if(!confirm(`„${f.name}“ nach /assets/music/ hochladen und speichern?`)) return;
+    const b64=await fileToBase64(f);
+    const dest=`assets/music/${f.name}`;
+    await ghUploadFile(dest,b64,`upload music: ${f.name}`);
+    // in Bibliothek aufnehmen
+    const o={path:dest,url:rawUrl(dest),title:pathTitle(dest)};
+    current.music.library=current.music.library||[];
+    if(!current.music.library.find(x=>x.path===o.path)) current.music.library.push(o);
     current.updated=nowISO();
-    await ghPutFile(current,'music: add uploaded');
+    await ghPutFile(current,"music: add uploaded");
     renderMusic();
-    alert(`Hochgeladen & übernommen: ${name}`);
-  }catch(e){ alert('Fehler (Upload Musik):\n'+e.message) }
-  finally{ ev.target.value='' }
-});
+  }catch(e){ alert("Fehler (Musik hochladen):\n"+e.message); }
+}
+async function musicToActive(path){
+  try{
+    await ensureLoaded();
+    current.music.active=current.music.active||[];
+    if(!current.music.active.includes(path)) current.music.active.push(path);
+    current.updated=nowISO();
+    if(!confirm("Musik in Aktiv-Liste speichern?")) return;
+    await ghPutFile(current,"music: add to active");
+    renderMusic();
+  }catch(e){ alert("Fehler (Musik aktiv):\n"+e.message); }
+}
+async function musicArchive(path){
+  try{
+    await ensureLoaded();
+    if(!confirm("Diesen Titel ins Archiv verschieben und speichern?")) return;
+    current.music.archived=current.music.archived||[];
+    if(!current.music.archived.find(x=>x.path===path)) current.music.archived.unshift({path,archived_at:nowISO()});
+    // auch aus active entfernen
+    current.music.active=current.music.active.filter(p=>p!==path);
+    current.updated=nowISO();
+    await ghPutFile(current,"music: archive");
+    renderMusic();
+  }catch(e){ alert("Fehler (Musik Archiv):\n"+e.message); }
+}
+async function musicRestore(path){
+  try{
+    await ensureLoaded();
+    if(!confirm("Archivierten Titel zurückholen (Bibliothek bleibt) und speichern?")) return;
+    current.music.archived=current.music.archived.filter(x=>x.path!==path);
+    current.updated=nowISO();
+    await ghPutFile(current,"music: restore");
+    renderMusic();
+  }catch(e){ alert("Fehler (Musik zurückholen):\n"+e.message); }
+}
+async function musicArchDel(i){
+  try{
+    await ensureLoaded();
+    if(!confirm("Archiv-Eintrag endgültig entfernen?")) return;
+    current.music.archived.splice(i,1);
+    current.updated=nowISO();
+    await ghPutFile(current,"music: archive remove entry");
+    renderMusic();
+  }catch(e){ alert("Fehler (Musik Archiv löschen):\n"+e.message); }
+}
+async function musicActiveRemove(i){
+  try{
+    await ensureLoaded();
+    if(!confirm("Aus Aktiv-Liste entfernen und speichern?")) return;
+    current.music.active.splice(i,1);
+    current.updated=nowISO();
+    await ghPutFile(current,"music: remove from active");
+    renderMusic();
+  }catch(e){ alert("Fehler (Musik aktiv entfernen):\n"+e.message); }
+}
 
-/* Verbinden / Laden */
+/* ============================== Verbinden / Laden / Logout ============================== */
 async function connect(){
   GH.owner=byId("ghOwner").value.trim();
   GH.repo=byId("ghRepo").value.trim();
   GH.branch=byId("ghBranch").value.trim();
   GH.path=byId("ghPath").value.trim();
   GH.token=byId("ghToken").value.trim();
+  GH.remember=byId("rememberCb").checked;
 
-  byId("connStatus").textContent="Verbinde …"; byId("btnReload").disabled=true;
+  byId("connStatus").textContent="Verbinde …";
+  byId("btnReload").disabled=true;
+  byId("btnLogout").disabled=true;
+
   try{
     const ping=await fetch(`https://api.github.com/repos/${GH.owner}/${GH.repo}`,{headers:ghHeaders()});
     if(!ping.ok) throw new Error(`Repo nicht erreichbar (${ping.status})`);
     byId("connStatus").innerHTML=`<span class="ok">Verbunden.</span>`;
     byId("btnReload").disabled=false;
-    await loadOrInit(); // automatisch laden
-  }catch(e){ byId("connStatus").innerHTML=`<span class="err">Fehler: ${e.message}</span>`; }
+    byId("btnLogout").disabled=false;
+  }catch(e){
+    byId("connStatus").innerHTML=`<span class="err">Fehler: ${e.message}</span>`;
+  }
 }
+
 async function loadOrInit(){
   byId("connStatus").textContent="Lade rotator.json …";
   try{
@@ -924,27 +922,30 @@ async function loadOrInit(){
       await ghPutFile(current,"init rotator.json");
       byId("connStatus").innerHTML=`<span class="warn">rotator.json neu angelegt.</span>`;
     }else{
-      current=r.data; currentSha=r.sha; ensureStruct();
+      current=r.data; currentSha=r.sha;
       byId("connStatus").innerHTML=`<span class="ok">rotator.json geladen.</span>`;
     }
     byId("lastLoad").textContent=new Date().toLocaleString();
     renderAll();
-  }catch(e){ byId("connStatus").innerHTML=`<span class="err">Fehler: ${e.message}</span>`; }
+  }catch(e){
+    byId("connStatus").innerHTML=`<span class="err">Fehler: ${e.message}</span>`;
+  }
 }
+
 function logout(){
-  if(!confirmAction("Verbindung trennen?")) return;
-  GH.token=""; byId('ghToken').value="";
+  GH.token=""; byId("ghToken").value="";
+  byId("btnReload").disabled=true; byId("btnLogout").disabled=true;
   byId("connStatus").innerHTML=`<span class="warn">Abgemeldet.</span>`;
 }
 
-/* Events */
+/* ============================== Events ============================== */
 byId("btnConnect").addEventListener("click",connect);
 byId("btnReload").addEventListener("click",loadOrInit);
-byId("btnLogout").addEventListener("click",logout);
+byId("btnLogout").addEventListener("click",()=>{ if(confirm("Wirklich ausloggen?")) logout(); });
 
 byId("btnAddLib").addEventListener("click",addToLibrary);
 byId("btnAddActive").addEventListener("click",addDirectToActive);
-byId("btnPreviewNew").addEventListener("click",()=>{const u=toEmbed(byId("newUrl").value,current?.hostPref||'auto'); if(!u) return alert("Bitte gültige URL"); previewUrl(encodeURIComponent(u));});
+byId("btnPreviewNew").addEventListener("click",()=>{ const u=toEmbed(byId("newUrl").value); if(!u) return alert("Bitte gültige URL"); previewUrl(encodeURIComponent(u));});
 byId("btnStopPreview").addEventListener("click",stopPreview);
 
 byId("btnTestRotate").addEventListener("click",startTestRotate);
@@ -953,21 +954,34 @@ byId("btnStartRotation").addEventListener("click",startRotation);
 byId("btnPauseRotation").addEventListener("click",pauseRotation);
 byId("btnSaveInterval").addEventListener("click",saveInterval);
 
-byId("btnKinoPreview").addEventListener("click",kinoPreview);
-byId("btnKinoPrevStop").addEventListener("click",kinoPrevStop);
+/* Kino */
+byId("btnKinoPreview").addEventListener("click",()=>{ const first=current.kino.playlist?.[0]; if(first) kinoPreviewUrl(encodeURIComponent(first.url)); });
+byId("btnKinoClear").addEventListener("click",()=>{ byId("plTitle").value=""; byId("plUrl").value=""; byId("kinoNote").value=""; byId("kinoStart").value=""; byId("kinoLengthMin").value=120; });
+byId("btnPlAdd").addEventListener("click",plAdd);
+byId("btnPlClear").addEventListener("click",kinoClearInputs);
+byId("btnTplSave").addEventListener("click",async ()=>{
+  const name=byId("tplName").value.trim(); if(!name) return alert("Bitte Vorlagennamen eingeben.");
+  current.kino.templates=current.kino.templates||[];
+  current.kino.templates.push({name,playlist:(current.kino.playlist||[]).slice(0)});
+  current.updated=nowISO(); if(!confirm("Vorlage speichern?")) return;
+  await ghPutFile(current,"kino: save template"); alert("Vorlage gespeichert.");
+});
+byId("btnTplLoad").addEventListener("click",()=>{
+  const name=byId("tplName").value.trim(); if(!name) return alert("Vorlagennamen eingeben.");
+  const t=(current.kino.templates||[]).find(x=>x.name===name);
+  if(!t) return alert("Keine Vorlage mit diesem Namen gefunden.");
+  current.kino.playlist=(t.playlist||[]).slice(0); renderPlaylist();
+});
 byId("btnKinoSave").addEventListener("click",kinoSave);
-byId("btnKinoAsTemplate").addEventListener("click",kinoAsTemplate);
-byId("btnKinoStartNow").addEventListener("click",kinoStartNow);
-byId("btnKinoEnd").addEventListener("click",kinoEnd);
+byId("btnKinoStart").addEventListener("click",kinoStart);
+byId("btnKinoStop").addEventListener("click",kinoStop);
 
-byId("btnAddMusicLib").addEventListener("click",musicAddLib);
-byId("btnAddMusicActive").addEventListener("click",musicAddActive);
-byId("btnPrevMusic").addEventListener("click",()=>{const u=byId('newMusicUrl').value.trim(); if(!u) return alert("URL fehlt"); musicPreview(encodeURIComponent(u));});
-byId("btnPrevMusicStop").addEventListener("click",musicPrevStop);
-byId("btnScanRepo").addEventListener("click",scanRepoMusic);
+/* Musik */
+byId("btnMusicScan").addEventListener("click",musicScan);
+byId("btnMusicUpload").addEventListener("click",musicUpload);
 
-/* On-Air initial */
-renderOnAir();
+/* Init dots */
+renderDots();
 </script>
 </body>
 </html>
