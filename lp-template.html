@@ -2,90 +2,171 @@
 <html lang="de">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Finanzielle Souveränität – Deine Landingpage</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Finanzielle Souveränität | Mentor Reise</title>
   <style>
-    /* Hintergrundvideo */
-    #bg-video {position:fixed; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:-2;}
-    #overlay {position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.4); z-index:-1;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Segoe UI',Roboto,Arial,sans-serif;background:#000;color:#fff;overflow-x:hidden;}
 
-    /* Schwebende Blöcke */
-    .floating {position:relative; margin:40px auto; max-width:900px; background:rgba(15,15,25,.8); color:#fff;
-               padding:24px; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,.6);}
-    h1,h2 {margin:0 0 12px; font-family:Montserrat, sans-serif;}
-    button {background:#d4af37; border:none; padding:10px 20px; border-radius:8px; font-weight:600; cursor:pointer;}
+    /* Hintergrundvideo */
+    .hero-bg{position:fixed;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:-1;}
+
+    /* Overlay */
+    .overlay{position:relative;max-width:900px;margin:0 auto;padding:60px 20px;text-align:center;}
+    h1{font-size:2.2rem;margin-bottom:20px;color:#ffedc2;}
+    h2{font-size:1.6rem;margin:20px 0;color:#ffe082;}
+    p{margin:15px 0;font-size:1.1rem;line-height:1.6;color:#f9f9f9;}
+    .quote{font-style:italic;color:#d4af37;margin:25px 0;}
+
+    /* Vorteile */
+    .vorteile{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:30px 0;text-align:left;}
+    .vorteile div{background:rgba(0,0,0,0.5);padding:15px;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.4);}
+
+    /* CTA */
+    .cta{margin:40px 0;background:rgba(0,0,0,0.6);padding:20px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.4);}
+    .cta strong{color:#ffd54f;}
+
+    /* Floating Menü */
+    .floating-menu{position:fixed;top:20px;right:20px;display:flex;flex-direction:column;gap:10px;z-index:100;}
+    .floating-menu a{background:#ff7043;color:#fff;text-decoration:none;padding:10px 16px;border-radius:6px;font-weight:bold;box-shadow:0 3px 6px rgba(0,0,0,0.3);transition:background 0.3s;}
+    .floating-menu a:hover{background:#e64a19;}
+
+    /* Setup Screen */
+    #setup-screen{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.55);
+      display:none;justify-content:center;align-items:center;z-index:200;}
+    #setup-box{background:rgba(15,23,42,0.9);padding:40px;border-radius:12px;max-width:520px;
+      text-align:center;box-shadow:0 8px 20px rgba(0,0,0,0.5);}
+    #setup-box h1{color:#facc15;margin-bottom:20px;}
+    #setup-box ul{text-align:left;margin:15px auto;max-width:440px;color:#f9fafb;line-height:1.6;font-size:1rem;}
+    #setup-box input{padding:12px;width:100%;max-width:320px;border-radius:6px;border:none;margin:10px 0;font-size:1rem;}
+    #setup-box button{background:#22c55e;color:#111;font-weight:600;padding:12px 24px;border:none;
+      border-radius:8px;cursor:pointer;font-size:1rem;}
   </style>
 </head>
 <body>
-  <!-- Hintergrund -->
-  <video id="bg-video" autoplay muted loop>
-    <source src="assets/video/adler-hero.mp4" type="video/mp4">
-  </video>
-  <div id="overlay"></div>
 
-  <!-- Setup/Live wird hier geladen -->
-  <main id="app"></main>
+  <!-- Begrüßung (Partner-Setup) -->
+  <div id="setup-screen">
+    <div id="setup-box">
+      <h1>🦅 LP-Aktivierung</h1>
+      <p>Bitte aktiviere jetzt deine persönliche Landingpage:</p>
+      <ul>
+        <li>👉 Gib <strong>deine eigene, gültige E-Mail-Adresse</strong> ein.</li>
+        <li>👉 Klicke auf <strong>„Freischalten“</strong>.</li>
+        <li>👉 Danach kannst du den Link an deine Kontakte weitergeben.</li>
+      </ul>
+      <p style="color:#f87171;font-size:.95rem;">
+        ⚠️ Diese Adresse wird fest in deiner LP gespeichert und ist für Interessenten sichtbar.<br>
+        Bitte verwende eine seriöse Kontakt-Adresse.
+      </p>
+      <input type="email" id="partnerEmail" placeholder="Deine E-Mail">
+      <br>
+      <button onclick="saveEmail()">✅ Freischalten</button>
+    </div>
+  </div>
 
-  <script>
-    async function initLP(){
-      const urlParams = new URLSearchParams(window.location.search);
-      const id = urlParams.get("id");
-      if(!id){ document.getElementById("app").innerHTML="<p>⚠️ Keine ID übergeben!</p>"; return; }
+  <!-- LP Inhalt -->
+  <div id="lp-screen" style="display:none;">
+    <!-- Hintergrundvideo (Rotator-kompatibel) -->
+    <video id="heroVideo" autoplay muted loop playsinline class="hero-bg">
+      <source src="media/adler-hero.mp4" type="video/mp4">
+    </video>
 
-      // emails.json laden
-      const res = await fetch("data/emails.json");
-      const data = await res.json();
-      const entry = data[id];
+    <!-- Floating Menü -->
+    <div class="floating-menu">
+      <a href="https://www.finanziellesouveraenitaet.de/startseite">Startseite</a>
+      <a href="https://www.finanziellesouveraenitaet.de/campus">Campus</a>
+      <a href="https://www.finanziellesouveraenitaet.de/grundkurs-anfaenger">Grundkurs</a>
+      <a href="https://www.finanziellesouveraenitaet.de/onboarding">Onboarding</a>
+      <a href="https://www.finanziellesouveraenitaet.de/krypto-glossar-pro">Krypto-Glossar</a>
+    </div>
 
-      if(!entry || entry.mode === "setup"){
-        // Setup-Modus
-        document.getElementById("app").innerHTML = `
-          <div class="floating">
-            <h1>Willkommen!</h1>
-            <p>Bitte trage deine E-Mail ein, um deine persönliche Landingpage zu aktivieren:</p>
-            <input id="emailInput" type="email" placeholder="deine@mail.de" style="padding:8px; width:80%">
-            <button onclick="activateLP('${id}')">✅ Bestätigen</button>
-          </div>
-        `;
-      } else {
-        // Live-Modus
-        renderLive(entry.email);
+    <!-- Overlay Inhalte (Template 002) -->
+    <div class="overlay">
+      <h1>Mentor Reise Start</h1>
+      <p>Dein Geld. Deine Freiheit.<br>
+      Die Welt verändert sich: Inflation, KI, Blockchain. Hier lernst du, wie du souverän wirst.<br>
+      Nie mehr Fremdbestimmung.</p>
+
+      <p>Wer es wirklich will, folgt der Einladung. Viele Tausende entdecken jeden Tag die Krypto-Welt.<br>
+      Viele haben Angst – weil sie eben keine Ahnung haben. Genau deshalb gibt es die Finanzielle Souveränität Online Akademie.</p>
+
+      <div class="cta">
+        <a href="#start" style="background:#4caf50; padding:14px 28px; color:#fff; font-size:1.2rem; border-radius:8px; text-decoration:none; font-weight:bold;">
+          🚀 Jetzt starten
+        </a>
+      </div>
+
+      <p class="quote">„Eine Investition in Wissen bringt die besten Zinsen.“ – Franklin</p>
+
+      <h2>Deine Vorteile</h2>
+      <div class="vorteile">
+        <div>💰 Vermögen schützen</div>
+        <div>🔑 Zugang zu Krypto</div>
+        <div>🤖 Einkommen mit KI</div>
+        <div>🌐 Klarheit statt Chaos</div>
+      </div>
+
+      <p>All das bekommst du schon im kostenlosen Grundkurs.</p>
+      <p class="quote">„Das Wichtigste ist, in dich selbst zu investieren.“ – Buffett</p>
+
+      <h2>Dein Digitaler Mentor</h2>
+      <p>Dein persönlicher Begleiter durch die Akademie: Er zeigt dir Schritt für Schritt, wie du Ängste überwindest, Wissen aufbaust und souverän in der neuen Welt bestehst.</p>
+
+      <h2>Deine Reise zur finanziellen Souveränität</h2>
+      <p>Starte deinen eigenen Weg. Wer losgeht, entdeckt die Chancen, die in Blockchain, KI und Krypto stecken.<br>
+      Du bist nicht allein – viele Menschen gehen diesen Weg. Die Community wächst täglich.<br>
+      Die Zukunft ist digital. Blockchain, Krypto und KI eröffnen dir neue Einkommensmöglichkeiten.<br>
+      Angst entsteht aus Unwissenheit. Wissen schafft Sicherheit. Genau deshalb gibt es diesen Kurs.<br>
+      Hier bekommst du alles, was du brauchst: Klarheit, Praxiswissen und die Tools für deine Freiheit.</p>
+
+      <h2>Finanzbildung für die neue Welt</h2>
+      <p>Dein Geld. Deine Zukunft. Deine Souveränität.</p>
+
+      <div class="cta" id="start">
+        🚀 Jetzt kostenlos starten – <strong id="mentorEmail">EMAIL_PLACEHOLDER</strong><br><br>
+        Oder kopiere die Adresse direkt:<br>
+        <strong id="mentorEmailCopy">EMAIL_PLACEHOLDER</strong><br><br>
+        👉 Über diese E-Mail erhältst du direkten Kontakt zu einem menschlichen Mentor.<br>
+        ✅ Von deinem Mentor erhältst du außerdem deine Zugangsdaten zum Grundkurs.
+      </div>
+    </div>
+  </div>
+
+<script>
+async function init(){
+  const params = new URLSearchParams(window.location.search);
+  const lp_id = params.get("id");
+  if(!lp_id) return;
+
+  const res = await fetch("data/emails.json");
+  const emails = await res.json();
+  const entry = emails[lp_id];
+
+  if(!entry || entry.mode==="setup"){
+    document.getElementById("setup-screen").style.display="flex";
+  } else {
+    document.getElementById("lp-screen").style.display="block";
+    document.getElementById("mentorEmail").innerText = entry.email;
+    document.getElementById("mentorEmailCopy").innerText = entry.email;
+
+    // Rotator Integration
+    try {
+      const vRes = await fetch("playlist.json");
+      const playlist = await vRes.json();
+      if(playlist && playlist.length>0){
+        document.getElementById("heroVideo").src = playlist[0].url;
       }
-    }
+    } catch(e){ console.log("Kein Rotator gefunden, Standard Adler-Video läuft."); }
+  }
+}
 
-    function renderLive(email){
-      document.getElementById("app").innerHTML = `
-        <div class="floating">
-          <h1>Finanzielle Souveränität beginnt hier</h1>
-          <p>30 Tage. Klarer Plan. Konkrete Schritte.</p>
-          <button onclick="window.location.href='mailto:${email}'">Jetzt starten</button>
-        </div>
+function saveEmail(){
+  alert("E-Mail gespeichert! (Hier folgt GitHub-Update mit Token)");
+  // später: API Call an GitHub um emails.json + ledger.json zu aktualisieren
+}
 
-        <div class="floating">
-          <h2>Dein Nutzen</h2>
-          <ul>
-            <li>🛡️ Sicherheit – Peer-to-Peer, volle Kontrolle</li>
-            <li>🌐 Netzwerk & Duplizierung – gemeinsam wachsen</li>
-            <li>💰 Einkommen & Unabhängigkeit – planbar & nachhaltig</li>
-          </ul>
-        </div>
-
-        <div class="floating">
-          <h2>Kontakt</h2>
-          <p>Fragen? Melde dich direkt bei: <b>${email}</b></p>
-        </div>
-      `;
-    }
-
-    function activateLP(id){
-      const email = document.getElementById("emailInput").value.trim();
-      if(!email) return alert("Bitte eine gültige E-Mail eintragen!");
-      // Hier nur VISUELL umschalten – Admin muss später emails.json anpassen!
-      renderLive(email);
-      alert("✅ Deine LP ist jetzt aktiv. Bitte diesen Link sofort kopieren & teilen!");
-    }
-
-    initLP();
-  </script>
+init();
+</script>
 </body>
 </html>
