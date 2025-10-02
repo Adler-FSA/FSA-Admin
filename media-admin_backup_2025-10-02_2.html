@@ -1,0 +1,778 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FSA Admin · Media (Rota-Style-003 · Master)</title>
+<style>
+  :root{
+    --bg:#0b1220; --card:#111827; --muted:#9aa4b2; --txt:#eaf2ff;
+    --gold:#d4af37; --teal:#1cc2a0; --red:#e11d48; --blue:#38bdf8;
+    --shadow:0 10px 30px rgba(0,0,0,.45); --radius:14px;
+    --line:rgba(255,255,255,.1);
+  }
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--txt);font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif}
+  h1,h2,h3{margin:0 0 10px;font-family:Montserrat,system-ui,sans-serif}
+  a{color:var(--blue);text-decoration:none}
+  .wrap{max-width:1200px;margin:24px auto;padding:0 16px}
+  .card{background:var(--card);border:1px solid rgba(212,175,55,.25);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+  .grid{display:grid;gap:16px}
+  .g-2{grid-template-columns:1fr 1fr}
+  .g-3{grid-template-columns:1.2fr .8fr}
+  @media (max-width:1100px){.g-2,.g-3{grid-template-columns:1fr}}
+  .title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+  .title h2{color:var(--gold);font-size:1.2rem}
+  .muted{color:var(--muted);font-size:.95rem}
+  .hr{height:1px;background:var(--line);margin:12px 0}
+  label{display:block;margin:8px 0 6px;font-weight:700;color:#dbe3f3}
+  input[type="text"],input[type="number"],input[type="datetime-local"],textarea,select{
+    width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#0b1325;color:#fff;font-size:.98rem;outline:none}
+  textarea{min-height:96px}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .btn{padding:10px 14px;border:none;border-radius:10px;font-weight:800;cursor:pointer;box-shadow:var(--shadow)}
+  .btn.gold{background:var(--gold);color:#000}
+  .btn.teal{background:var(--teal);color:#001210}
+  .btn.blue{background:var(--blue);color:#001018}
+  .btn.red{background:var(--red);color:#fff}
+  .btn.ghost{background:transparent;border:1px dashed rgba(255,255,255,.25);color:#cbd5e1}
+  .btn.small{padding:6px 10px;font-weight:700}
+  .chip{padding:4px 10px;border-radius:999px;background:#0f1a30;border:1px solid rgba(255,255,255,.12);color:#cbe0ff;font-size:.9rem}
+  .list{display:grid;gap:10px}
+  .item{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;background:#0e182b;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px}
+  .badge{background:var(--gold);color:#000;border-radius:999px;padding:2px 8px;font-weight:900;font-size:.8rem}
+  .item .url{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#dbeafe}
+  .item.active{outline:2px solid var(--teal);background:#0e1e2b}
+  .preview{border:2px solid var(--gold);border-radius:12px;overflow:hidden;height:360px;background:#000}
+  .note{font-size:.9rem;color:#b6c3d6}
+  .ok{color:#22c55e}.warn{color:#f59e0b}.err{color:#ef4444}
+
+  /* On-Air (1–12) */
+  .onair{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+  .dot{width:32px;height:32px;border-radius:999px;display:inline-grid;place-items:center;
+       background:#0f1a30;border:1px solid rgba(255,255,255,.15);color:#9fb9ff;font-weight:900}
+  .dot.active{background:#133051;border-color:#53ffd6;color:#53ffd6;animation:pulse 1.1s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(28,194,160,.65)}70%{box-shadow:0 0 0 10px rgba(28,194,160,0)}100%{box-shadow:0 0 0 0 rgba(28,194,160,0)}}
+
+  /* Kino-Listen */
+  .groupTitle{margin-top:12px;margin-bottom:6px;font-weight:800;color:#ffe8a6}
+  .rowline{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;
+           background:#0f1526;border:1px dashed rgba(255,255,255,.15);border-radius:10px;padding:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 🔑 GitHub Verbindung -->
+  <div class="card">
+    <div class="title"><h2>🔑 GitHub Verbindung</h2></div>
+    <div class="grid g-2">
+      <div><label>Owner</label><input id="ghOwner" type="text" value="Adler-FSA"></div>
+      <div><label>Repo</label><input id="ghRepo" type="text" value="FSA-Admin"></div>
+      <div><label>Branch</label><input id="ghBranch" type="text" value="main"></div>
+      <div><label>JSON-Pfad</label><input id="ghPath" type="text" value="rotator.json"></div>
+      <div style="grid-column:1/-1">
+        <label>Personal Access Token (wird NICHT gespeichert)</label>
+        <input id="ghToken" type="text" placeholder="ghp_... (fine-grained: contents read/write)">
+      </div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <button class="btn gold" id="btnConnect">🔗 Verbinden</button>
+      <button class="btn ghost" id="btnReload" disabled>🔄 Daten laden / anlegen</button>
+      <label class="row" style="align-items:center;gap:8px">
+        <input id="sessionLock" type="checkbox"> <span class="muted">Sitzung merken (nur dieser Tab – keine Speicherung)</span>
+      </label>
+      <button class="btn red" id="btnLogout">🚪 Ausloggen</button>
+      <span id="connStatus" class="note">Bitte Token einfügen und verbinden.</span>
+    </div>
+  </div>
+
+  <!-- 📚 Bibliothek · 🎛 Aktive · 📦 Archiv -->
+  <div class="grid g-3" style="margin-top:16px">
+    <!-- Bibliothek -->
+    <div class="card">
+      <div class="title"><h2>📚 Bibliothek</h2><div class="muted">Globaler Pool deiner Videos</div></div>
+      <label>Neue Video-URL (YouTube/Vimeo/Zoom)</label>
+      <input id="newUrl" type="text" placeholder="https://youtu.be/… oder https://www.youtube.com/watch?v=…">
+      <div class="row" style="margin-top:8px">
+        <button class="btn teal" id="btnAddLib">＋ Zur Bibliothek</button>
+        <button class="btn blue" id="btnAddActive">＋ Direkt in Rotator</button>
+        <button class="btn gold" id="btnPreviewNew">▶️ Vorschau</button>
+        <button class="btn ghost" id="btnStopPreview">⏹️ Vorschau Stop</button>
+        <button class="btn ghost" id="btnLoadTests">🧪 4 Testvideos laden</button>
+      </div>
+      <div class="hr"></div>
+      <div class="row">
+        <span class="chip">Einträge: <span id="countLib">0</span></span>
+        <span class="chip">Aktive max: <span id="maxActiveLabel">12</span></span>
+      </div>
+      <div id="libList" class="list" style="margin-top:10px"></div>
+    </div>
+
+    <!-- Aktive -->
+    <div class="card">
+      <div class="title"><h2>🎛 Aktive Videos (Rotator)</h2><div class="muted">Max. 12 – Reihenfolge zählt</div></div>
+      <div class="row">
+        <span class="chip">Aktiv: <span id="countActive">0</span>/12</span>
+        <span class="chip">Intervall: <span id="intervalLabel">60</span>s</span>
+      </div>
+      <div id="activeList" class="list" style="margin-top:10px"></div>
+    </div>
+
+    <!-- Archiv -->
+    <div class="card">
+      <div class="title"><h2>📦 Archiv</h2><div class="muted">Zurückholen möglich</div></div>
+      <div id="archList" class="list"></div>
+    </div>
+  </div>
+
+  <!-- 🖥 Vorschau & Rotation -->
+  <div class="card" style="margin-top:16px">
+    <div class="title"><h2>🖥 Vorschau & Rotation</h2><div class="muted">Nur Admin-Test – LP liest die gespeicherten Daten</div></div>
+    <div class="grid g-2">
+      <div>
+        <div id="previewBox" class="preview">
+          <iframe id="preview" width="100%" height="100%" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="border:0"></iframe>
+        </div>
+
+        <!-- On-Air Indikator -->
+        <div class="onair" id="onAir">
+          <!-- wird via JS gerendert -->
+        </div>
+
+        <div class="row" style="margin-top:10px">
+          <button class="btn ghost small" id="btnPrev">◀ Zurück</button>
+          <span class="chip">Now <span id="nowIndex">–</span></span>
+          <button class="btn ghost small" id="btnNext">Weiter ▶</button>
+          <span class="muted" id="countdown">Countdown: —s bis Guard · —s bis Intervall</span>
+        </div>
+      </div>
+
+      <div>
+        <label>Intervall (Sekunden)</label>
+        <input id="intervalSec" type="number" min="3" value="60">
+
+        <label>Guard-Zeit (Sekunden) – Anti-Störung</label>
+        <input id="guardSec" type="number" min="0" value="10">
+
+        <label>Host-Präferenz</label>
+        <select id="hostPref">
+          <option value="auto">Automatisch</option>
+          <option value="youtube">YouTube bevorzugt</option>
+          <option value="vimeo">Vimeo bevorzugt</option>
+        </select>
+
+        <div class="row" style="margin-top:10px">
+          <button class="btn teal" id="btnStartRotation">▶️ Start</button>
+          <button class="btn red"  id="btnPauseRotation">⏸ Stop</button>
+          <button class="btn blue" id="btnSaveInterval">💾 Intervall & Guard & Host merken</button>
+        </div>
+
+        <div class="row" style="margin-top:10px">
+          <button class="btn gold" id="btnTestRotate">🧪 Rotationstest (5s)</button>
+          <button class="btn ghost" id="btnStopAll">⏹️ Test/Rotation beenden</button>
+        </div>
+
+        <div class="row" style="margin-top:8px;align-items:center">
+          <label class="row" style="align-items:center;gap:8px">
+            <input id="autoSkip" type="checkbox">
+            <span>Verdächtige automatisch überspringen</span>
+          </label>
+        </div>
+
+        <div class="hr"></div>
+        <div class="note">Status: <span id="statusMsg">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🎬 Kino / Playlist / Fallback -->
+  <div class="card" style="margin-top:16px">
+    <div class="title"><h2>🎬 Kino / Playlist / Fallback</h2><div class="muted">Global für LP-„Kino-Fenster“ inkl. Verlauf/Archiv</div></div>
+
+    <div class="grid g-2">
+      <div>
+        <label>Kino/Embed URL (YouTube/Zoom …)</label>
+        <input id="kinoUrl" type="text" placeholder="https://www.youtube.com/embed/... / https://youtu.be/...">
+
+        <label>Playlist URL (optional)</label>
+        <input id="playlistUrl" type="text" placeholder="https://www.youtube.com/playlist?list=...">
+
+        <div class="row" style="margin-top:10px">
+          <button class="btn gold" id="btnKinoPreview">▶️ Kino Vorschau</button>
+          <button class="btn ghost" id="btnKinoClear">🧹 Kino löschen</button>
+          <button class="btn blue" id="btnKinoSave">💾 Kino/Playlist merken</button>
+        </div>
+
+        <div class="hr"></div>
+
+        <label>Modus</label>
+        <select id="kinoMode">
+          <option value="60s">⏱ alle 60 Sekunden</option>
+          <option value="full">⏱ nach Gesamtlänge (durchlaufen)</option>
+        </select>
+
+        <label>Geplanter Start</label>
+        <input id="kinoStart" type="datetime-local">
+
+        <div class="row" style="margin-top:10px">
+          <button class="btn teal" id="btnKinoSaveTemplate">📌 Als Vorlage speichern</button>
+          <button class="btn gold" id="btnKinoStartNow">▶️ Jetzt starten (loggt)</button>
+          <button class="btn red" id="btnKinoEnd">⏹️ Event beenden</button>
+        </div>
+      </div>
+
+      <div>
+        <label>Adler-Fallback</label>
+        <div class="row">
+          <select id="fallbackEnabled">
+            <option value="true">🦅 Fallback aktiv</option>
+            <option value="false">🦅 Fallback aus</option>
+          </select>
+          <input id="fallbackImage" type="text" placeholder="https://.../assets/adler-fallback.jpg">
+        </div>
+      </div>
+    </div>
+
+    <!-- Kino-Listen -->
+    <div class="groupTitle">📁 Vorlagen (Bibliothek): <span id="kinoTemplatesCount" class="muted">0</span></div>
+    <div id="kinoTemplates" class="list"></div>
+
+    <div class="groupTitle">🕓 Verlauf (zuletzt zuerst): <span id="kinoHistoryCount" class="muted">0</span></div>
+    <div id="kinoHistory" class="list"></div>
+
+    <div class="groupTitle">🗃 Kino-Archiv: <span id="kinoArchiveCount" class="muted">0</span></div>
+    <div id="kinoArchive" class="list"></div>
+  </div>
+
+  <!-- Fuß -->
+  <div class="muted" style="margin:14px 4px">Letztes Laden: <span id="lastLoad">—</span> · Letztes Speichern: <span id="lastSave">—</span></div>
+
+</div>
+
+<script>
+/* ===== Konstante Limits ===== */
+const MAX_ACTIVE = 12;
+
+/* ===== Helpers ===== */
+const $ = s => document.querySelector(s);
+const byId = id => document.getElementById(id);
+function shortUrl(u){try{const x=new URL(u);return x.hostname.replace('www.','')+x.pathname+(x.search?'…':'')}catch(e){return u}}
+function nowISO(){return new Date().toISOString()}
+function toISO(v){if(!v) return ""; const d=new Date(v); return isNaN(d)?"":d.toISOString();}
+function fromISOtoLocal(iso){if(!iso) return ""; const d=new Date(iso); if(isNaN(d)) return ""; const z=d.getTimezoneOffset()*60000; return new Date(d - z).toISOString().slice(0,16);}
+
+/* Base64 UTF-8 */
+function toBase64(str){const enc=new TextEncoder().encode(str);let bin="";enc.forEach(b=>bin+=String.fromCharCode(b));return btoa(bin)}
+function fromBase64(b64){const bin=atob(b64);const bytes=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);return new TextDecoder().decode(bytes)}
+
+/* URL ➝ EMBED */
+function toEmbed(url){
+  if(!url) return "";
+  let u=url.trim();
+  // YouTube short
+  if(/youtu\.be\//i.test(u)){const id=u.split("youtu.be/")[1].split(/[?&]/)[0];return `https://www.youtube.com/embed/${id}?rel=0&autoplay=1&mute=1&playsinline=1`}
+  // YouTube watch
+  if(/youtube\.com\/watch/i.test(u)){const q=new URL(u).searchParams.get("v"); if(q) return `https://www.youtube.com/embed/${q}?rel=0&autoplay=1&mute=1&playsinline=1`}
+  // YouTube embed bleibt
+  if(/youtube\.com\/embed/i.test(u)) return u;
+  // Vimeo
+  const vm=u.match(/vimeo\.com\/(\d+)/); if(vm){return `https://player.vimeo.com/video/${vm[1]}?autoplay=1&muted=1`}
+  if(/player\.vimeo\.com\/video/.test(u)) return u;
+  return u;
+}
+
+/* ===== GitHub ===== */
+let GH={owner:"Adler-FSA",repo:"FSA-Admin",branch:"main",path:"rotator.json",token:""};
+let current=null, currentSha="";
+let testTimer=null, rotateTimer=null, guardTimer=null, intervalTimer=null;
+let selectedActiveIndex=-1, playingIndex=-1, countdownInt=null;
+
+function ghHeaders(){ if(!GH.token) throw new Error("Kein Token");
+  return {"Authorization":"Bearer "+GH.token,"Accept":"application/vnd.github+json","Content-Type":"application/json"};}
+
+async function ghGetFile(){
+  const url=`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${GH.path}?ref=${GH.branch}`;
+  const res=await fetch(url,{headers:ghHeaders()});
+  if(res.status===404) return {status:404};
+  if(!res.ok){throw new Error(`GET ${res.status}: ${await res.text()}`)}
+  const j=await res.json(); const content=fromBase64(j.content||"");
+  return {status:200,sha:j.sha,data:JSON.parse(content)};
+}
+async function ghPutFile(data,message){
+  const url=`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${GH.path}`;
+  const body={message:message||"update rotator.json",content:toBase64(JSON.stringify(data,null,2)),branch:GH.branch};
+  if(currentSha) body.sha=currentSha;
+  const res=await fetch(url,{method:"PUT",headers:ghHeaders(),body:JSON.stringify(body)});
+  if(!res.ok){throw new Error(`PUT ${res.status}: ${await res.text()}`)}
+  const j=await res.json(); currentSha=j.content.sha; byId("lastSave").textContent=new Date().toLocaleString();
+}
+
+/* Defaults (inkl. 4 Test-Videos) */
+function defaultData(){
+  return {
+    active:[
+      "https://www.youtube.com/embed/miWBKSszEIw?rel=0&autoplay=1&mute=1&playsinline=1",
+      "https://www.youtube.com/embed/J7QYQ-Qj-48?rel=0&autoplay=1&mute=1&playsinline=1",
+      "https://www.youtube.com/embed/CqesPVWSzao?rel=0&autoplay=1&mute=1&playsinline=1",
+      "https://www.youtube.com/embed/WcuSPqefQBY?rel=0&autoplay=1&mute=1&playsinline=1"
+    ],
+    library:[
+      "https://youtu.be/CqesPVWSzao",
+      "https://youtu.be/WcuSPqefQBY",
+      "https://youtu.be/qPlWNJ__Z1Q"
+    ],
+    archived:[],
+    interval:60,
+    settings:{guardSec:10, hostPref:"auto", autoSkip:false},
+    kino:{
+      url:"", playlist:"", mode:"60s", startISO:"",
+      templates:[],           // {url,playlist,title?,saved_at}
+      history:[],             // {url,playlist,mode,started_at,ended_at?,title?}
+      archive:[],             // verschobene History-Einträge
+      running:null            // {url,playlist,mode,started_at}
+    },
+    fallback:{enabled:true,imageUrl:""},
+    updated:nowISO()
+  };
+}
+
+/* ===== Render ===== */
+function ensureArrays(){
+  current.library=current.library||[];
+  current.active=current.active||[];
+  current.archived=current.archived||[];
+  current.settings=current.settings||{guardSec:10,hostPref:"auto",autoSkip:false};
+  current.kino=current.kino||{url:"",playlist:"",mode:"60s",startISO:"",templates:[],history:[],archive:[],running:null};
+}
+
+function renderOnAir(){
+  const n = current.active.length;
+  const wrap = byId("onAir"); wrap.innerHTML="";
+  for(let i=1;i<=MAX_ACTIVE;i++){
+    const d=document.createElement("div");
+    d.className="dot"+(i-1===playingIndex?" active":"");
+    d.textContent = i;
+    d.title = i<=n? shortUrl(current.active[i-1]) : "–";
+    d.style.opacity = i<=n?1:.35;
+    wrap.appendChild(d);
+  }
+  byId("nowIndex").textContent = playingIndex>=0? `${playingIndex+1}/${n||0}` : `—/${n||0}`;
+}
+
+function renderKinoLists(){
+  const T=current.kino.templates||[], H=current.kino.history||[], A=current.kino.archive||[];
+  byId("kinoTemplatesCount").textContent=T.length;
+  byId("kinoHistoryCount").textContent=H.length;
+  byId("kinoArchiveCount").textContent=A.length;
+
+  byId("kinoTemplates").innerHTML = T.length? T.map((o,i)=>`
+    <div class="rowline">
+      <span class="badge">${i+1}</span>
+      <div class="url" title="${o.url}">${shortUrl(o.url)} <span class="muted">· ${o.saved_at?new Date(o.saved_at).toLocaleString():""}</span></div>
+      <div class="row">
+        <button class="btn small blue" onclick="kinoLoadTemplate(${i})">⇢ Laden</button>
+        <button class="btn small ghost" onclick="kinoRemoveTemplate(${i})">🗑 Entfernen</button>
+      </div>
+    </div>`).join("") : `<div class="muted">Noch keine Vorlagen.</div>`;
+
+  byId("kinoHistory").innerHTML = H.length? H.map((o,i)=>`
+    <div class="rowline">
+      <span class="badge">${H.length-i}</span>
+      <div class="url" title="${o.url}">
+        ${shortUrl(o.url)} <span class="muted">· start: ${new Date(o.started_at).toLocaleString()}${o.ended_at? " – Ende: "+new Date(o.ended_at).toLocaleString():""}</span>
+      </div>
+      <div class="row">
+        <button class="btn small teal" onclick="kinoResend(${i})">🔁 Wieder senden</button>
+        <button class="btn small blue" onclick="kinoHistoryToArchive(${i})">📦 Archiv</button>
+      </div>
+    </div>`).join("") : `<div class="muted">Noch nichts ausgestrahlt.</div>`;
+
+  byId("kinoArchive").innerHTML = A.length? A.map((o,i)=>`
+    <div class="rowline">
+      <span class="badge">${i+1}</span>
+      <div class="url" title="${o.url}">
+        ${shortUrl(o.url)} <span class="muted">· archiviert ${o.archived_at?new Date(o.archived_at).toLocaleString():""}</span>
+      </div>
+      <div class="row">
+        <button class="btn small teal" onclick="kinoArchiveRestore(${i})">↩︎ Zurückholen</button>
+        <button class="btn small ghost" onclick="kinoArchiveRemove(${i})">🗑 Entfernen</button>
+      </div>
+    </div>`).join("") : `<div class="muted">Kino-Archiv leer.</div>`;
+}
+
+function renderAll(){
+  ensureArrays();
+  byId("countLib").textContent=current.library.length;
+  byId("countActive").textContent=current.active.length;
+  byId("intervalLabel").textContent=current.interval||60;
+  byId("maxActiveLabel").textContent=MAX_ACTIVE;
+
+  // Bibliothek
+  byId("libList").innerHTML=current.library.map((u,i)=>`
+    <div class="item">
+      <span class="badge">${i+1}</span>
+      <div class="url" title="${u}">${shortUrl(u)}</div>
+      <div class="row">
+        <button class="btn small gold" onclick="previewUrl('${encodeURIComponent(toEmbed(u))}')">▶️ Vorschau</button>
+        <button class="btn small teal" onclick="libToActive(${i})">＋ In Rotator</button>
+        <button class="btn small ghost" onclick="removeFromLibrary(${i})">🗑 Entfernen</button>
+      </div>
+    </div>`).join("");
+
+  // Aktive
+  byId("activeList").innerHTML=current.active.map((u,i)=>`
+    <div class="item ${i===selectedActiveIndex?'active':''}" onclick="selectActive(${i})">
+      <span class="badge">${i+1}</span>
+      <div class="url" title="${u}">${shortUrl(u)}</div>
+      <div class="row">
+        <button class="btn small gold" onclick="event.stopPropagation(); previewUrl('${encodeURIComponent(u)}')">▶️ Vorschau</button>
+        <button class="btn small ghost" onclick="event.stopPropagation(); moveUp(${i})">▲</button>
+        <button class="btn small ghost" onclick="event.stopPropagation(); moveDown(${i})">▼</button>
+        <button class="btn small blue" onclick="event.stopPropagation(); activeToArchive(${i})">📦 Archiv</button>
+      </div>
+    </div>`).join("");
+
+  // Archiv
+  const ar=current.archived;
+  byId("archList").innerHTML=ar.length? ar.map((o,i)=>`
+    <div class="item">
+      <span class="badge">${i+1}</span>
+      <div class="url" title="${o.url}">${shortUrl(o.url)} <span class="muted">· ${o.archived_at?new Date(o.archived_at).toLocaleString():""}</span></div>
+      <div class="row">
+        <button class="btn small teal" onclick="restoreFromArchive(${i})">↩︎ Zurückholen</button>
+        <button class="btn small ghost" onclick="removeFromArchive(${i})">🗑 Entfernen</button>
+      </div>
+    </div>`).join(""):`<div class="muted">Noch nichts archiviert.</div>`;
+
+  // Teil 2 – Settings
+  byId("intervalSec").value=current.interval||60;
+  byId("guardSec").value=current.settings.guardSec||10;
+  byId("hostPref").value=current.settings.hostPref||"auto";
+  byId("autoSkip").checked=!!current.settings.autoSkip;
+  renderOnAir();
+
+  // Teil 3 – Kino Felder
+  byId("kinoUrl").value=current.kino.url||"";
+  byId("playlistUrl").value=current.kino.playlist||"";
+  byId("kinoMode").value=current.kino.mode||"60s";
+  byId("kinoStart").value=fromISOtoLocal(current.kino.startISO||"");
+  byId("fallbackEnabled").value=String(current.fallback?.enabled??true);
+  byId("fallbackImage").value=current.fallback?.imageUrl||"";
+  renderKinoLists();
+}
+
+/* Guard: sicherstellen, dass current geladen ist */
+async function ensureLoaded(){ if(current) return; await loadOrInit(); }
+
+/* ===== Aktionen – Teil 1 (Videos) ===== */
+async function addToLibrary(){
+  try{
+    await ensureLoaded();
+    const u=toEmbed(byId("newUrl").value);
+    if(!u) return alert("Bitte gültige URL eingeben.");
+    if(!current.library.includes(u)) current.library.push(u);
+    current.updated=nowISO(); await ghPutFile(current,"add: library"); renderAll();
+  }catch(e){ alert("Fehler (Bibliothek hinzufügen):\n"+e.message); }
+}
+async function addDirectToActive(){
+  try{
+    await ensureLoaded();
+    const u=toEmbed(byId("newUrl").value); if(!u) return alert("Bitte gültige URL eingeben.");
+    if(current.active.length>=MAX_ACTIVE) return alert(`Maximal ${MAX_ACTIVE} aktive Videos.`);
+    if(!current.active.includes(u)) current.active.push(u);
+    if(!current.library.includes(u)) current.library.push(u);
+    current.updated=nowISO(); await ghPutFile(current,"add: direct-to-active"); renderAll();
+  }catch(e){ alert("Fehler (Direkt in Rotator):\n"+e.message); }
+}
+async function libToActive(i){
+  try{
+    await ensureLoaded();
+    const u=toEmbed(current.library[i]);
+    if(current.active.length>=MAX_ACTIVE) return alert(`Maximal ${MAX_ACTIVE} aktive Videos.`);
+    if(!current.active.includes(u)) current.active.push(u);
+    current.updated=nowISO(); await ghPutFile(current,"add: lib->active"); renderAll();
+  }catch(e){ alert("Fehler (lib->active):\n"+e.message); }
+}
+async function removeFromLibrary(i){
+  try{ await ensureLoaded(); current.library.splice(i,1); current.updated=nowISO(); await ghPutFile(current,"remove: library"); renderAll(); }
+  catch(e){ alert("Fehler (Library entfernen):\n"+e.message); }
+}
+function selectActive(i){selectedActiveIndex=i; renderAll();}
+async function moveUp(i){
+  if(i<=0) return; const a=current.active; [a[i-1],a[i]]=[a[i],a[i-1]];
+  selectedActiveIndex=i-1; current.updated=nowISO(); await ghPutFile(current,"reorder: up"); renderAll();
+}
+async function moveDown(i){
+  const a=current.active; if(i>=a.length-1) return;
+  [a[i+1],a[i]]=[a[i],a[i+1]]; selectedActiveIndex=i+1; current.updated=nowISO(); await ghPutFile(current,"reorder: down"); renderAll();
+}
+async function activeToArchive(i){
+  try{
+    await ensureLoaded();
+    const u=current.active[i]; current.archived.unshift({url:u,archived_at:nowISO()});
+    current.active.splice(i,1); selectedActiveIndex=-1; current.updated=nowISO();
+    await ghPutFile(current,"archive: from-active"); renderAll();
+  }catch(e){ alert("Fehler (Archivieren):\n"+e.message); }
+}
+async function restoreFromArchive(i){
+  try{
+    await ensureLoaded();
+    const u=current.archived[i].url;
+    if(current.active.length>=MAX_ACTIVE) return alert(`Schon ${MAX_ACTIVE} aktive Videos.`);
+    if(!current.active.includes(u)) current.active.push(u);
+    current.archived.splice(i,1); current.updated=nowISO();
+    await ghPutFile(current,"restore: archive->active"); renderAll();
+  }catch(e){ alert("Fehler (Zurückholen):\n"+e.message); }
+}
+async function removeFromArchive(i){
+  try{ await ensureLoaded(); current.archived.splice(i,1); current.updated=nowISO(); await ghPutFile(current,"remove: archive"); renderAll();}
+  catch(e){ alert("Fehler (Archiv entfernen):\n"+e.message); }
+}
+
+/* Vorschau/Rotation – Teil 2 */
+function previewUrl(enc){const u=decodeURIComponent(enc); byId("preview").src=u; byId("statusMsg").textContent="Vorschau läuft";}
+function stopPreview(){byId("preview").src="about:blank"; byId("statusMsg").textContent="Vorschau gestoppt";}
+
+function stopAllTimers(){
+  if(testTimer)clearInterval(testTimer);
+  if(intervalTimer)clearInterval(intervalTimer);
+  if(countdownInt)clearInterval(countdownInt);
+  if(guardTimer)clearTimeout(guardTimer);
+  testTimer=null; intervalTimer=null; countdownInt=null; guardTimer=null;
+}
+
+function updateCountdown(secGuard,secInt){
+  let g=secGuard, i=secInt;
+  byId("countdown").textContent=`Countdown: ${g>=0?g:"—"}s bis Guard · ${i>=0?i:"—"}s bis Intervall`;
+}
+
+function markPlaying(idx){
+  playingIndex = idx;
+  renderOnAir();
+}
+
+function playAtIndex(idx, arr, secInt, secGuard){
+  if(!arr.length) return;
+  markPlaying(idx);
+  byId("preview").src = arr[idx];
+  byId("statusMsg").textContent = `Rotation aktiv (${secInt}s)`;
+  // Guard: während der Guard-Zeit nicht reagieren / optional überspringen
+  let guardLeft = secGuard, intLeft = secInt;
+  if(countdownInt) clearInterval(countdownInt);
+  countdownInt = setInterval(()=>{ guardLeft--; intLeft--; updateCountdown(guardLeft,intLeft); },1000);
+  if(guardTimer) clearTimeout(guardTimer);
+  guardTimer = setTimeout(()=>{ /* Guard vorbei */ }, secGuard*1000);
+}
+
+function startRotationCore(secInt){
+  stopAllTimers();
+  const arr=(current?.active||[]).map(u=>toEmbed(u));
+  if(!arr.length) return alert("Keine aktiven Videos.");
+  const secGuard=Math.max(0, parseInt(byId("guardSec").value||current.settings.guardSec||"0",10));
+  const autoSkip = byId("autoSkip").checked;
+
+  let i=0; playAtIndex(i,arr,secInt,secGuard);
+
+  intervalTimer = setInterval(()=>{
+    // rudimentäres Auto-Skip: falls Host verdächtig + Option aktiv → schneller weiter
+    if(autoSkip){
+      const u=arr[i]||""; if(/youtube\.com\/embed\/ads?|shorts/i.test(u)){ /* heuristik */ }
+    }
+    i = (i+1)%arr.length;
+    playAtIndex(i,arr,secInt,secGuard);
+  }, secInt*1000);
+}
+
+function startTestRotate(){
+  startRotationCore(5);
+}
+function startRotation(){
+  const sec=Math.max(3, parseInt(byId("intervalSec").value||"60",10));
+  startRotationCore(sec);
+}
+function pauseRotation(){
+  stopAllTimers(); byId("statusMsg").textContent = "Rotation pausiert"; renderOnAir();
+}
+function prevManual(){
+  const arr=current?.active||[]; if(!arr.length) return;
+  pauseRotation();
+  const idx = playingIndex>0? playingIndex-1 : arr.length-1;
+  byId("preview").src = arr[idx]; markPlaying(idx);
+}
+function nextManual(){
+  const arr=current?.active||[]; if(!arr.length) return;
+  pauseRotation();
+  const idx = playingIndex<arr.length-1? playingIndex+1 : 0;
+  byId("preview").src = arr[idx]; markPlaying(idx);
+}
+async function saveInterval(){
+  try{
+    await ensureLoaded();
+    const sec=Math.max(3,parseInt(byId("intervalSec").value||"60",10));
+    const g=Math.max(0,parseInt(byId("guardSec").value||"0",10));
+    const host=byId("hostPref").value||"auto";
+    const skip=byId("autoSkip").checked;
+    current.interval=sec; current.settings.guardSec=g; current.settings.hostPref=host; current.settings.autoSkip=skip;
+    current.updated=nowISO(); await ghPutFile(current,"update: rotation settings");
+    byId("intervalLabel").textContent=sec; byId("statusMsg").textContent="Intervall/GUARD/Host gespeichert";
+  }catch(e){ alert("Fehler beim Speichern der Rotation:\n"+e.message); }
+}
+
+/* Kino – Teil 3 */
+function kinoPreview(){const u=toEmbed(byId("kinoUrl").value.trim()); if(!u) return alert("Bitte Kino/Embed URL eintragen."); byId("preview").src=u; byId("statusMsg").textContent="Kino-Vorschau läuft";}
+function kinoClear(){byId("kinoUrl").value=""; byId("playlistUrl").value=""; byId("kinoMode").value="60s"; byId("kinoStart").value=""; byId("statusMsg").textContent="Kino Felder geleert (noch nicht gespeichert)";}
+async function kinoSave(){
+  try{
+    await ensureLoaded();
+    current.kino.url=byId("kinoUrl").value.trim();
+    current.kino.playlist=byId("playlistUrl").value.trim();
+    current.kino.mode=byId("kinoMode").value;
+    current.kino.startISO=toISO(byId("kinoStart").value);
+    current.fallback={enabled:byId("fallbackEnabled").value==="true",imageUrl:byId("fallbackImage").value.trim()};
+    current.updated=nowISO(); await ghPutFile(current,"update: kino fields");
+    byId("statusMsg").textContent="Kino gespeichert";
+    renderAll();
+  }catch(e){ alert("Fehler (Kino speichern):\n"+e.message); }
+}
+async function kinoSaveTemplate(){
+  try{
+    await ensureLoaded();
+    const tpl={url:byId("kinoUrl").value.trim(), playlist:byId("playlistUrl").value.trim(), title:"", saved_at:nowISO()};
+    if(!tpl.url) return alert("Bitte Kino-URL eintragen.");
+    current.kino.templates=current.kino.templates||[]; current.kino.templates.unshift(tpl);
+    current.updated=nowISO(); await ghPutFile(current,"kino: save template"); renderAll();
+  }catch(e){ alert("Fehler (Vorlage speichern):\n"+e.message); }
+}
+function kinoLoadTemplate(i){
+  const o=current.kino.templates[i]; if(!o) return;
+  byId("kinoUrl").value=o.url; byId("playlistUrl").value=o.playlist||"";
+}
+async function kinoRemoveTemplate(i){
+  try{ current.kino.templates.splice(i,1); current.updated=nowISO(); await ghPutFile(current,"kino: remove template"); renderAll();}
+  catch(e){ alert("Fehler (Vorlage entfernen):\n"+e.message); }
+}
+async function kinoStartNow(){
+  try{
+    await ensureLoaded();
+    const ev={url:byId("kinoUrl").value.trim(), playlist:byId("playlistUrl").value.trim(), mode:byId("kinoMode").value, started_at:nowISO()};
+    if(!ev.url) return alert("Bitte Kino-URL eintragen.");
+    current.kino.running=ev;
+    current.kino.history=current.kino.history||[]; current.kino.history.unshift({...ev});
+    current.updated=nowISO(); await ghPutFile(current,"kino: start now"); renderAll();
+  }catch(e){ alert("Fehler (Kino jetzt starten):\n"+e.message); }
+}
+async function kinoEnd(){
+  try{
+    await ensureLoaded();
+    if(!current.kino.running){ byId("statusMsg").textContent="Kein laufendes Event."; return; }
+    const end=nowISO();
+    // setze ended_at beim neuesten offenen History-Eintrag
+    const h=current.kino.history||[];
+    const open=h.find(x=>!x.ended_at); if(open) open.ended_at=end;
+    current.kino.running=null; current.updated=nowISO(); await ghPutFile(current,"kino: end event"); renderAll();
+  }catch(e){ alert("Fehler (Kino beenden):\n"+e.message); }
+}
+function kinoResend(i){ const o=current.kino.history[i]; if(!o) return; byId("kinoUrl").value=o.url; byId("playlistUrl").value=o.playlist||""; byId("kinoMode").value=o.mode||"60s"; }
+async function kinoHistoryToArchive(i){
+  try{
+    current.kino.archive=current.kino.archive||[];
+    const row=current.kino.history.splice(i,1)[0];
+    current.kino.archive.unshift({...row, archived_at:nowISO()});
+    current.updated=nowISO(); await ghPutFile(current,"kino: history -> archive"); renderAll();
+  }catch(e){ alert("Fehler (Kino Verlauf -> Archiv):\n"+e.message); }
+}
+async function kinoArchiveRestore(i){
+  try{
+    const row=current.kino.archive.splice(i,1)[0];
+    current.kino.history.unshift(row);
+    current.updated=nowISO(); await ghPutFile(current,"kino: archive -> history"); renderAll();
+  }catch(e){ alert("Fehler (Kino Archiv zurückholen):\n"+e.message); }
+}
+async function kinoArchiveRemove(i){
+  try{ current.kino.archive.splice(i,1); current.updated=nowISO(); await ghPutFile(current,"kino: remove archive"); renderAll();}
+  catch(e){ alert("Fehler (Kino Archiv entfernen):\n"+e.message); }
+}
+
+/* Verbinden / Laden */
+async function connect(){
+  GH.owner=byId("ghOwner").value.trim();
+  GH.repo=byId("ghRepo").value.trim();
+  GH.branch=byId("ghBranch").value.trim();
+  GH.path=byId("ghPath").value.trim();
+  GH.token=byId("ghToken").value.trim();
+  byId("connStatus").textContent="Verbinde …"; byId("btnReload").disabled=true;
+  try{
+    const ping=await fetch(`https://api.github.com/repos/${GH.owner}/${GH.repo}`,{headers:ghHeaders()});
+    if(!ping.ok) throw new Error(`Repo nicht erreichbar (${ping.status})`);
+    byId("connStatus").innerHTML=`<span class="ok">Verbunden.</span>`;
+    byId("btnReload").disabled=false;
+    await loadOrInit();
+  }catch(e){ byId("connStatus").innerHTML=`<span class="err">Fehler: ${e.message}</span>`; }
+}
+function logout(){
+  stopAllTimers(); stopPreview();
+  GH.token=""; byId("ghToken").value=""; byId("connStatus").innerHTML=`<span class="warn">Abgemeldet. Bitte Token erneut einfügen und verbinden.</span>`;
+}
+async function loadOrInit(){
+  byId("connStatus").textContent="Lade rotator.json …";
+  try{
+    const r=await ghGetFile();
+    if(r.status===404){
+      current=defaultData();
+      await ghPutFile(current,"init rotator.json");
+      byId("connStatus").innerHTML=`<span class="warn">rotator.json neu angelegt.</span>`;
+    }else{
+      current=r.data; currentSha=r.sha;
+      byId("connStatus").innerHTML=`<span class="ok">rotator.json geladen.</span>`;
+    }
+    byId("lastLoad").textContent=new Date().toLocaleString();
+    renderAll();
+  }catch(e){ byId("connStatus").innerHTML=`<span class="err">Fehler: ${e.message}</span>`; }
+}
+
+/* Testvideos */
+async function loadTests(){
+  await ensureLoaded();
+  const tests=[
+    "https://www.youtube.com/embed/miWBKSszEIw?rel=0&autoplay=1&mute=1&playsinline=1",
+    "https://www.youtube.com/embed/J7QYQ-Qj-48?rel=0&autoplay=1&mute=1&playsinline=1",
+    "https://www.youtube.com/embed/CqesPVWSzao?rel=0&autoplay=1&mute=1&playsinline=1",
+    "https://www.youtube.com/embed/WcuSPqefQBY?rel=0&autoplay=1&mute=1&playsinline=1"
+  ];
+  for(const u of tests){
+    if(!current.library.includes(u)) current.library.push(u);
+    if(current.active.length<MAX_ACTIVE && !current.active.includes(u)) current.active.push(u);
+  }
+  current.updated=nowISO(); await ghPutFile(current,"seed: 4 test videos"); renderAll();
+}
+
+/* Events */
+byId("btnConnect").addEventListener("click",connect);
+byId("btnReload").addEventListener("click",loadOrInit);
+byId("btnLogout").addEventListener("click",logout);
+
+byId("btnAddLib").addEventListener("click",addToLibrary);
+byId("btnAddActive").addEventListener("click",addDirectToActive);
+byId("btnPreviewNew").addEventListener("click",()=>{const u=toEmbed(byId("newUrl").value); if(!u) return alert("Bitte gültige URL"); previewUrl(encodeURIComponent(u));});
+byId("btnStopPreview").addEventListener("click",stopPreview);
+byId("btnLoadTests").addEventListener("click",loadTests);
+
+byId("btnTestRotate").addEventListener("click",startTestRotate);
+byId("btnStopAll").addEventListener("click",()=>{pauseRotation(); stopPreview();});
+byId("btnStartRotation").addEventListener("click",startRotation);
+byId("btnPauseRotation").addEventListener("click",pauseRotation);
+byId("btnSaveInterval").addEventListener("click",saveInterval);
+byId("btnPrev").addEventListener("click",prevManual);
+byId("btnNext").addEventListener("click",nextManual);
+
+// Kino
+byId("btnKinoPreview").addEventListener("click",kinoPreview);
+byId("btnKinoClear").addEventListener("click",kinoClear);
+byId("btnKinoSave").addEventListener("click",kinoSave);
+byId("btnKinoSaveTemplate").addEventListener("click",kinoSaveTemplate);
+byId("btnKinoStartNow").addEventListener("click",kinoStartNow);
+byId("btnKinoEnd").addEventListener("click",kinoEnd);
+</script>
+</body>
+</html>
