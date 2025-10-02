@@ -30,7 +30,7 @@
     "enabled": true,
     "imageUrl": ""
   },
-  "updated": "2025-10-02T10:25:06.263Z",
+  "updated": "2025-10-02T10:25:13.081Z",
   "settings": {
     "guardSec": 10,
     "hostPref": "auto",
@@ -47,16 +47,17 @@
   "kinoLog": [
     {
       "url": "https://youtu.be/5Z_X_hV5Nes?si=HkMHzFAwxCqGZpO1 https://youtu.be/5Z_X_hV5Nes?si=HkMHzFAwxCqGZpO1",
-      "startISO": "2025-10-02T10:25:04.164Z",
-      "endISO": "",
-      "mode": "byDuration"
-    },
-    {
-      "url": "https://youtu.be/5Z_X_hV5Nes?si=HkMHzFAwxCqGZpO1 https://youtu.be/5Z_X_hV5Nes?si=HkMHzFAwxCqGZpO1",
       "startISO": "2025-10-02T10:25:06.263Z",
       "endISO": "",
       "mode": "byDuration"
     }
   ],
-  "kinoArchive": []
+  "kinoArchive": [
+    {
+      "url": "https://youtu.be/5Z_X_hV5Nes?si=HkMHzFAwxCqGZpO1 https://youtu.be/5Z_X_hV5Nes?si=HkMHzFAwxCqGZpO1",
+      "startISO": "2025-10-02T10:25:04.164Z",
+      "endISO": "2025-10-02T10:25:13.081Z",
+      "mode": "byDuration"
+    }
+  ]
 }
