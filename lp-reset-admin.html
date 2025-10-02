@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>🦅 FSA LP Reset Admin</title>
+  <style>
+    body {
+      font-family: system-ui, Segoe UI, Roboto, Arial, sans-serif;
+      background: #0b1220;
+      color: #eaf2ff;
+      margin: 0; padding: 0;
+    }
+    header {
+      background: linear-gradient(135deg,#111827,#1f2937);
+      padding: 16px 24px;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #facc15;
+      text-align: center;
+      border-bottom: 3px solid #facc15;
+    }
+    .panel {
+      max-width: 1000px;
+      margin: 30px auto;
+      background: #1e293b;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,.4);
+    }
+    .tokenBox {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    input, button {
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      font-size: .95rem;
+    }
+    input {
+      flex: 1;
+      background: #0f172a;
+      color: #eaf2ff;
+      border: 1px solid #334155;
+    }
+    button {
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .btnPrimary { background:#facc15; color:#111; }
+    .btnReset { background:#ef4444; color:#fff; }
+    .btnReset:hover { background:#dc2626; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #334155;
+    }
+    th { color:#facc15; }
+    .status-live { color:#22c55e; font-weight:700; }
+    .status-setup { color:#fbbf24; font-weight:700; }
+  </style>
+</head>
+<body>
+  <header>🦅 FSA Landingpage Reset Admin</header>
+  <div class="panel">
+    <div class="tokenBox">
+      <input id="token" type="password" placeholder="🔑 GitHub Token eingeben">
+      <button class="btnPrimary" onclick="loadLedger()">📂 Laden</button>
+    </div>
+    <div id="statusMsg"></div>
+    <table id="lpTable" style="display:none;">
+      <thead>
+        <tr>
+          <th>LP-ID</th>
+          <th>Email</th>
+          <th>Status</th>
+          <th>Erstellt am</th>
+          <th>Aktion</th>
+        </tr>
+      </thead>
+      <tbody id="lpBody"></tbody>
+    </table>
+  </div>
+
+<script>
+const REPO = "Adler-FSA/FSA-Admin";
+const LEDGER = "data/ledger.json";
+const EMAILS = "data/emails.json";
+
+let token = "";
+
+async function loadLedger(){
+  token = document.getElementById("token").value.trim();
+  if(!token){ alert("Bitte GitHub Token eingeben!"); return; }
+
+  document.getElementById("statusMsg").innerHTML = "⏳ Lade Daten...";
+  try {
+    const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${LEDGER}`);
+    const data = await res.json();
+    const content = JSON.parse(atob(data.content));
+
+    renderTable(content);
+    document.getElementById("statusMsg").innerHTML = "✅ Daten geladen.";
+  } catch(e){
+    console.error(e);
+    document.getElementById("statusMsg").innerHTML = "❌ Fehler beim Laden.";
+  }
+}
+
+function renderTable(entries){
+  const tbody = document.getElementById("lpBody");
+  tbody.innerHTML = "";
+  entries.forEach(e => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${e.id}</td>
+      <td>${e.email || "-"}</td>
+      <td class="${e.mode === "live" ? "status-live":"status-setup"}">${e.mode}</td>
+      <td>${e.created_at || ""}</td>
+      <td><button class="btnReset" onclick="resetLP('${e.id}')">🔄 Reset</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+  document.getElementById("lpTable").style.display = "table";
+}
+
+async function resetLP(lpId){
+  if(!confirm(`Soll LP ${lpId} wirklich zurückgesetzt werden?`)) return;
+
+  try {
+    // 1. Ledger laden
+    const ledgerRes = await fetch(`https://api.github.com/repos/${REPO}/contents/${LEDGER}`);
+    const ledgerData = await ledgerRes.json();
+    let ledger = JSON.parse(atob(ledgerData.content));
+
+    // 2. Emails laden
+    const emailsRes = await fetch(`https://api.github.com/repos/${REPO}/contents/${EMAILS}`);
+    const emailsData = await emailsRes.json();
+    let emails = JSON.parse(atob(emailsData.content));
+
+    // 3. Anpassen
+    ledger = ledger.map(e => e.id === lpId ? {...e, mode:"setup", email:null} : e);
+    if(emails[lpId]){
+      emails[lpId].mode = "setup";
+      emails[lpId].email = null;
+    }
+
+    // 4. Änderungen committen
+    await saveFile(LEDGER, JSON.stringify(ledger,null,2), ledgerData.sha);
+    await saveFile(EMAILS, JSON.stringify(emails,null,2), emailsData.sha);
+
+    alert(`✅ LP ${lpId} zurückgesetzt.`);
+    loadLedger();
+  } catch(e){
+    console.error(e);
+    alert("❌ Fehler beim Reset.");
+  }
+}
+
+async function saveFile(path, content, sha){
+  const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
+    method: "PUT",
+    headers: {
+      "Authorization": `token ${token}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      message: "Admin Reset via lp-reset-admin",
+      content: btoa(unescape(encodeURIComponent(content))),
+      sha: sha
+    })
+  });
+  if(!res.ok) throw new Error("Commit fehlgeschlagen: "+res.status);
+}
+</script>
+</body>
+</html>
