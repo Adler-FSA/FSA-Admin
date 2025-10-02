@@ -11,11 +11,13 @@
     --shadow:0 10px 30px rgba(0,0,0,.45); --radius:14px;
   }
   html,body{height:100%}
-  body{margin:0;background:var(--bg);color:var(--txt);font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif}
+  body{margin:0;background:var(--bg);color:var(--txt);
+       font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif}
   h1,h2,h3{margin:0 0 10px;font-family:Montserrat,system-ui,sans-serif}
   a{color:var(--blue);text-decoration:none}
   .wrap{max-width:1100px;margin:24px auto;padding:0 16px}
-  .card{background:var(--card);border:1px solid rgba(212,175,55,.25);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+  .card{background:var(--card);border:1px solid rgba(212,175,55,.25);
+        border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
   .grid{display:grid;gap:16px}
   .g-2{grid-template-columns:1fr 1fr}
   .g-3{grid-template-columns:1.2fr .8fr}
@@ -43,12 +45,13 @@
   .item .url{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#dbeafe}
   .item.active{outline:2px solid var(--teal);background:#0e1e2b}
   .preview{border:2px solid var(--gold);border-radius:12px;overflow:hidden;height:360px;background:#000;}
-  /* NEU: eigenes Kino-Preview-Fenster (stört den Rotator nicht) */
   .kino-preview{border:2px solid var(--gold);border-radius:12px;overflow:hidden;height:260px;background:#000;margin-top:10px;}
   .stat{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:.92rem}
   .chip{padding:4px 10px;border-radius:999px;background:#0f1a30;border:1px solid rgba(255,255,255,.12);color:#cbe0ff}
   .note{font-size:.9rem;color:#b6c3d6}
   .ok{color:#22c55e}.warn{color:#f59e0b}.err{color:#ef4444}
+  .sectionTitle{margin:14px 0 6px;color:#f1f5f9;font-weight:800}
+  .mini{font-size:.86rem;color:#9fb2ca}
 </style>
 </head>
 <body>
@@ -140,9 +143,9 @@
     </div>
   </div>
 
-  <!-- Teil 3 – Kino (mit EIGENEM Preview) -->
+  <!-- Teil 3 – Kino -->
   <div class="card" style="margin-top:16px">
-    <div class="title"><h2>🎬 Kino / Playlist / Fallback</h2><div class="muted">Global für LP-„Kino-Fenster“ · separate Vorschau</div></div>
+    <div class="title"><h2>🎬 Kino / Playlist / Fallback</h2><div class="muted">Global für LP-„Kino-Fenster“ · separate Vorschau + Vorlagen/Verlauf/Archiv</div></div>
     <div class="grid g-2">
       <div>
         <label>Kino/Embed URL (YouTube/Zoom …)</label>
@@ -177,6 +180,29 @@
           </select>
           <input id="fallbackImage" type="text" placeholder="https://.../assets/adler-fallback.jpg">
         </div>
+        <div class="hr"></div>
+        <div class="row">
+          <button class="btn ghost" id="btnKinoSaveTemplate">🧩 Als Vorlage speichern</button>
+          <button class="btn teal"  id="btnKinoStartNow">🚀 Jetzt starten (loggt)</button>
+          <button class="btn red"   id="btnKinoEndEvent">🛑 Event beenden</button>
+        </div>
+        <div class="mini" id="kinoStatusNote" style="margin-top:6px">—</div>
+      </div>
+    </div>
+
+    <div class="hr"></div>
+    <div class="grid g-3">
+      <div class="card" style="background:#0c1426;border-color:rgba(56,189,248,.25)">
+        <div class="sectionTitle">📚 Vorlagen (Bibliothek): <span id="kinoTplCount">0</span></div>
+        <div id="kinoTplList" class="list"></div>
+      </div>
+      <div class="card" style="background:#0c1426;border-color:rgba(28,194,160,.25)">
+        <div class="sectionTitle">🕑 Verlauf (zuletzt zuerst): <span id="kinoLogCount">0</span></div>
+        <div id="kinoLogList" class="list"></div>
+      </div>
+      <div class="card" style="background:#0c1426;border-color:rgba(212,175,55,.25)">
+        <div class="sectionTitle">📦 Kino-Archiv: <span id="kinoArchCount">0</span></div>
+        <div id="kinoArchList" class="list"></div>
       </div>
     </div>
   </div>
@@ -193,6 +219,7 @@ const $ = s => document.querySelector(s);
 const byId = id => document.getElementById(id);
 function shortUrl(u){try{const x=new URL(u);return x.hostname.replace('www.','')+x.pathname+(x.search?'…':'')}catch(e){return u}}
 function nowISO(){return new Date().toISOString()}
+function fmtLocal(iso){if(!iso) return "—"; const d=new Date(iso); return isNaN(d)?"—":d.toLocaleString();}
 function toISO(v){if(!v) return ""; const d=new Date(v); return isNaN(d)?"":d.toISOString();}
 function fromISOtoLocal(iso){if(!iso) return ""; const d=new Date(iso); if(isNaN(d)) return ""; const z=d.getTimezoneOffset()*60000; return new Date(d - z).toISOString().slice(0,16);}
 
@@ -216,7 +243,7 @@ function toEmbed(url){
 let GH={owner:"Adler-FSA",repo:"FSA-Admin",branch:"main",path:"rotator.json",token:""};
 let current=null, currentSha="", testTimer=null, rotateTimer=null, selectedActiveIndex=-1;
 
-/* nur Header – Token nie speichern auf Server */
+/* Header */
 function ghHeaders(){ if(!GH.token) throw new Error("Kein Token"); return {"Authorization":"Bearer "+GH.token,"Accept":"application/vnd.github+json","Content-Type":"application/json"};}
 
 async function ghGetFile(){
@@ -236,7 +263,7 @@ async function ghPutFile(data,message){
   const j=await res.json(); currentSha=j.content.sha; byId("lastSave").textContent=new Date().toLocaleString();
 }
 
-/* Defaults (inkl. 4 Test-Videos) */
+/* Defaults */
 function defaultData(){
   return {
     active:[
@@ -253,16 +280,26 @@ function defaultData(){
     archived:[],
     interval:60,
     kino:{url:"",playlist:"",mode:"60s",startISO:""},
+    kinoTemplates:[], /* {url, playlist, mode, title?, saved_at} */
+    kinoLog:[],       /* {url, startISO, endISO, mode} */
+    kinoArchive:[],   /* same shape as log */
     fallback:{enabled:true,imageUrl:""},
     updated:nowISO()
   };
 }
 
-/* Render */
+/* ===== Render global ===== */
+function ensureKinoArrays(){
+  current.kinoTemplates=current.kinoTemplates||[];
+  current.kinoLog=current.kinoLog||[];
+  current.kinoArchive=current.kinoArchive||[];
+}
+
 function renderAll(){
   current.library=current.library||[];
   current.active=current.active||[];
   current.archived=current.archived||[];
+  ensureKinoArrays();
 
   byId("countLib").textContent=current.library.length;
   byId("countActive").textContent=current.active.length;
@@ -303,21 +340,63 @@ function renderAll(){
     </div>`).join(""):`<div class="muted">Noch nichts archiviert.</div>`;
 
   byId("intervalSec").value=current.interval||60;
+
+  /* Kino Felder */
   byId("kinoUrl").value=current.kino?.url||"";
   byId("playlistUrl").value=current.kino?.playlist||"";
   byId("kinoMode").value=current.kino?.mode||"60s";
   byId("kinoStart").value=fromISOtoLocal(current.kino?.startISO||"");
   byId("fallbackEnabled").value=String(current.fallback?.enabled??true);
   byId("fallbackImage").value=current.fallback?.imageUrl||"";
+
+  renderKinoLists();
+}
+
+/* ===== Kino Listen ===== */
+function renderKinoLists(){
+  ensureKinoArrays();
+
+  byId("kinoTplCount").textContent=current.kinoTemplates.length;
+  byId("kinoTplList").innerHTML = current.kinoTemplates.length ? current.kinoTemplates.map((t,i)=>`
+    <div class="item">
+      <span class="badge">${i+1}</span>
+      <div class="url" title="${t.url}">${shortUrl(t.url)} <span class="muted">· gespeichert ${fmtLocal(t.saved_at)}</span></div>
+      <div class="row">
+        <button class="btn small blue" onclick="kinoLoadTemplate(${i})">↪︎ Laden</button>
+        <button class="btn small ghost" onclick="kinoRemoveTemplate(${i})">🗑 Entfernen</button>
+      </div>
+    </div>`).join("") : `<div class="muted">Noch keine Vorlagen.</div>`;
+
+  byId("kinoLogCount").textContent=current.kinoLog.length;
+  byId("kinoLogList").innerHTML = current.kinoLog.length ? current.kinoLog.slice().reverse().map((e,ri)=>{
+      const i=current.kinoLog.length-1-ri;
+      const dur = (e.startISO && e.endISO)? ` · Ende ${fmtLocal(e.endISO)}` : " · läuft/geschlossen";
+      return `<div class="item">
+        <span class="badge">${i+1}</span>
+        <div class="url" title="${e.url}">${shortUrl(e.url)} · Start ${fmtLocal(e.startISO)}${dur}</div>
+        <div class="row">
+          <button class="btn small teal" onclick="kinoResendFromLog(${i})">📺 Wieder senden</button>
+          <button class="btn small blue" onclick="kinoArchiveFromLog(${i})">📦 Archiv</button>
+        </div>
+      </div>`;
+    }).join("") : `<div class="muted">Noch kein Verlauf.</div>`;
+
+  byId("kinoArchCount").textContent=current.kinoArchive.length;
+  byId("kinoArchList").innerHTML = current.kinoArchive.length ? current.kinoArchive.map((e,i)=>`
+    <div class="item">
+      <span class="badge">${i+1}</span>
+      <div class="url" title="${e.url}">${shortUrl(e.url)} · Start ${fmtLocal(e.startISO)} · Ende ${fmtLocal(e.endISO)}</div>
+      <div class="row">
+        <button class="btn small teal" onclick="kinoArchiveRestore(${i})">↩︎ Zurückholen</button>
+        <button class="btn small ghost" onclick="kinoArchiveRemove(${i})">🗑 Entfernen</button>
+      </div>
+    </div>`).join("") : `<div class="muted">Kino-Archiv leer.</div>`;
 }
 
 /* Guard: sicherstellen, dass current geladen ist */
-async function ensureLoaded(){
-  if(current) return;
-  await loadOrInit();
-}
+async function ensureLoaded(){ if(current) return; await loadOrInit(); }
 
-/* Aktionen – Teil 1 */
+/* Aktionen – Teil 1: Bibliothek/Rotator */
 async function addToLibrary(){
   try{
     await ensureLoaded();
@@ -442,15 +521,15 @@ async function saveInterval(){
   }catch(e){ alert("Fehler beim Speichern des Intervalls:\n"+e.message); }
 }
 
-/* ===== Kino – EIGENES Preview-Fenster ===== */
+/* ===== Kino – Preview + Speicher + Vorlagen/Verlauf/Archiv ===== */
 function kinoPreviewStart(){
   const raw=(byId("kinoUrl").value || byId("playlistUrl").value || "").trim();
   if(!raw) return alert("Bitte Kino/Embed oder Playlist URL eintragen.");
   const u=toEmbed(raw);
   byId("kinoPreview").src=u;
-  byId("statusMsg").textContent="Kino-Vorschau läuft";
+  byId("kinoStatusNote").textContent="Kino-Vorschau läuft";
 }
-function kinoPreviewStop(){byId("kinoPreview").src="about:blank"; byId("statusMsg").textContent="Kino-Vorschau gestoppt";}
+function kinoPreviewStop(){byId("kinoPreview").src="about:blank"; byId("kinoStatusNote").textContent="Kino-Vorschau gestoppt";}
 async function kinoSave(){
   try{
     await ensureLoaded();
@@ -464,6 +543,93 @@ async function kinoSave(){
     current.updated=nowISO(); await ghPutFile(current,"update: kino/playlist/fallback");
     byId("statusMsg").textContent="Kino/Fallback gespeichert";
   }catch(e){ alert("Fehler beim Speichern Kino:\n"+e.message); }
+}
+
+/* Vorlagen */
+async function kinoSaveTemplate(){
+  try{
+    await ensureLoaded();
+    ensureKinoArrays();
+    const t={
+      url:byId("kinoUrl").value.trim(),
+      playlist:byId("playlistUrl").value.trim(),
+      mode:byId("kinoMode").value,
+      saved_at:nowISO()
+    };
+    if(!t.url && !t.playlist) return alert("Keine Kino/Playlist URL vorhanden.");
+    current.kinoTemplates.unshift(t);
+    current.updated=nowISO();
+    await ghPutFile(current,"kino: save template");
+    renderKinoLists(); byId("kinoStatusNote").textContent="Vorlage gespeichert.";
+  }catch(e){ alert("Fehler (Kino Vorlage speichern):\n"+e.message); }
+}
+function kinoLoadTemplate(i){
+  const t=current.kinoTemplates[i]; if(!t) return;
+  byId("kinoUrl").value=t.url||""; byId("playlistUrl").value=t.playlist||"";
+  byId("kinoMode").value=t.mode||"60s";
+  kinoPreviewStart();
+}
+async function kinoRemoveTemplate(i){
+  try{ await ensureLoaded(); current.kinoTemplates.splice(i,1);
+    current.updated=nowISO(); await ghPutFile(current,"kino: remove template");
+    renderKinoLists();
+  }catch(e){ alert("Fehler (Vorlage entfernen):\n"+e.message); }
+}
+
+/* Verlauf (Log) */
+async function kinoStartNow(){
+  try{
+    await ensureLoaded(); ensureKinoArrays();
+    const url=byId("kinoUrl").value.trim() || byId("playlistUrl").value.trim();
+    if(!url) return alert("Bitte zuerst Kino/Playlist URL angeben.");
+    current.kinoLog.push({url, startISO:nowISO(), endISO:"", mode:(byId("kinoMode").value||"60s")});
+    current.updated=nowISO();
+    await ghPutFile(current,"kino: start now");
+    renderKinoLists(); byId("kinoStatusNote").textContent="Event gestartet & geloggt.";
+  }catch(e){ alert("Fehler (Kino Start):\n"+e.message); }
+}
+async function kinoEndEvent(){
+  try{
+    await ensureLoaded(); ensureKinoArrays();
+    for(let i=current.kinoLog.length-1;i>=0;i--){
+      if(!current.kinoLog[i].endISO){ current.kinoLog[i].endISO=nowISO(); break; }
+    }
+    current.updated=nowISO(); await ghPutFile(current,"kino: end event");
+    renderKinoLists(); byId("kinoStatusNote").textContent="Event beendet.";
+  }catch(e){ alert("Fehler (Kino Ende):\n"+e.message); }
+}
+function kinoResendFromLog(i){
+  const e=current.kinoLog[i]; if(!e) return;
+  byId("kinoUrl").value=e.url; byId("playlistUrl").value="";
+  byId("kinoMode").value=e.mode||"60s";
+  kinoPreviewStart();
+}
+async function kinoArchiveFromLog(i){
+  try{
+    await ensureLoaded(); ensureKinoArrays();
+    const e=current.kinoLog.splice(i,1)[0]; if(!e) return;
+    if(!e.endISO) e.endISO=nowISO();
+    current.kinoArchive.unshift(e);
+    current.updated=nowISO(); await ghPutFile(current,"kino: log->archive");
+    renderKinoLists();
+  }catch(e){ alert("Fehler (Kino Archivieren):\n"+e.message); }
+}
+
+/* Kino-Archiv Ops */
+async function kinoArchiveRestore(i){
+  try{ await ensureLoaded(); ensureKinoArrays();
+    const e=current.kinoArchive.splice(i,1)[0]; if(!e) return;
+    current.kinoLog.push(e);
+    current.updated=nowISO(); await ghPutFile(current,"kino: archive->log");
+    renderKinoLists();
+  }catch(e){ alert("Fehler (Kino Archiv zurückholen):\n"+e.message); }
+}
+async function kinoArchiveRemove(i){
+  try{ await ensureLoaded(); ensureKinoArrays();
+    current.kinoArchive.splice(i,1);
+    current.updated=nowISO(); await ghPutFile(current,"kino: archive remove");
+    renderKinoLists();
+  }catch(e){ alert("Fehler (Kino Archiv entfernen):\n"+e.message); }
 }
 
 /* Verbinden / Laden */
@@ -481,11 +647,8 @@ async function connect(){
     byId("connStatus").innerHTML=`<span class="ok">Verbunden.</span>`;
     byId("btnReload").disabled=false;
 
-    if(byId("sessRemember").checked){
-      try{ sessionStorage.setItem("FSA_ADMIN_TOKEN", GH.token); }catch{}
-    }
-
-    await loadOrInit(); // automatisch laden
+    if(byId("sessRemember").checked){ try{ sessionStorage.setItem("FSA_ADMIN_TOKEN", GH.token); }catch{} }
+    await loadOrInit();
   }catch(e){ byId("connStatus").innerHTML=`<span class="err">Fehler: ${e.message}</span>`; }
 }
 async function loadOrInit(){
@@ -532,8 +695,11 @@ byId("btnSaveInterval").addEventListener("click",saveInterval);
 byId("btnKinoPreview").addEventListener("click",kinoPreviewStart);
 byId("btnKinoStop").addEventListener("click",kinoPreviewStop);
 byId("btnKinoSave").addEventListener("click",kinoSave);
+byId("btnKinoSaveTemplate").addEventListener("click",kinoSaveTemplate);
+byId("btnKinoStartNow").addEventListener("click",kinoStartNow);
+byId("btnKinoEndEvent").addEventListener("click",kinoEndEvent);
 
-/* Token ggf. aus Sitzung (nur Tab) vorfüllen – NIE persistent speichern */
+/* Session-Token (nur Tab) vorfüllen */
 (function restoreSessionToken(){
   try{
     const t=sessionStorage.getItem("FSA_ADMIN_TOKEN");
