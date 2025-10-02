@@ -49,7 +49,7 @@
         "mode": "60s",
         "host": "youtu.be",
         "played_at": "2025-10-02T07:49:23.089Z",
-        "ended_at": null
+        "ended_at": "2025-10-02T07:50:19.691Z"
       }
     ],
     "archive": [
@@ -75,12 +75,12 @@
         "url": "",
         "volume": 0.25
       },
-      "forceStart": true
+      "forceStart": false
     }
   },
   "fallback": {
     "enabled": true,
     "imageUrl": ""
   },
-  "updated": "2025-10-02T07:49:23.089Z"
+  "updated": "2025-10-02T07:50:19.691Z"
 }
