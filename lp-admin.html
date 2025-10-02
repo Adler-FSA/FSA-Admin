@@ -13,6 +13,8 @@
     table { width:100%; border-collapse:collapse; background:#fff; margin-top:20px; box-shadow:0 4px 12px rgba(0,0,0,.1); }
     th, td { padding:10px; border-bottom:1px solid #ddd; text-align:left; }
     th { background:#0b1220; color:#fff; }
+    a { color:#2563eb; font-weight:600; text-decoration:none; }
+    a:hover { text-decoration:underline; }
     .live { color:green; font-weight:600; }
     .setup { color:orange; font-weight:600; }
     .resetBtn { background:#ef4444; }
@@ -32,6 +34,7 @@
         <th>Status</th>
         <th>Email</th>
         <th>Link</th>
+        <th>Erstellt</th>
         <th>Aktionen</th>
       </tr>
     </thead>
@@ -39,11 +42,11 @@
   </table>
 
   <script>
-    let lpData = {};
+    let ledgerData = [];
 
     async function loadData(){
-      const res = await fetch("data/emails.json?cache=" + Date.now());
-      lpData = await res.json();
+      const res = await fetch("data/ledger.json?cache=" + Date.now());
+      ledgerData = await res.json();
     }
 
     function searchLP(){
@@ -52,16 +55,17 @@
       tbody.innerHTML = "";
       let found = false;
 
-      Object.entries(lpData).forEach(([id, entry])=>{
-        if(id.toLowerCase().includes(query) || (entry.email && entry.email.toLowerCase().includes(query))){
+      ledgerData.forEach(entry=>{
+        if(entry.id.toLowerCase().includes(query) || (entry.email && entry.email.toLowerCase().includes(query))){
           found = true;
           const tr = document.createElement("tr");
           tr.innerHTML = `
-            <td>${id}</td>
+            <td>${entry.id}</td>
             <td class="${entry.mode}">${entry.mode}</td>
             <td>${entry.email ? entry.email : "-"}</td>
-            <td><a href="lp-template.html?id=${id}" target="_blank">🌐 öffnen</a></td>
-            <td><button class="resetBtn" onclick="resetLP('${id}')">Reset</button></td>
+            <td><a href="${entry.url}" target="_blank">🌐 öffnen</a></td>
+            <td>${new Date(entry.created_at).toLocaleString()}</td>
+            <td><button class="resetBtn" onclick="resetLP('${entry.id}')">Reset</button></td>
           `;
           tbody.appendChild(tr);
         }
