@@ -21,7 +21,7 @@
   ],
   "interval": 15,
   "kino": {
-    "url": "",
+    "url": "https://youtu.be/5Z_X_hV5Nes?si=HkMHzFAwxCqGZpO1",
     "playlist": "",
     "mode": "60s",
     "startISO": "",
@@ -81,7 +81,7 @@
     "enabled": true,
     "imageUrl": ""
   },
-  "updated": "2025-10-02T09:50:08.639Z",
+  "updated": "2025-10-02T09:53:12.669Z",
   "settings": {
     "guardSec": 10,
     "hostPref": "auto",
