@@ -24,11 +24,35 @@
     "url": "",
     "playlist": "",
     "mode": "60s",
-    "startISO": ""
+    "startISO": "",
+    "library": [
+      {
+        "url": "https://youtu.be/J7QYQ-Qj-48?si=Yv1L-_-TKG_crSW-",
+        "playlist": "",
+        "mode": "60s",
+        "startISO": "",
+        "saved_at": "2025-10-02T07:28:06.503Z"
+      }
+    ],
+    "history": [],
+    "archive": [],
+    "preRoll": {
+      "enabled": false,
+      "images": [],
+      "slideSec": 6,
+      "transition": "fade",
+      "countdown": true,
+      "overlayText": "",
+      "bgm": {
+        "url": "",
+        "volume": 0.25
+      },
+      "forceStart": false
+    }
   },
   "fallback": {
     "enabled": true,
     "imageUrl": ""
   },
-  "updated": "2025-10-01T17:34:28.336Z"
+  "updated": "2025-10-02T07:28:06.503Z"
 }
