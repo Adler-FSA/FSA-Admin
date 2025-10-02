@@ -6,7 +6,7 @@
 <title>Finanzielle Souveränitäts Akademie</title>
 <style>
   :root{
-    --bg-card: rgba(15,15,25,0.85);
+    --bg-card: rgba(15,15,25,0.65); /* halbtransparent für Wolken-Effekt */
     --text: #f2f2f2;
     --muted: #aaa;
     --accent: #d4af37; 
@@ -15,29 +15,44 @@
     --radius: 14px;
     --maxw: 1200px;
   }
+
   body{font-family:Inter,system-ui,sans-serif;color:var(--text);background:#000;margin:0}
   h1,h2,h3{font-family:Montserrat,sans-serif;font-weight:700;line-height:1.2}
-  header{position:fixed;top:0;left:0;width:100%;display:flex;justify-content:center;align-items:center;padding:20px 40px;z-index:1000;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);color:#fff}
+
+  /* Menü oben */
+  header{
+    position:fixed;top:0;left:0;width:100%;
+    display:flex;justify-content:center;align-items:center;
+    padding:20px 40px;z-index:1000;
+    background:rgba(0,0,0,.6);backdrop-filter:blur(6px);color:#fff
+  }
   header nav{display:flex;gap:40px}
-  header a{color:#fff;text-decoration:none;font-weight:600;font-size:1.05rem;font-family:Montserrat,sans-serif}
-  header a:hover{color:var(--accent)}
+  header a{
+    color:#fff;text-decoration:none;font-weight:600;font-size:1.05rem;
+    font-family:Montserrat,sans-serif;
+    padding:6px 14px;border-radius:8px;
+    box-shadow:0 0 14px rgba(255,255,255,0.15);
+    background:rgba(0,0,0,0.4)
+  }
+  header a:hover{color:var(--accent);box-shadow:0 0 18px rgba(212,175,55,0.7)}
 
-  /* 🎬 Hintergrund Video */
-  .bg-video{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-2;pointer-events:none;overflow:hidden}
-  #hero-video{width:100%;height:100%;object-fit:cover}
+  /* Video Hintergrund */
+  .bg-video{
+    position:fixed;top:0;left:0;width:100%;height:100%;
+    z-index:-2;pointer-events:none;background:#000
+  }
+  .bg-video iframe{width:100%;height:100%;border:none}
 
+  /* Layout */
   section{padding:100px 0;position:relative;z-index:2}
   .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
   .grid{display:grid;gap:32px}
   .grid.cols-2{grid-template-columns:repeat(2,1fr)}
   @media (max-width:900px){.grid.cols-2{grid-template-columns:1fr}}
 
-  @keyframes float{0%{transform:translateY(0)}50%{transform:translateY(-5px)}100%{transform:translateY(0)}}
-  @keyframes pulseBorder{
-    0%{box-shadow:var(--shadow);border:1px solid rgba(212,175,55,0)}
-    50%{box-shadow:0 0 20px rgba(212,175,55,0.7),var(--shadow);border:1px solid rgba(212,175,55,0.6)}
-    100%{box-shadow:var(--shadow);border:1px solid rgba(212,175,55,0)}
-  }
+  /* Animationen */
+  @keyframes float{0%{transform:translateY(0)}50%{transform:translateY(-6px)}100%{transform:translateY(0)}}
+  @keyframes pulseBorder{0%{box-shadow:var(--shadow);border:1px solid rgba(212,175,55,0)}50%{box-shadow:0 0 25px rgba(212,175,55,0.7),var(--shadow);border:1px solid rgba(212,175,55,0.6)}100%{box-shadow:var(--shadow);border:1px solid rgba(212,175,55,0)}}
 
   .card{
     background:var(--bg-card);
@@ -45,58 +60,63 @@
     padding:32px;
     backdrop-filter:blur(10px);
     color:var(--text);
-    animation:float 9s ease-in-out infinite,pulseBorder 6s ease-in-out infinite;
+    animation:float 9s ease-in-out infinite,pulseBorder 6s ease-in-out infinite
   }
 
+  /* Buttons */
   .btn{
-    display:inline-block;margin-top:20px;background:var(--accent);color:#000;
-    padding:14px 28px;border-radius:999px;font-weight:600;
-    text-decoration:none;font-family:Montserrat,sans-serif;font-size:1rem;
+    display:inline-block;margin-top:20px;
+    background:var(--accent);color:#000;
+    padding:14px 28px;border-radius:999px;
+    font-weight:600;text-decoration:none;
+    font-family:Montserrat,sans-serif;font-size:1rem;
     box-shadow:0 4px 12px rgba(0,0,0,.4)
   }
   .btn:hover{background:#e5c85f}
   .btn.full{display:block;width:100%;text-align:center}
 
+  /* Akkordeon */
   .accordion-btn{
     width:100%;background:none;border:none;outline:none;
     text-align:left;padding:16px;font-size:1.1rem;font-weight:600;
     color:var(--accent);cursor:pointer;
-    border-bottom:1px solid rgba(255,255,255,.2);transition:background .3s
+    border-bottom:1px solid rgba(255,255,255,.2);
+    transition:background .3s
   }
   .accordion-btn:hover{background:rgba(255,255,255,0.05)}
   .accordion-content{display:none;padding:0 16px 16px;color:var(--text);font-size:1rem;line-height:1.6}
   .accordion-item.active .accordion-content{display:block}
 
-  /* 🎵 Musik Button */
+  /* Musik-Button */
   #musikBtn{
-    position:fixed;bottom:30px;right:30px;z-index:10;
-    padding:14px 22px;background:rgba(0,0,0,0.7);color:#fff;
-    border:none;border-radius:50px;font-size:1.1rem;cursor:pointer;
-    font-family:Inter,sans-serif;box-shadow:0 6px 14px rgba(0,0,0,0.5);
-    animation:float 8s ease-in-out infinite;
+    position:fixed;bottom:20px;right:20px;z-index:10;
+    padding:10px 18px;background:rgba(0,0,0,0.6);
+    color:#fff;border:none;border-radius:50px;
+    font-size:1rem;cursor:pointer;font-family:Inter,sans-serif;
+    box-shadow:0 6px 14px rgba(0,0,0,0.5)
   }
 
-  .footer{padding:60px 0;color:var(--muted);font-size:1rem;border-top:1px solid rgba(255,255,255,.2)}
+  footer{padding:60px 0;color:var(--muted);font-size:1rem;text-align:center}
 </style>
 </head>
 <body>
 
 <header>
   <nav>
-    <a href="#mentor">Mentor</a>
-    <a href="#accordion">Reise</a>
-    <a href="#cta">Start</a>
+    <a href="#hero">Startseite</a>
+    <a href="#mentor">Campus</a>
+    <a href="#accordion">Grundkurs/Anfänger</a>
+    <a href="#cta">Onboarding</a>
+    <a href="#cta">Krypto-Glossar Pro</a>
   </nav>
 </header>
 
-<!-- 🎬 Video mit Fallback Adler -->
+<!-- Hintergrundvideo: Adler Hero -->
 <div class="bg-video">
-  <video id="hero-video" autoplay muted loop playsinline>
-    <source src="media/adler-hero.mp4" type="video/mp4">
-    Dein Browser unterstützt kein Video.
-  </video>
+  <iframe src="https://www.youtube.com/embed/miWBKSszEIw?autoplay=1&mute=1&loop=1&playlist=miWBKSszEIw&controls=0&modestbranding=1&showinfo=0" allow="autoplay; fullscreen"></iframe>
 </div>
 
+<!-- Hero -->
 <section id="hero">
   <div class="wrap grid cols-2">
     <div class="card">
@@ -124,6 +144,7 @@
   </div>
 </section>
 
+<!-- Mentor -->
 <section id="mentor">
   <div class="wrap">
     <div class="card" style="text-align:center">
@@ -133,6 +154,7 @@
   </div>
 </section>
 
+<!-- Reise -->
 <section id="accordion">
   <div class="wrap">
     <div class="card">
@@ -146,21 +168,22 @@
         <div class="accordion-content"><p>Du bist nicht allein – viele Menschen gehen diesen Weg. Die Community wächst täglich.</p></div>
       </div>
       <div class="accordion-item">
-        <button class="accordion-btn">🧠 Viele Tausende entdecken jeden Tag die Krypto-Welt</button>
+        <button class="accordion-btn">🧠 Viele Tausende entdecken täglich die Krypto-Welt</button>
         <div class="accordion-content"><p>Die Zukunft ist digital. Blockchain, Krypto und KI eröffnen dir neue Einkommensmöglichkeiten.</p></div>
       </div>
       <div class="accordion-item">
-        <button class="accordion-btn">😨 Viele haben Angst – weil sie keine Ahnung haben</button>
-        <div class="accordion-content"><p>Angst entsteht aus Unwissenheit. Wissen schafft Sicherheit. Genau deshalb gibt es diesen Kurs.</p></div>
+        <button class="accordion-btn">😨 Angst entsteht aus Unwissenheit</button>
+        <div class="accordion-content"><p>Wissen schafft Sicherheit. Genau deshalb gibt es diesen Kurs.</p></div>
       </div>
       <div class="accordion-item">
-        <button class="accordion-btn">📚 Deshalb gibt es die Finanzielle Souveränität Online Akademie</button>
+        <button class="accordion-btn">📚 Deshalb gibt es die Akademie</button>
         <div class="accordion-content"><p>Hier bekommst du alles, was du brauchst: Klarheit, Praxiswissen und die Tools für deine Freiheit.</p></div>
       </div>
     </div>
   </div>
 </section>
 
+<!-- CTA -->
 <section id="cta">
   <div class="wrap">
     <div class="card" style="text-align:center;padding:50px;max-width:780px;margin:0 auto">
@@ -170,75 +193,38 @@
       <p style="margin-top:20px;font-size:1rem;color:var(--muted)">Oder kopiere die Adresse direkt:</p>
       <p style="font-size:1.2rem;font-weight:600;color:var(--accent)">EMAIL_PLACEHOLDER</p>
       <button onclick="navigator.clipboard.writeText('EMAIL_PLACEHOLDER').then(()=>alert('📋 E-Mail kopiert: EMAIL_PLACEHOLDER'))" style="margin-top:8px;padding:10px 16px;background:var(--accent);color:#000;border:none;border-radius:6px;cursor:pointer;font-weight:600">📋 E-Mail kopieren</button>
-      <p style="margin-top:25px;font-size:1rem;color:var(--text)">👉 Über diese E-Mail erhältst du direkten Kontakt zu einem menschlichen Mentor, der die Akademie bereits erfolgreich abgeschlossen hat.</p>
-      <p style="margin-top:15px;font-size:1.2rem;font-weight:700;color:var(--accent-2)">✅ Von deinem menschlichen Mentor erhältst du außerdem deine persönlichen Zugangsdaten zum Grundkurs.</p>
+      <p style="margin-top:25px;font-size:1rem;color:var(--text)">👉 Über diese E-Mail erhältst du direkten Kontakt zu einem menschlichen Mentor.</p>
+      <p style="margin-top:15px;font-size:1.2rem;font-weight:700;color:var(--accent-2)">✅ Von deinem Mentor erhältst du außerdem deine Zugangsdaten zum Grundkurs.</p>
     </div>
   </div>
 </section>
 
-<footer class="footer">
-  © 2025 Finanzielle Souveränität Akademie – Alle Rechte vorbehalten
+<footer>
+  <p>© 2025 Finanzielle Souveränitäts Akademie</p>
+  <p><em>„Wissen ist Macht – angewandtes Wissen ist Freiheit.“</em></p>
 </footer>
 
-<!-- 🎵 Musik -->
-<button id="musikBtn">🎵 Musik starten</button>
-<audio id="bg-music" loop>
-  <source src="media/terra-mater-inspiring-cinematic-epic-272565.mp3" type="audio/mpeg">
+<!-- Musik -->
+<audio id="bgMusic" loop>
+  <source src="terra-mater-inspiring-cinematic-epic-272565.mp3" type="audio/mpeg">
 </audio>
+<button id="musikBtn">🎵 Musik starten</button>
 
 <script>
-  // 🎵 Musiksteuerung
-  const musikBtn = document.getElementById("musikBtn");
-  const music = document.getElementById("bg-music");
-  let playing = false;
-  musikBtn.addEventListener("click", ()=>{
-    if(playing){
-      music.pause(); musikBtn.textContent="🎵 Musik starten";
-    } else {
-      music.play(); musikBtn.textContent="⏸ Musik stoppen";
-    }
-    playing=!playing;
+  // Musikbutton
+  const musikBtn=document.getElementById('musikBtn');
+  const bgMusic=document.getElementById('bgMusic');
+  musikBtn.addEventListener('click',()=>{
+    if(bgMusic.paused){bgMusic.play();musikBtn.textContent="🎵 Musik stoppen";}
+    else{bgMusic.pause();musikBtn.textContent="🎵 Musik starten";}
   });
 
-  // 🎬 + 🎵 Rotator Integration
-  async function initRotator() {
-    try {
-      let res = await fetch("rotator.json");
-      if (!res.ok) throw new Error("Rotator nicht verfügbar");
-      let data = await res.json();
-
-      // Video wechseln
-      if (data.videos && data.videos.length > 0) {
-        let hero = document.getElementById("hero-video");
-        hero.innerHTML = "";
-        let src = document.createElement("source");
-        src.src = data.videos[0].url;
-        src.type = "video/mp4";
-        hero.appendChild(src);
-        hero.load(); hero.play();
-      }
-      // Musik wechseln
-      if (data.music && data.music.length > 0) {
-        let audio = document.getElementById("bg-music");
-        audio.innerHTML = "";
-        let src = document.createElement("source");
-        src.src = data.music[0].url;
-        src.type = "audio/mpeg";
-        audio.appendChild(src);
-        audio.load();
-      }
-    } catch(e){ console.log("Fallback aktiv:", e.message); }
-  }
-  initRotator();
-
-  // Accordion
+  // Akkordeon
   document.querySelectorAll('.accordion-btn').forEach(btn=>{
     btn.addEventListener('click',()=>{
-      const item = btn.parentElement;
-      item.classList.toggle('active');
+      btn.parentElement.classList.toggle('active');
     });
   });
 </script>
-
 </body>
 </html>
