@@ -75,13 +75,21 @@
         "volume": 0.25
       },
       "forceStart": false
-    }
+    },
+    "templates": [
+      {
+        "url": "https://youtu.be/5Z_X_hV5Nes?si=HkMHzFAwxCqGZpO1",
+        "playlist": "",
+        "title": "",
+        "saved_at": "2025-10-02T09:53:41.269Z"
+      }
+    ]
   },
   "fallback": {
     "enabled": true,
     "imageUrl": ""
   },
-  "updated": "2025-10-02T09:53:12.669Z",
+  "updated": "2025-10-02T09:53:41.269Z",
   "settings": {
     "guardSec": 10,
     "hostPref": "auto",
