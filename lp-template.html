@@ -1,447 +1,526 @@
 <!doctype html>
 <html lang="de">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Finanzielle Souveränitäts Akademie</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Finanzielle Souveränität – Landingpage</title>
+<meta name="color-scheme" content="dark light" />
 <style>
   :root{
-    --bg-card: rgba(15,15,25,0.65);
-    --text: #f2f2f2;
-    --muted: #b9c1cf;
-    --accent: #d4af37;   /* Gold */
-    --accent-2:#1cc2a0;  /* Türkis */
-    --shadow: 0 25px 50px rgba(0,0,0,.65);
-    --radius: 14px;
+    --cloud: rgba(20,22,28,0.70);             /* „Wolken“-Fläche */
+    --cloud-strong: rgba(20,22,28,0.82);
+    --text: #f1f5f9;
+    --muted:#cbd5e1;
+    --accent:#facc15;                          /* Goldgelb */
+    --mint:#00c2a7;                            /* Türkis-Akzent */
+    --glow: 0 0 40px rgba(250,204,21,.35), 0 0 12px rgba(250,204,21,.25);
+    --glow-soft: 0 0 24px rgba(250,204,21,.22);
+    --radius: 16px;
+    --shadow: 0 18px 60px rgba(0,0,0,.55);
     --maxw: 1200px;
   }
 
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color:var(--text);background:#000;margin:0;overflow-x:hidden}
-
-  /* ===== NAV ===== */
-  header{
-    position:fixed;top:0;left:0;width:100%;
-    display:flex;justify-content:center;align-items:center;
-    padding:18px 24px;z-index:1000;
-    background:rgba(0,0,0,.6);backdrop-filter:blur(6px);
-  }
-  header nav{display:flex;gap:28px;flex-wrap:wrap}
-  header a{
-    color:#fff;text-decoration:none;font-weight:600;font-size:1rem;
-    padding:7px 14px;border-radius:10px;
-    background:rgba(10,10,14,0.45);
-    box-shadow:
-      0 0 15px rgba(255,255,255,0.16),
-      0 0 35px rgba(212,175,55,0.10);
-    transition:.25s ease;
-  }
-  header a:hover{
-    color:#fff;
-    box-shadow:
-      0 0 22px rgba(255,255,255,0.26),
-      0 0 55px rgba(212,175,55,0.28);
+  html,body{height:100%;margin:0}
+  body{
+    font-family: Inter, Segoe UI, Roboto, system-ui, -apple-system, Arial, sans-serif;
+    color: var(--text);
+    background: #000; overflow-x:hidden;
   }
 
-  /* ===== HERO VIDEO (FALLBACK ADLER) ===== */
-  .bg-video{
-    position:fixed;inset:0;z-index:-2;pointer-events:none;background:#000;overflow:hidden;
+  /* ===== Adler-Video: immer im Hintergrund ===== */
+  .bg{
+    position:fixed; inset:0; z-index:-2; overflow:hidden;
+    background:#000;
   }
-  #heroVideo{width:100%;height:100%;object-fit:cover}
-
-  /* ===== LAYOUT ===== */
-  section{padding:140px 0 90px;position:relative;z-index:2}
-  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
-  .grid{display:grid;gap:32px}
-  .cols-2{grid-template-columns:1.05fr .95fr}
-  @media (max-width:1000px){.cols-2{grid-template-columns:1fr}}
-
-  /* ===== CLOUD / GLOW ===== */
-  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-  @keyframes pulseBorder{
-    0%{box-shadow:var(--shadow), 0 0 0 0 rgba(212,175,55,0)}
-    50%{box-shadow:var(--shadow), 0 0 35px 4px rgba(212,175,55,0.55)}
-    100%{box-shadow:var(--shadow), 0 0 0 0 rgba(212,175,55,0)}
+  .bg video, .bg iframe{
+    position:absolute; inset:0; width:100%; height:100%;
+    object-fit:cover; border:0;
   }
+  /* Rotator-Overlay (falls aktiv) ersetzt den Hintergrund-Clip */
+  #rotatorFrame{ display:none; }
+
+  /* ===== Top-Menü (schwebende Buttons, Position wie Vorbild) ===== */
+  .topbar{
+    position:sticky; top:0; z-index:5;
+    display:flex; justify-content:center; gap:18px;
+    padding:14px 10px;
+    background:linear-gradient(to bottom, rgba(0,0,0,.65), rgba(0,0,0,.15) 60%, transparent);
+    backdrop-filter: blur(6px);
+  }
+  .toplink{
+    color:#fff; text-decoration:none; font-weight:700; font-size:15px;
+    padding:10px 16px; border-radius:999px;
+    background: rgba(0,0,0,.55);
+    border:1px solid rgba(255,255,255,.08);
+    box-shadow: var(--glow-soft);
+    transition: transform .15s ease, background .2s ease, box-shadow .2s ease;
+  }
+  .toplink:hover{ transform: translateY(-1px); background:rgba(0,0,0,.7); box-shadow: var(--glow); }
+
+  /* ===== Sektionen / Karten mit „Wolken“-Glas + Glow ===== */
+  section{ padding:56px 16px; }
+  .wrap{ max-width:var(--maxw); margin:0 auto; }
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:28px; }
+  @media (max-width:960px){ .grid2{ grid-template-columns:1fr; } }
+
   .card{
-    background:var(--bg-card);
-    border-radius:var(--radius);
-    padding:32px 30px;
-    backdrop-filter:blur(10px);
-    color:var(--text);
-    animation:float 9s ease-in-out infinite, pulseBorder 7s ease-in-out infinite;
-    line-height:1.6;
+    background: var(--cloud);
+    backdrop-filter: blur(12px);
+    border-radius: var(--radius);
+    padding: 28px;
+    box-shadow: var(--shadow), var(--glow-soft);
+    border: 1px solid rgba(255,255,255,.06);
   }
-  .card h1,.card h2,.card h3{margin:0 0 12px}
-  .muted{color:var(--muted)}
+  .cloud-strong{ background: var(--cloud-strong); }
 
-  /* Buttons */
+  h1,h2,h3{ margin:0 0 14px; font-weight:800; line-height:1.15; }
+  h1 .mint{ color: var(--mint); }
+
+  .lead{ color: var(--muted); line-height:1.7; }
+
+  .quote{
+    font-style: italic; text-align:center; color:#e5e7eb;
+  }
+
   .btn{
-    display:inline-block;margin-top:18px;
-    background:var(--accent);color:#000;
-    padding:14px 28px;border-radius:999px;
-    font-weight:700;text-decoration:none;font-size:1rem;
-    box-shadow:0 4px 12px rgba(0,0,0,.45);
-    transition:transform .2s ease, box-shadow .2s ease, background .2s ease;
+    display:inline-flex; align-items:center; justify-content:center;
+    gap:10px; padding:12px 22px;
+    background: var(--accent); color:#111; font-weight:800; border:0;
+    border-radius: 999px; cursor:pointer; text-decoration:none;
+    box-shadow: 0 10px 24px rgba(250,204,21,.25);
+    transition: transform .15s ease, filter .2s ease;
   }
-  .btn:hover{background:#e7c85f;transform:translateY(-2px)}
-  .btn.full{display:block;width:100%;text-align:center}
+  .btn:hover{ transform: translateY(-1px); filter:brightness(1.05); }
 
-  /* Vorteile */
-  ul.benefits{padding-left:0;margin:8px 0 0}
-  ul.benefits li{list-style:none;margin:8px 0}
-
-  /* Accordion */
-  .accordion-item{border-bottom:1px solid rgba(255,255,255,.2)}
-  .accordion-btn{
-    width:100%;background:none;border:none;outline:none;
-    text-align:left;padding:16px 6px;font-size:1.08rem;font-weight:700;
-    color:var(--accent);cursor:pointer;transition:background .25s ease;
+  /* ===== Kino-Fenster (leer, wird extern bespielt) ===== */
+  .kinoShell{
+    margin-top: 22px;
+    border-radius: var(--radius);
+    border:1px solid rgba(255,255,255,.08);
+    box-shadow: var(--shadow), var(--glow);
+    padding: 12px;
+    background: linear-gradient(to bottom, rgba(0,0,0,.25), rgba(0,0,0,.15));
   }
-  .accordion-btn:hover{background:rgba(255,255,255,.05)}
-  .accordion-content{display:none;padding:0 6px 16px}
-  .accordion-item.active .accordion-content{display:block}
-
-  /* Panorama-Kino (leer) */
-  #kino{
-    width:100%;height:420px;margin:80px auto 0;
-    border-radius:18px;border:2px solid rgba(212,175,55,0.85);
-    box-shadow:
-      0 0 45px rgba(212,175,55,0.55),
-      inset 0 0 60px rgba(255,255,255,0.08);
-    background:transparent;
-    animation:float 12s ease-in-out infinite;
+  .kinoViewport{
+    border-radius: 14px;
+    height: 52vh; min-height: 360px;
+    background: radial-gradient(ellipse at 30% 20%, rgba(255,255,255,.08), rgba(0,0,0,.35) 60%, rgba(0,0,0,.55));
+    backdrop-filter: blur(10px);
   }
 
-  /* Musik-Toggle (kleine Wolke) */
-  #musikBtn{
-    position:fixed;right:22px;bottom:22px;z-index:1200;
-    padding:11px 18px;border:none;border-radius:999px;
-    background:rgba(10,10,14,0.55);color:#fff;font-weight:700;
-    box-shadow:
-      0 0 16px rgba(255,255,255,0.20),
-      0 0 32px rgba(212,175,55,0.18);
-    backdrop-filter:blur(6px);
-    cursor:pointer;transition:.25s ease;
-    animation:float 8s ease-in-out infinite;
-  }
-  #musikBtn:hover{
-    box-shadow:
-      0 0 22px rgba(255,255,255,0.28),
-      0 0 48px rgba(212,175,55,0.26);
+  /* ===== CTA ===== */
+  .ctaBox{ max-width: 780px; margin:0 auto; text-align:center; }
+
+  /* ===== Musik-Button unten rechts ===== */
+  #musicToggle{
+    position: fixed; right: 20px; bottom: 20px; z-index: 6;
+    background: rgba(0,0,0,.65); border:1px solid rgba(255,255,255,.08);
+    color:#fff; padding:12px 16px; border-radius:999px;
+    box-shadow: var(--glow-soft); backdrop-filter: blur(8px);
+    cursor:pointer; font-weight:700;
   }
 
-  /* Begrüßungs-Overlay (nur bei mode: setup) */
-  #setupOverlay{
-    position:fixed;inset:0;z-index:1100;display:none;
-    align-items:center;justify-content:center;
-    background:rgba(0,0,0,0.55);backdrop-filter:blur(3px);
+  /* ===== Begrüßungs-Overlay ===== */
+  .overlay{
+    position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+    background: radial-gradient(circle at 50% 30%, rgba(0,0,0,.35), rgba(0,0,0,.85));
+    z-index: 8; padding:16px;
   }
-  #setupBox{
-    max-width:560px;margin:0 16px;padding:28px;border-radius:16px;
-    background:rgba(15,15,25,0.85);color:#fff;text-align:center;
-    box-shadow:
-      0 0 35px rgba(255,255,255,0.20),
-      0 0 60px rgba(212,175,55,0.25);
-    animation:float 8s ease-in-out infinite;
+  .welcome{
+    width:min(680px, 96vw);
+    background: var(--cloud-strong); border-radius: 18px;
+    border:1px solid rgba(255,255,255,.08);
+    box-shadow: var(--shadow), var(--glow);
+    padding: 26px 22px;
+    text-align:center;
   }
-  #setupBox input{
-    width:100%;max-width:360px;margin:10px auto;padding:12px 14px;
-    border-radius:10px;border:1px solid rgba(255,255,255,.15);outline:none;
-    background:rgba(0,0,0,.35);color:#fff;font-size:1rem;
+  .welcome h3{ margin:6px 0 10px; font-size: 1.6rem; }
+  .welcome p{ margin: 4px 0; color: var(--muted); }
+  .welcome .row{ display:flex; gap:10px; margin-top:14px; }
+  .welcome input{
+    flex:1; min-width:200px; padding:12px 14px; border-radius:10px;
+    border:1px solid rgba(255,255,255,.15); background: rgba(0,0,0,.35);
+    color:#fff; font-weight:600;
   }
-  #setupBox .row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:8px}
-  #setupBox .row button{
-    padding:12px 18px;border:none;border-radius:10px;cursor:pointer;font-weight:800
-  }
-  #setupConfirm{background:var(--accent);color:#000}
-  #setupSkip{background:rgba(255,255,255,.12);color:#fff}
-  #setupNote{font-size:.95rem;color:var(--muted);margin-top:10px}
+  .welcome small{ display:block; margin-top:10px; color: var(--muted); }
 
-  footer{padding:70px 0 80px;color:#cbd5e1;font-size:1rem;text-align:center}
+  /* sanfter Auftritt */
+  .fade-in{ animation:fade .5s ease both; }
+  @keyframes fade{ from{opacity:0; transform: translateY(6px)} to{opacity:1; transform:none} }
+
+  footer{
+    padding: 40px 16px; text-align:center; color: var(--muted);
+  }
+  .divider{
+    opacity:.7; margin:20px auto; max-width:920px; height:1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.25), transparent);
+  }
 </style>
 </head>
 <body>
 
-<!-- ===== NAV (Links zur Original-Website) ===== -->
-<header>
-  <nav>
-    <a href="https://www.finanziellesouveraenitaet.de/startseite" target="_blank" rel="noopener">Startseite</a>
-    <a href="https://www.finanziellesouveraenitaet.de/campus" target="_blank" rel="noopener">Campus</a>
-    <a href="https://www.finanziellesouveraenitaet.de/grundkurs-anfaenger" target="_blank" rel="noopener">Grundkurs/Anfänger</a>
-    <a href="https://www.finanziellesouveraenitaet.de/onboarding" target="_blank" rel="noopener">Onboarding</a>
-    <a href="https://www.finanziellesouveraenitaet.de/krypto-glossar-pro" target="_blank" rel="noopener">Krypto-Glossar Pro</a>
-  </nav>
-</header>
+<!-- ===== Hintergrund: Adler Loop (Fallback) + optionaler Rotator ===== -->
+<div class="bg" aria-hidden="true">
+  <!-- Rotator: wird per JS sichtbar, wenn aktiv -->
+  <iframe id="rotatorFrame" title="Rotator" allow="autoplay; fullscreen"></iframe>
 
-<!-- ===== HINTERGRUND: ADLER FALLBACK ===== -->
-<div class="bg-video" aria-hidden="true">
-  <video id="heroVideo" autoplay muted loop playsinline>
-    <source src="media/adler-hero.mp4" type="video/mp4">
-  </video>
+  <!-- Fallback Adler (lokal / YouTube – hier YouTube als sichere Quelle) -->
+  <iframe
+    id="eagleBg"
+    title="Adler-Loop"
+    src="https://www.youtube.com/embed/miWBKSszEIw?autoplay=1&mute=1&loop=1&playlist=miWBKSszEIw&controls=0&modestbranding=1&playsinline=1"
+    allow="autoplay; fullscreen"
+  ></iframe>
 </div>
 
-<!-- ===== HERO / INTRO ===== -->
-<section id="hero" aria-label="Einleitung">
-  <div class="wrap grid cols-2">
-    <div class="card" style="hyphens:auto">
-      <h1>Dein Geld.<br><span style="color:var(--accent-2)">Deine Freiheit.</span></h1>
-      <p>Die Welt verändert sich: Inflation, KI, Blockchain. Hier lernst du, wie du souverän wirst.</p>
+<!-- ===== Autoplay Musik (mit Fallback) ===== -->
+<audio id="bgMusic" preload="auto" loop>
+  <!-- Deine MP3 aus dem Repo (Template 002) -->
+  <source src="https://adler-fsa.github.io/FSA-Admin/media/loop-theme.mp3" type="audio/mpeg" />
+</audio>
+<button id="musicToggle">🎵 Musik starten</button>
+
+<!-- ===== Schwebende Menü-Buttons (genau die Ziel-Links) ===== -->
+<nav class="topbar">
+  <a class="toplink" href="https://www.finanziellesouveraenitaet.de/startseite" target="_blank" rel="noopener">Startseite</a>
+  <a class="toplink" href="https://www.finanziellesouveraenitaet.de/campus" target="_blank" rel="noopener">Campus</a>
+  <a class="toplink" href="https://www.finanziellesouveraenitaet.de/grundkurs-anfaenger" target="_blank" rel="noopener">Grundkurs/Anfänger</a>
+  <a class="toplink" href="https://www.finanziellesouveraenitaet.de/onboarding" target="_blank" rel="noopener">Onboarding</a>
+  <a class="toplink" href="https://www.finanziellesouveraenitaet.de/krypto-glossar-pro" target="_blank" rel="noopener">Krypto-Glossar Pro</a>
+</nav>
+
+<!-- ===== Hero-Blöcke wie im Original ===== -->
+<section>
+  <div class="wrap grid2 fade-in">
+    <div class="card cloud-strong">
+      <h1>Dein Geld.<br><span class="mint">Deine Freiheit.</span></h1>
+      <p class="lead">Die Welt verändert sich: Inflation, KI, Blockchain. Hier lernst du, wie du souverän wirst.</p>
       <p><strong>Nie mehr Fremdbestimmung.</strong></p>
       <p>Wer es wirklich will, folgt der Einladung. Viele Tausende entdecken jeden Tag die Krypto-Welt.</p>
       <p>Viele haben Angst – weil sie eben keine Ahnung haben. Genau deshalb gibt es die <strong>Finanzielle Souveränität Online Akademie</strong>.</p>
       <a href="#cta" class="btn">Jetzt starten</a>
     </div>
 
-    <div style="display:flex;flex-direction:column;gap:22px">
-      <div class="card" style="font-style:italic;text-align:center">„Eine Investition in Wissen bringt die besten Zinsen.“ – Franklin</div>
-      <div class="card">
-        <h2>Deine Vorteile</h2>
-        <ul class="benefits">
-          <li>💰 Vermögen schützen</li>
-          <li>🔑 Zugang zu Krypto</li>
-          <li>🤖 Einkommen mit KI</li>
-          <li>🌐 Klarheit statt Chaos</li>
-        </ul>
-        <p class="muted" style="margin-top:12px;text-align:center">All das bekommst du schon im kostenlosen Grundkurs.</p>
-      </div>
-      <div class="card" style="font-style:italic;text-align:center">„Das Wichtigste ist, in dich selbst zu investieren.“ – Buffett</div>
+    <div class="card quote">„Eine Investition in Wissen bringt die besten Zinsen.“ – Franklin</div>
+
+    <div class="card cloud-strong">
+      <h2>Deine Vorteile</h2>
+      <ul style="line-height:1.9; padding-left: 1.2rem; margin: 10px 0 6px">
+        <li>💰 Vermögen schützen</li>
+        <li>🔑 Zugang zu Krypto</li>
+        <li>🤖 Einkommen mit KI</li>
+        <li>🌐 Klarheit statt Chaos</li>
+      </ul>
+      <p class="lead" style="text-align:center;margin-top:10px">All das bekommst du schon im kostenlosen Grundkurs.</p>
     </div>
+
+    <div class="card quote">„Das Wichtigste ist, in dich selbst zu investieren.“ – Buffett</div>
   </div>
 </section>
 
-<!-- ===== MENTOR ===== -->
-<section id="mentor" aria-label="Digitaler Mentor">
-  <div class="wrap">
-    <div class="card" style="text-align:center;hyphens:auto">
+<!-- ===== Dein Digitaler Mentor ===== -->
+<section>
+  <div class="wrap fade-in">
+    <div class="card cloud-strong" style="text-align:center">
       <h2>Dein Digitaler Mentor</h2>
-      <p>Dein persönlicher Begleiter durch die Akademie: Er zeigt dir Schritt für Schritt, wie du Ängste überwindest, Wissen aufbaust und souverän in der neuen Welt bestehst.</p>
+      <p class="lead">Dein persönlicher Begleiter durch die Akademie: Er zeigt dir Schritt für Schritt, wie du Ängste überwindest, Wissen aufbaust und souverän in der neuen Welt bestehst.</p>
     </div>
   </div>
 </section>
 
-<!-- ===== REISE / AKKORDEON ===== -->
-<section id="reise" aria-label="Deine Reise">
-  <div class="wrap">
-    <div class="card">
+<!-- ===== Reise (als aufklappfreie, saubere Liste – Zeilen umbrechen schön) ===== -->
+<section>
+  <div class="wrap fade-in">
+    <div class="card cloud-strong">
       <h2>Deine Reise zur finanziellen Souveränität</h2>
+      <div style="height:8px"></div>
+      <div class="lead">🚀 Nie mehr Fremdbestimmung</div>
+      <p class="lead" style="margin-top:6px">Starte deinen eigenen Weg. Wer losgeht, entdeckt die Chancen, die in Blockchain, KI und Krypto stecken.</p>
+      <hr class="divider" />
+      <div class="lead">🎆 Wer es wirklich will, folgt der Einladung</div>
+      <p class="lead" style="margin-top:6px">Du bist nicht allein – viele Menschen gehen diesen Weg. Die Community wächst täglich.</p>
+      <hr class="divider" />
+      <div class="lead">🧠 Viele Tausende entdecken täglich die Krypto-Welt</div>
+      <p class="lead" style="margin-top:6px">Die Zukunft ist digital. Blockchain, Krypto und KI eröffnen dir neue Einkommensmöglichkeiten.</p>
+      <hr class="divider" />
+      <div class="lead">😨 Angst entsteht aus Unwissenheit</div>
+      <p class="lead" style="margin-top:6px">Wissen schafft Sicherheit. Genau deshalb gibt es diesen Kurs.</p>
+      <hr class="divider" />
+      <div class="lead">📚 Deshalb gibt es die Akademie</div>
+      <p class="lead" style="margin-top:6px">Hier bekommst du alles, was du brauchst: Klarheit, Praxiswissen und die Tools für deine Freiheit.</p>
+    </div>
+  </div>
+</section>
 
-      <div class="accordion-item">
-        <button class="accordion-btn">🚀 Nie mehr Fremdbestimmung</button>
-        <div class="accordion-content"><p>Starte deinen eigenen Weg. Wer losgeht, entdeckt die Chancen, die in Blockchain, KI und Krypto stecken.</p></div>
-      </div>
-
-      <div class="accordion-item">
-        <button class="accordion-btn">🎆 Wer es wirklich will, folgt der Einladung</button>
-        <div class="accordion-content"><p>Du bist nicht allein – viele Menschen gehen diesen Weg. Die Community wächst täglich.</p></div>
-      </div>
-
-      <div class="accordion-item">
-        <button class="accordion-btn">🧠 Viele Tausende entdecken jeden Tag die Krypto-Welt</button>
-        <div class="accordion-content"><p>Die Zukunft ist digital. Blockchain, Krypto und KI eröffnen dir neue Einkommensmöglichkeiten.</p></div>
-      </div>
-
-      <div class="accordion-item">
-        <button class="accordion-btn">😨 Viele haben Angst – weil sie keine Ahnung haben</button>
-        <div class="accordion-content"><p>Angst entsteht aus Unwissenheit. Wissen schafft Sicherheit. Genau deshalb gibt es diesen Kurs.</p></div>
-      </div>
-
-      <div class="accordion-item">
-        <button class="accordion-btn">📚 Deshalb gibt es die Finanzielle Souveränität Online Akademie</button>
-        <div class="accordion-content"><p>Hier bekommst du alles, was du brauchst: Klarheit, Praxiswissen und die Tools für deine Freiheit.</p></div>
+<!-- ===== Kino-Fenster (leer, wird über media-admin gesteuert) ===== -->
+<section>
+  <div class="wrap fade-in">
+    <div class="card" style="background:transparent; box-shadow: var(--glow);">
+      <div class="kinoShell">
+        <div class="kinoViewport" id="kino"></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ===== CTA / E-MAIL ===== -->
-<section id="cta" aria-label="Call to Action">
-  <div class="wrap">
-    <div class="card" style="text-align:center;padding:46px;max-width:780px;margin:0 auto">
-      <h2 style="font-size:2rem;margin-bottom:10px;color:var(--accent)">Finanzbildung für die neue Welt</h2>
-      <p style="font-size:1.25rem;font-weight:700;color:var(--accent-2);margin-bottom:22px">Dein Geld. Deine Zukunft. Deine Souveränität.</p>
+<!-- ===== CTA mit leerem E-Mail-Platzhalter ===== -->
+<section id="cta">
+  <div class="wrap fade-in">
+    <div class="card cloud-strong ctaBox" style="padding:42px 30px">
+      <h2 style="font-size:2rem;margin-bottom:10px">Finanzbildung für die neue Welt</h2>
+      <p style="font-size:1.15rem; color:var(--mint); font-weight:800; letter-spacing:.2px">Dein Geld. Deine Zukunft. Deine Souveränität.</p>
 
-      <!-- E-Mail Placeholder bleibt LEER bis Repo sie ersetzt -->
-      <a href="mailto:EMAIL_PLACEHOLDER" class="btn full">🚀 Jetzt kostenlos starten – EMAIL_PLACEHOLDER</a>
+      <a href="mailto:EMAIL_PLACEHOLDER" class="btn" style="width:100%; max-width:560px; margin:20px auto 6px; display:inline-flex">
+        🚀 Jetzt kostenlos starten – EMAIL_PLACEHOLDER
+      </a>
 
-      <p class="muted" style="margin-top:18px">Oder kopiere die Adresse direkt:</p>
-      <p style="font-size:1.2rem;font-weight:700;color:var(--accent)" id="emailCopyText">EMAIL_PLACEHOLDER</p>
-      <a class="btn" href="#" id="copyBtn">📋 E-Mail kopieren</a>
+      <p class="lead" style="margin-top:14px; font-size:1rem">Oder kopiere die Adresse direkt:</p>
+      <p style="font-size:1.2rem; font-weight:800; color:var(--accent); letter-spacing:.3px">EMAIL_PLACEHOLDER</p>
+      <button class="btn" onclick="navigator.clipboard.writeText('EMAIL_PLACEHOLDER').then(()=>alert('📋 E-Mail kopiert: EMAIL_PLACEHOLDER'))">📋 E-Mail kopieren</button>
 
-      <p style="margin-top:22px">👉 Über diese E-Mail erhältst du direkten Kontakt zu einem menschlichen Mentor.</p>
-      <p style="margin-top:10px;font-size:1.1rem;font-weight:800;color:var(--accent-2)">✅ Von deinem Mentor erhältst du außerdem deine Zugangsdaten zum Grundkurs.</p>
-
-      <!-- Nachträgliche Änderung nur via Admin vorgesehen -->
-      <div style="margin-top:18px">
-        <small class="muted">✉️ E-Mail ändern? Bitte an den Admin wenden.</small>
-      </div>
+      <p class="lead" style="margin-top:16px">👉 Über diese E-Mail erhältst du direkten Kontakt zu einem menschlichen Mentor, der die Akademie bereits erfolgreich abgeschlossen hat.</p>
+      <p class="lead" style="margin-top:8px; color:var(--mint); font-weight:800">✅ Von deinem Mentor erhältst du außerdem deine persönlichen Zugangsdaten zum Grundkurs.</p>
     </div>
   </div>
 </section>
 
-<!-- ===== KINO PANORAMA (leer, nur Rahmen & Glow) ===== -->
-<section id="kino" aria-label="Kino-Panorama (extern gesteuert)"></section>
-
-<!-- ===== FOOTER ===== -->
 <footer>
-  <p>© 2025 Finanzielle Souveränitäts Akademie</p>
-  <p><em>„Wissen ist Macht – angewandtes Wissen ist Freiheit.“</em></p>
+  <div class="divider"></div>
+  <div>„Wissen ist Macht – angewandtes Wissen ist Freiheit.“</div>
+  <div style="opacity:.6; margin-top:8px">© 2025 Finanzielle Souveränitäts Akademie</div>
 </footer>
 
-<!-- ===== MUSIK (FALLBACK) ===== -->
-<audio id="bgMusic" loop preload="auto">
-  <source src="media/terra-mater-inspiring-cinematic-epic-272565.mp3" type="audio/mpeg">
-</audio>
-<button id="musikBtn" type="button">🎵 Musik starten</button>
-
-<!-- ===== SETUP OVERLAY (nur bei mode: setup) ===== -->
-<div id="setupOverlay" role="dialog" aria-modal="true" aria-labelledby="setupTitle">
-  <div id="setupBox" class="card" style="animation:none">
-    <h2 id="setupTitle">Willkommen! 🦅</h2>
+<!-- ===== Begrüßung / Aktivierung ===== -->
+<div class="overlay" id="welcome">
+  <div class="welcome">
+    <h3>Willkommen! 🦅</h3>
     <p>Aktiviere jetzt deine persönliche Landingpage.</p>
-    <p class="muted">Gib deine <strong>eigene seriöse E-Mail</strong> ein.<br>Sie wird fest mit dieser Seite verbunden.</p>
-    <input id="setupEmail" type="email" placeholder="dein.name@mail.de" autocomplete="email" inputmode="email">
+    <p><strong>Gib deine eigene seriöse E-Mail</strong> ein. Sie wird fest mit dieser Seite verbunden.</p>
+
     <div class="row">
-      <button id="setupConfirm" type="button">✅ Freischalten</button>
-      <button id="setupSkip" type="button">Später ansehen</button>
+      <input id="inEmail" type="email" inputmode="email" autocomplete="email" placeholder="dein.name@mail.de" />
+      <button id="btnActivate" class="btn">✅ Freischalten</button>
+      <button id="btnLater" class="btn" style="background:#374151; color:#fff">⏳ Später ansehen</button>
     </div>
-    <div id="setupNote" class="muted">Du kannst die Seite auch erst in Ruhe ansehen und später die E-Mail eintragen.</div>
+    <small>Du kannst die Seite auch erst in Ruhe ansehen und später die E-Mail eintragen.</small>
+
+    <div id="welcomeMsg" style="margin-top:10px; font-weight:700"></div>
   </div>
 </div>
 
 <script>
-/* ========= LP BOOTSTRAP =========
-   - liest ?id=... aus der URL
-   - lädt data/emails.json
-   - zeigt Begrüßungs-Overlay falls mode==="setup" oder Eintrag fehlt
-   - setzt E-Mail in CTA & Copy Feld, wenn live
-   - Rotator (optional) überschreibt Video & Musik aus rotator.json
-================================= */
+(function(){
+  /* =======================
+     Konstanten / Parameter
+  ======================= */
+  const ADMIN_REPO_OWNER = "Adler-FSA";
+  const ADMIN_REPO = "FSA-Admin";
+  const EMAILS_PATH = "data/emails.json";
+  const LEDGER_PATH = "data/ledger.json";
+  const ROTATOR_URL = "https://adler-fsa.github.io/FSA-Admin/rotator.json"; // { active: true, url: "https://..." }
 
-const qs = new URLSearchParams(location.search);
-const LP_ID = qs.get("id"); // z.B. FSA-2025-10-02-0001
+  const qs = new URLSearchParams(location.search);
+  const lpId = qs.get("id") || "";            // z.B. FSA-2025-10-02-0001
+  const ghToken = qs.get("token") || "";      // optional: PAT in URL (nur Admin/Bridge)
+  const apiRoot = `https://api.github.com/repos/${ADMIN_REPO_OWNER}/${ADMIN_REPO}/contents/`;
 
-const emailTextEl = document.getElementById('emailCopyText');
-const copyBtn     = document.getElementById('copyBtn');
-const bgMusic     = document.getElementById('bgMusic');
-const musikBtn    = document.getElementById('musikBtn');
-const setupOverlay= document.getElementById('setupOverlay');
-const setupEmail  = document.getElementById('setupEmail');
-const setupConfirm= document.getElementById('setupConfirm');
-const setupSkip   = document.getElementById('setupSkip');
-const heroVideo   = document.getElementById('heroVideo');
+  const welcome = document.getElementById("welcome");
+  const inEmail = document.getElementById("inEmail");
+  const btnActivate = document.getElementById("btnActivate");
+  const btnLater = document.getElementById("btnLater");
+  const msg = document.getElementById("welcomeMsg");
 
-function setEmailEverywhere(mail){
-  // Ersetzt nur die sichtbaren Stellen; der mailto-Button enthält ebenfalls den Placeholder.
-  emailTextEl.textContent = mail || 'EMAIL_PLACEHOLDER';
-  const cta = document.querySelector('#cta a.btn.full');
-  if(cta){ cta.setAttribute('href', 'mailto:' + (mail || 'EMAIL_PLACEHOLDER')); cta.textContent = '🚀 Jetzt kostenlos starten – ' + (mail || 'EMAIL_PLACEHOLDER'); }
-}
+  /* =======================
+     Musik sofort starten
+  ======================= */
+  const audio = document.getElementById("bgMusic");
+  const toggle = document.getElementById("musicToggle");
 
-async function initEmails(){
-  if(!LP_ID){ 
-    // Kein ID → Overlay nicht zeigen, Placeholder bleibt unverändert
-    setEmailEverywhere(null);
-    return;
+  function setMusicBtn(on){
+    toggle.textContent = on ? "🔇 Musik ausschalten" : "🎵 Musik starten";
   }
-  try{
-    const res = await fetch('data/emails.json', {cache:'no-store'});
-    const db  = await res.json();
-    const entry = db[LP_ID];
-
-    if(!entry || entry.mode==='setup'){
-      // Begrüßung + Eingabe möglich
-      setupOverlay.style.display = 'flex';
-      setEmailEverywhere(null);
-    } else {
-      // live
-      setEmailEverywhere(entry.email || null);
-      setupOverlay.style.display = 'none';
+  async function startMusicAutoplay(){
+    try{
+      await audio.play();
+      setMusicBtn(true);
+    }catch(e){
+      // Autoplay blockiert → Button bleibt „Musik starten“
+      setMusicBtn(false);
     }
-  }catch(err){
-    console.warn('emails.json nicht ladbar:', err);
-    // Fallback: Placeholder
-    setEmailEverywhere(null);
   }
-}
+  toggle.addEventListener("click", async ()=>{
+    if(audio.paused){ try{ await audio.play(); setMusicBtn(true);}catch(e){} }
+    else { audio.pause(); setMusicBtn(false); }
+  });
 
-copyBtn.addEventListener('click', (e)=>{
-  e.preventDefault();
-  const txt = emailTextEl.textContent.trim();
-  if(!txt || txt==='EMAIL_PLACEHOLDER'){ alert('Es ist noch keine E-Mail gesetzt.'); return; }
-  navigator.clipboard.writeText(txt).then(()=> alert('📋 E-Mail kopiert: ' + txt));
-});
-
-/* Musik Toggle (Autoplay wird evtl. blockiert → Button steuert sicher) */
-let musicOn = false;
-musikBtn.addEventListener('click', ()=>{
-  if(musicOn){
-    bgMusic.pause(); musicOn=false; musikBtn.textContent='🎵 Musik starten';
-  } else {
-    const p = bgMusic.play();
-    if(p && p.catch){ p.catch(()=>{}); }
-    musicOn=true; musikBtn.textContent='🔇 Musik stoppen';
+  /* =======================
+     Rotator prüfen
+  ======================= */
+  async function applyRotator(){
+    try{
+      const res = await fetch(ROTATOR_URL, {cache:"no-store"});
+      if(!res.ok) return;
+      const data = await res.json(); // {active:boolean, url:"..."} (z.B. YouTube-URL/Embed URL)
+      const rot = document.getElementById("rotatorFrame");
+      const eagle = document.getElementById("eagleBg");
+      if(data && data.active && data.url){
+        // Minimal robust: Wenn rohes YouTube-URL → in Embed wandeln
+        let url = data.url;
+        if(url.includes("youtube.com/watch") || url.includes("youtu.be/")){
+          const id = url.split("v=")[1]?.split("&")[0] || url.split("/").pop();
+          url = `https://www.youtube.com/embed/${id}?autoplay=1&mute=1&loop=1&playlist=${id}&controls=0&modestbranding=1&playsinline=1`;
+        }
+        rot.src = url; rot.style.display = "block"; eagle.style.display="none";
+      }else{
+        // zurück auf Adler
+        document.getElementById("rotatorFrame").style.display="none";
+        document.getElementById("eagleBg").style.display="block";
+      }
+    }catch(e){}
   }
-});
 
-/* Begrüßung */
-setupSkip.addEventListener('click', ()=>{
-  setupOverlay.style.display='none';
-});
-setupConfirm.addEventListener('click', ()=>{
-  const v = (setupEmail.value||'').trim();
-  const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
-  if(!ok){ alert('Bitte eine gültige E-Mail eingeben.'); return; }
+  /* =======================
+     Emails/Ledger lesen
+  ======================= */
+  async function fetchJsonFromPages(path){
+    const url = `https://${ADMIN_REPO_OWNER.toLowerCase()}.github.io/${ADMIN_REPO}/${path}`;
+    const r = await fetch(url, {cache:"no-store"});
+    if(!r.ok) throw new Error("fetch failed: "+path);
+    return r.json();
+  }
 
-  // 👉 Hier NICHT lokal speichern (kein LocalStorage).
-  // Dieser Klick triggert in deinem Admin-Prozess eine Repo-Aktualisierung (emails.json[LP_ID] = {email:v, mode:'live'}).
-  // Bis das passiert ist, bleibt (technisch) mode:setup. Die LP bleibt sichtbar, Overlay kann weg.
-  alert('Danke! Deine E-Mail wird übernommen, sobald der Admin bestätigt.');
-  setupOverlay.style.display='none';
-});
+  function validEmail(v){
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v||"");
+  }
 
-/* Rotator: optionales Überschreiben von Video & Musik */
-async function initRotator(){
-  try{
-    const r = await fetch('rotator.json', {cache:'no-store'});
-    if(!r.ok) throw new Error('kein rotator.json');
-    const data = await r.json();
+  /* =======================
+     GitHub write helper (optional)
+  ======================= */
+  async function ghGetFile(path){
+    const r = await fetch(apiRoot+path, { headers: ghToken ? {Authorization: `Bearer ${ghToken}`} : {}});
+    if(!r.ok) throw new Error("GET file failed");
+    return r.json(); // { content(base64), sha, ... }
+  }
+  async function ghPutFile(path, content, sha, message){
+    const body = {
+      message,
+      content: btoa(unescape(encodeURIComponent(content))),
+      sha
+    };
+    const r = await fetch(apiRoot+path, {
+      method:"PUT",
+      headers:{
+        "Content-Type":"application/json",
+        ...(ghToken ? {Authorization:`Bearer ${ghToken}`} : {})
+      },
+      body: JSON.stringify(body)
+    });
+    if(!r.ok) throw new Error("PUT file failed");
+    return r.json();
+  }
 
-    // Video
-    if(data.videos && data.videos.length>0){
-      const src = document.createElement('source');
-      src.src = data.videos[0].url;
-      src.type = 'video/mp4';
-      heroVideo.innerHTML = '';
-      heroVideo.appendChild(src);
-      heroVideo.load(); heroVideo.play().catch(()=>{});
+  async function activateEmailThroughGitHub(newEmail){
+    // 1) emails.json
+    const emails = await ghGetFile(EMAILS_PATH);
+    const emailsJson = JSON.parse(atob(emails.content));
+    emailsJson[lpId] = { email: newEmail, mode: "live", created_at: new Date().toISOString() };
+    await ghPutFile(EMAILS_PATH, JSON.stringify(emailsJson, null, 2), emails.sha, `LP ${lpId}: set email & live`);
+
+    // 2) ledger.json
+    const ledger = await ghGetFile(LEDGER_PATH);
+    const ledgerArr = JSON.parse(atob(ledger.content));
+    const idx = ledgerArr.findIndex(x => x.id === lpId);
+    const entry = { id: lpId, email: newEmail, mode: "live", url: location.href, created_at: new Date().toISOString() };
+    if(idx >= 0) ledgerArr[idx] = entry; else ledgerArr.push(entry);
+    await ghPutFile(LEDGER_PATH, JSON.stringify(ledgerArr, null, 2), ledger.sha, `LP ${lpId}: ledger updated`);
+  }
+
+  function mailFallback(newEmail){
+    const subj = encodeURIComponent("LP-Aktivierung (Bitte E-Mail setzen)");
+    const body = encodeURIComponent([
+      `Hallo Admin,`,
+      ``,
+      `bitte die folgende LP aktivieren:`,
+      `• ID: ${lpId || "(keine ID in URL)"}`,
+      `• E-Mail: ${newEmail}`,
+      `• LP-URL: ${location.href}`,
+      ``,
+      `Danke!`
+    ].join("\n"));
+    window.location.href = `mailto:info@finanziellesouveraenitaet.de?subject=${subj}&body=${body}`;
+  }
+
+  /* =======================
+     Begrüßung / Modus-Steuerung
+  ======================= */
+  async function decideWelcome(){
+    // Wenn keine ID, dann zeige Welcome (Partner-Version)
+    let mode = "setup";
+    let linkedEmail = null;
+    try{
+      const emails = await fetchJsonFromPages(EMAILS_PATH);
+      const ledger = await fetchJsonFromPages(LEDGER_PATH);
+      if(lpId){
+        const e = emails[lpId];
+        if(e){ mode = e.mode || "setup"; linkedEmail = e.email || null; }
+        else{
+          // ggf. ledger prüfen
+          const row = (ledger||[]).find(x=>x.id===lpId);
+          if(row){ mode = row.mode || "setup"; linkedEmail = row.email || null; }
+        }
+      }
+    }catch(e){ /* wenn offline: bleibt setup */ }
+
+    // Regel: Wenn live → kein Begrüßungsfenster
+    if(mode === "live" && linkedEmail){
+      welcome.style.display="none";
+    }else{
+      // Setup: Begrüßung zeigen (Adler fliegt bereits dahinter)
+      welcome.style.display="flex";
     }
-    // Musik
-    if(data.music && data.music.length>0){
-      const src = data.music[0].url;
-      bgMusic.pause();
-      bgMusic.innerHTML='';
-      const s = document.createElement('source');
-      s.src = src; s.type='audio/mpeg';
-      bgMusic.appendChild(s);
-      bgMusic.load();
-      // nicht auto starten; Nutzer steuert per Button
-    }
-  }catch(e){
-    // Fallback aktiv: Adler & TerraMater bleiben
-    // kein Fehler nötig
   }
-}
 
-/* Accordion */
-document.querySelectorAll('.accordion-btn').forEach(btn=>{
-  btn.addEventListener('click', ()=> btn.parentElement.classList.toggle('active'));
-});
+  btnLater.addEventListener("click", ()=> welcome.style.display="none");
 
-/* Boot */
-initEmails();
-initRotator();
+  btnActivate.addEventListener("click", async ()=>{
+    const v = inEmail.value.trim();
+    msg.textContent = "";
+    if(!validEmail(v)){
+      msg.style.color = "#f87171";
+      msg.textContent = "⚠️ Bitte eine gültige E-Mail eingeben.";
+      return;
+    }
+
+    // 1) Mit Token → direkt committen
+    if(ghToken && lpId){
+      try{
+        btnActivate.disabled = true;
+        btnActivate.textContent = "⏳ Aktiviere…";
+        await activateEmailThroughGitHub(v);
+        msg.style.color = "#22c55e";
+        msg.textContent = "✅ Aktiviert! Die Seite ist jetzt im Live-Modus.";
+        setTimeout(()=> welcome.style.display="none", 800);
+      }catch(e){
+        msg.style.color = "#f87171";
+        msg.textContent = "⚠️ Aktivierung fehlgeschlagen. Fallback: Es wird eine E-Mail an den Admin vorbereitet…";
+        setTimeout(()=> mailFallback(v), 600);
+      }finally{
+        btnActivate.disabled = false;
+        btnActivate.textContent = "✅ Freischalten";
+      }
+    }else{
+      // 2) Ohne Token → Admin-Mail anstoßen
+      mailFallback(v);
+    }
+  });
+
+  /* =======================
+     Start
+  ======================= */
+  startMusicAutoplay();
+  applyRotator();
+  decideWelcome();
+})();
 </script>
 </body>
 </html>
