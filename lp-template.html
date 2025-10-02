@@ -6,7 +6,7 @@
 <title>Finanzielle Souveränitäts Akademie</title>
 <style>
   :root{
-    --bg-card: rgba(15,15,25,0.65); /* halbtransparent für Wolken-Effekt */
+    --bg-card: rgba(15,15,25,0.65);
     --text: #f2f2f2;
     --muted: #aaa;
     --accent: #d4af37; 
@@ -19,7 +19,7 @@
   body{font-family:Inter,system-ui,sans-serif;color:var(--text);background:#000;margin:0}
   h1,h2,h3{font-family:Montserrat,sans-serif;font-weight:700;line-height:1.2}
 
-  /* Menü oben */
+  /* Menü */
   header{
     position:fixed;top:0;left:0;width:100%;
     display:flex;justify-content:center;align-items:center;
@@ -41,10 +41,10 @@
     position:fixed;top:0;left:0;width:100%;height:100%;
     z-index:-2;pointer-events:none;background:#000
   }
-  .bg-video iframe{width:100%;height:100%;border:none}
+  .bg-video video{width:100%;height:100%;object-fit:cover}
 
   /* Layout */
-  section{padding:100px 0;position:relative;z-index:2}
+  section{padding:120px 0;position:relative;z-index:2}
   .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
   .grid{display:grid;gap:32px}
   .grid.cols-2{grid-template-columns:repeat(2,1fr)}
@@ -87,14 +87,32 @@
   .accordion-content{display:none;padding:0 16px 16px;color:var(--text);font-size:1rem;line-height:1.6}
   .accordion-item.active .accordion-content{display:block}
 
+  /* Kino Fenster (leer, Glow, Panorama) */
+  #kino{
+    margin:80px auto;
+    width:100%;height:400px;
+    border-radius:16px;
+    border:2px solid rgba(212,175,55,0.8);
+    box-shadow:0 0 35px rgba(212,175,55,0.6);
+    background:transparent;
+    animation:float 12s ease-in-out infinite;
+  }
+
   /* Musik-Button */
   #musikBtn{
-    position:fixed;bottom:20px;right:20px;z-index:10;
-    padding:10px 18px;background:rgba(0,0,0,0.6);
-    color:#fff;border:none;border-radius:50px;
-    font-size:1rem;cursor:pointer;font-family:Inter,sans-serif;
-    box-shadow:0 6px 14px rgba(0,0,0,0.5)
+    position:fixed;
+    bottom:20px; right:20px;
+    z-index:10000;
+    padding:12px 20px;
+    border:none;border-radius:999px;
+    background:rgba(0,0,0,0.6);
+    color:#fff;font-size:1rem;
+    font-family:Inter,sans-serif;cursor:pointer;
+    box-shadow:0 0 25px rgba(255,215,0,0.5);
+    backdrop-filter: blur(6px);
+    animation: float 6s ease-in-out infinite;
   }
+  #musikBtn:hover{background:rgba(0,0,0,0.8)}
 
   footer{padding:60px 0;color:var(--muted);font-size:1rem;text-align:center}
 </style>
@@ -111,12 +129,14 @@
   </nav>
 </header>
 
-<!-- Hintergrundvideo: Adler Hero -->
+<!-- Adler Hero Fallback Video -->
 <div class="bg-video">
-  <iframe src="https://www.youtube.com/embed/miWBKSszEIw?autoplay=1&mute=1&loop=1&playlist=miWBKSszEIw&controls=0&modestbranding=1&showinfo=0" allow="autoplay; fullscreen"></iframe>
+  <video id="heroVideo" autoplay muted loop playsinline>
+    <source src="adler-hero.mp4" type="video/mp4">
+  </video>
 </div>
 
-<!-- Hero -->
+<!-- Hero Section -->
 <section id="hero">
   <div class="wrap grid cols-2">
     <div class="card">
@@ -189,15 +209,18 @@
     <div class="card" style="text-align:center;padding:50px;max-width:780px;margin:0 auto">
       <h2 style="font-size:2rem;margin-bottom:10px;color:var(--accent)">Finanzbildung für die neue Welt</h2>
       <p style="font-size:1.3rem;font-weight:600;color:var(--accent-2);margin-bottom:25px">Dein Geld. Deine Zukunft. Deine Souveränität.</p>
-      <a href="mailto:EMAIL_PLACEHOLDER" class="btn full" style="margin-top:25px;font-size:1.1rem;padding:16px 0">🚀 Jetzt kostenlos starten – EMAIL_PLACEHOLDER</a>
+      <a href="mailto:EMAIL_PLACEHOLDER" class="btn full">🚀 Jetzt kostenlos starten – EMAIL_PLACEHOLDER</a>
       <p style="margin-top:20px;font-size:1rem;color:var(--muted)">Oder kopiere die Adresse direkt:</p>
       <p style="font-size:1.2rem;font-weight:600;color:var(--accent)">EMAIL_PLACEHOLDER</p>
-      <button onclick="navigator.clipboard.writeText('EMAIL_PLACEHOLDER').then(()=>alert('📋 E-Mail kopiert: EMAIL_PLACEHOLDER'))" style="margin-top:8px;padding:10px 16px;background:var(--accent);color:#000;border:none;border-radius:6px;cursor:pointer;font-weight:600">📋 E-Mail kopieren</button>
+      <button onclick="navigator.clipboard.writeText('EMAIL_PLACEHOLDER').then(()=>alert('📋 E-Mail kopiert: EMAIL_PLACEHOLDER'))" class="btn">📋 E-Mail kopieren</button>
       <p style="margin-top:25px;font-size:1rem;color:var(--text)">👉 Über diese E-Mail erhältst du direkten Kontakt zu einem menschlichen Mentor.</p>
       <p style="margin-top:15px;font-size:1.2rem;font-weight:700;color:var(--accent-2)">✅ Von deinem Mentor erhältst du außerdem deine Zugangsdaten zum Grundkurs.</p>
     </div>
   </div>
 </section>
+
+<!-- Kino Fenster Panorama -->
+<section id="kino"></section>
 
 <footer>
   <p>© 2025 Finanzielle Souveränitäts Akademie</p>
@@ -205,10 +228,10 @@
 </footer>
 
 <!-- Musik -->
-<audio id="bgMusic" loop>
+<audio id="bgMusic" loop autoplay>
   <source src="terra-mater-inspiring-cinematic-epic-272565.mp3" type="audio/mpeg">
 </audio>
-<button id="musikBtn">🎵 Musik starten</button>
+<button id="musikBtn">🎵 Musik stoppen</button>
 
 <script>
   // Musikbutton
@@ -221,10 +244,33 @@
 
   // Akkordeon
   document.querySelectorAll('.accordion-btn').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      btn.parentElement.classList.toggle('active');
-    });
+    btn.addEventListener('click',()=>{btn.parentElement.classList.toggle('active');});
   });
+
+  // Rotator Überschreibung
+  async function initRotator(){
+    try{
+      let res=await fetch("rotator.json");
+      if(!res.ok) throw new Error("kein Rotator");
+      let data=await res.json();
+
+      // Video überschreiben
+      if(data.videos && data.videos.length>0){
+        let hero=document.getElementById("heroVideo");
+        hero.src=data.videos[0].url;
+        hero.load();hero.play();
+      }
+
+      // Musik überschreiben
+      if(data.music && data.music.length>0){
+        let src=data.music[0].url;
+        bgMusic.src=src;
+        bgMusic.load();
+        bgMusic.play();
+      }
+    }catch(e){console.log("Fallback aktiv:",e.message);}
+  }
+  initRotator();
 </script>
 </body>
 </html>
