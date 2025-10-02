@@ -3,258 +3,189 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Finanzielle Souveränität – Template 002</title>
+  <title>Finanzielle Souveränität – Landingpage</title>
   <style>
-    body, html {
-      margin: 0;
-      padding: 0;
-      height: 100%;
+    /* Reset + Basics */
+    * {margin:0; padding:0; box-sizing:border-box;}
+    body {
       font-family: "Segoe UI", Roboto, Arial, sans-serif;
       color: #fff;
       background: #000;
       overflow-x: hidden;
     }
 
-    /* Hintergrund-Video */
-    #bg-video {
+    /* Hintergrund-Video (Adler Hero) */
+    #hero-video {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       object-fit: cover;
       z-index: -1;
     }
 
-    /* Glow Animation */
-    @keyframes sunGlow {
-      from {
-        box-shadow: 0 0 6px rgba(249, 174, 22, 0.4),
-                    0 0 12px rgba(249, 174, 22, 0.3);
-      }
-      to {
-        box-shadow: 0 0 18px rgba(249, 174, 22, 0.8),
-                    0 0 32px rgba(249, 174, 22, 0.6);
-      }
-    }
-
-    /* Menü oben */
+    /* Navigation */
     nav {
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(6px);
       display: flex;
       justify-content: center;
-      gap: 30px;
-      padding: 20px;
-      background: rgba(255, 255, 255, 0.85);
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      z-index: 10;
-      backdrop-filter: blur(6px);
+      padding: 14px;
+      border-bottom: 2px solid rgba(255,165,0,0.6);
     }
-
     nav a {
-      text-decoration: none;
-      font-size: 1rem;
-      color: #333;
-      font-weight: 500;
-      padding: 6px 14px;
+      margin: 0 10px;
+      padding: 8px 18px;
       border-radius: 6px;
-      background: rgba(255, 255, 255, 0.8);
-      animation: sunGlow 3s ease-in-out infinite alternate;
+      text-decoration: none;
+      font-weight: 600;
+      color: #fff;
+      background: rgba(40,40,40,0.6);
+      box-shadow: 0 0 12px rgba(255,165,0,0.4);
       transition: all 0.3s ease;
     }
-
     nav a:hover {
-      background: #f97316;
-      color: #fff;
+      background: #ff6600;
+      box-shadow: 0 0 20px rgba(255,200,50,0.9);
     }
 
-    nav a.active {
-      background: #f97316;
-      color: #fff;
+    /* Container für Content */
+    .content {
+      max-width: 1100px;
+      margin: 60px auto;
+      padding: 20px;
     }
 
     /* Schwebende Textboxen */
     .box {
-      background: rgba(0, 0, 0, 0.55);
+      background: rgba(15,15,25,0.65);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 25px rgba(255,200,50,0.25);
+      backdrop-filter: blur(4px);
+    }
+    .box h2, .box h3 {
+      color: #ffcc33;
+      margin-bottom: 12px;
+    }
+    .box p {
+      line-height: 1.6;
+      font-size: 1.05rem;
+    }
+
+    /* Vorteil-Liste */
+    .vorteile li {
+      margin: 8px 0;
+      list-style: none;
+    }
+
+    /* Email Eingabe */
+    .email-block {
+      background: rgba(10,10,20,0.7);
+      border-radius: 12px;
       padding: 20px;
-      border-radius: 12px;
-      margin: 20px auto;
-      max-width: 800px;
-      animation: sunGlow 4s ease-in-out infinite alternate;
-    }
-
-    .box h1, .box h2 {
-      color: #ffd700;
-      margin-bottom: 10px;
-    }
-
-    .quote {
-      font-style: italic;
-      color: #facc15;
-    }
-
-    /* CTA Button */
-    .cta-btn {
-      display: inline-block;
-      margin-top: 20px;
-      padding: 14px 28px;
-      background: #f97316;
-      color: #fff;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: bold;
-      font-size: 1.2rem;
-      animation: sunGlow 3s ease-in-out infinite alternate;
-    }
-
-    /* Begrüßungs-Overlay */
-    #setup-screen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.65);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 200;
-    }
-
-    #setup-box {
-      background: rgba(15,23,42,0.9);
-      padding: 40px;
-      border-radius: 12px;
-      max-width: 520px;
+      margin-top: 40px;
       text-align: center;
-      animation: sunGlow 3s ease-in-out infinite alternate;
+      box-shadow: 0 0 18px rgba(255,200,50,0.4);
     }
-
-    #setup-box input {
-      padding: 12px;
-      width: 80%;
+    .email-block input {
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      width: 60%;
+      max-width: 320px;
+      margin-right: 10px;
+    }
+    .email-block button {
+      padding: 10px 18px;
       border: none;
       border-radius: 6px;
-      margin: 10px 0;
-      font-size: 1rem;
-    }
-
-    #setup-box button {
-      background: #f97316;
+      background: #ff6600;
       color: #fff;
       font-weight: 600;
-      padding: 12px 24px;
-      border: none;
-      border-radius: 8px;
       cursor: pointer;
-      font-size: 1rem;
-      margin-top: 10px;
+      box-shadow: 0 0 12px rgba(255,200,50,0.6);
+      transition: all 0.3s ease;
+    }
+    .email-block button:hover {
+      background: #ffaa00;
+      box-shadow: 0 0 18px rgba(255,220,100,0.9);
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 0.85rem;
+      color: #aaa;
     }
   </style>
 </head>
 <body>
 
-  <!-- 🎥 Hintergrund Adler-Video -->
-  <video autoplay muted loop playsinline id="bg-video">
-    <source src="https://cdn.coverr.co/videos/coverr-flying-bald-eagle-8570/1080p.mp4" type="video/mp4">
+  <!-- Hero-Video -->
+  <video id="hero-video" autoplay muted loop playsinline>
+    <source src="media/adler-hero.mp4" type="video/mp4">
+    Dein Browser unterstützt kein HTML5-Video.
   </video>
 
-  <!-- 🌐 Menü -->
+  <!-- Navigation -->
   <nav>
-    <a href="https://www.finanziellesouveraenitaet.de/startseite" class="active">Startseite</a>
+    <a href="https://www.finanziellesouveraenitaet.de/startseite">Startseite</a>
     <a href="https://www.finanziellesouveraenitaet.de/campus">Campus</a>
     <a href="https://www.finanziellesouveraenitaet.de/grundkurs-anfaenger">Grundkurs/Anfänger</a>
     <a href="https://www.finanziellesouveraenitaet.de/onboarding">Onboarding</a>
     <a href="https://www.finanziellesouveraenitaet.de/krypto-glossar-pro">Krypto-Glossar Pro</a>
   </nav>
 
-  <!-- Begrüßung (Partner) -->
-  <div id="setup-screen">
-    <div id="setup-box">
-      <h1>🦅 LP-Aktivierung</h1>
-      <p>Bitte aktiviere jetzt deine persönliche Landingpage:</p>
-      <p>👉 Gib <strong>deine eigene seriöse E-Mail-Adresse</strong> ein.<br>
-         👉 Klicke auf <strong>Freischalten</strong>.<br>
-         👉 Danach kannst du den Link an deine Kontakte weitergeben.</p>
-      <input type="email" id="partnerEmail" placeholder="Deine E-Mail">
-      <br>
-      <button onclick="saveEmail()">✅ Freischalten</button>
-    </div>
-  </div>
-
-  <!-- Template 002 Inhalte -->
-  <div id="lp-screen" style="display:none;">
-    <div class="box">
-      <h1>Mentor Reise Start</h1>
-      <p>Dein Geld. Deine Freiheit. Die Welt verändert sich: Inflation, KI, Blockchain. Hier lernst du, wie du souverän wirst.<br>
-      Nie mehr Fremdbestimmung.</p>
-      <p>Wer es wirklich will, folgt der Einladung. Viele Tausende entdecken jeden Tag die Krypto-Welt.<br>
-      Viele haben Angst – weil sie keine Ahnung haben. Genau deshalb gibt es die Finanzielle Souveränität Online Akademie.</p>
-      <a href="#start" class="cta-btn">🚀 Jetzt starten</a>
-    </div>
-
-    <div class="box quote">„Eine Investition in Wissen bringt die besten Zinsen.“ – Franklin</div>
+  <!-- Content -->
+  <div class="content">
 
     <div class="box">
-      <h2>Deine Vorteile</h2>
-      <ul>
+      <h2>Dein Geld. Deine Freiheit.</h2>
+      <p>Die Welt verändert sich: Inflation, KI, Blockchain.<br>
+      Hier lernst du, wie du souverän wirst.<br><br>
+      <b>Nie mehr Fremdbestimmung.</b><br>
+      Wer es wirklich will, folgt der Einladung. Viele Tausende entdecken jeden Tag die Krypto-Welt.<br>
+      Viele haben Angst – weil sie keine Ahnung haben.<br>
+      Genau deshalb gibt es die <b>Finanzielle Souveränitäts Akademie</b>.
+      </p>
+    </div>
+
+    <div class="box">
+      <h3>„Eine Investition in Wissen bringt die besten Zinsen.“ – Franklin</h3>
+    </div>
+
+    <div class="box">
+      <h3>Deine Vorteile</h3>
+      <ul class="vorteile">
         <li>💰 Vermögen schützen</li>
         <li>🔑 Zugang zu Krypto</li>
         <li>🤖 Einkommen mit KI</li>
         <li>🌐 Klarheit statt Chaos</li>
       </ul>
-    </div>
-
-    <div class="box quote">„Das Wichtigste ist, in dich selbst zu investieren.“ – Buffett</div>
-
-    <div class="box">
-      <h2>Dein Digitaler Mentor</h2>
-      <p>Dein persönlicher Begleiter durch die Akademie: Er zeigt dir Schritt für Schritt, wie du Ängste überwindest, Wissen aufbaust und souverän in der neuen Welt bestehst.</p>
+      <p>All das bekommst du schon im kostenlosen Grundkurs.</p>
     </div>
 
     <div class="box">
-      <h2>Finanzbildung für die neue Welt</h2>
-      <p>Dein Geld. Deine Zukunft. Deine Souveränität.</p>
-      <div id="start" class="box">
-        🚀 Jetzt kostenlos starten – <strong id="mentorEmail">EMAIL_PLACEHOLDER</strong><br><br>
-        Oder kopiere die Adresse direkt:<br>
-        <strong id="mentorEmailCopy">EMAIL_PLACEHOLDER</strong><br><br>
-        👉 Über diese E-Mail erhältst du direkten Kontakt zu einem Mentor.<br>
-        ✅ Von deinem Mentor erhältst du außerdem deine Zugangsdaten zum Grundkurs.
-      </div>
+      <h3>„Das Wichtigste ist, in dich selbst zu investieren.“ – Buffett</h3>
     </div>
+
+    <!-- E-Mail Eingabe optional -->
+    <div class="email-block">
+      <h3>🔑 Optionale Aktivierung deiner Landingpage</h3>
+      <p>Trage deine eigene E-Mail ein, um deine persönliche LP zu verknüpfen.<br>
+      Du kannst die Seite aber auch ohne Eingabe sofort erleben.</p>
+      <form>
+        <input type="email" placeholder="Deine E-Mail">
+        <button type="submit">Freischalten</button>
+      </form>
+    </div>
+
   </div>
 
-<script>
-async function init(){
-  const params = new URLSearchParams(window.location.search);
-  const lp_id = params.get("id");
-  if(!lp_id) return;
+  <footer>
+    © 2025 Finanzielle Souveränität Akademie – Alle Rechte vorbehalten.
+  </footer>
 
-  try {
-    const res = await fetch("data/emails.json");
-    const emails = await res.json();
-    const entry = emails[lp_id];
-
-    if(!entry || entry.mode==="setup"){
-      document.getElementById("setup-screen").style.display="flex";
-    } else {
-      document.getElementById("lp-screen").style.display="block";
-      document.getElementById("mentorEmail").innerText = entry.email;
-      document.getElementById("mentorEmailCopy").innerText = entry.email;
-    }
-  } catch(e){
-    console.error("Fehler beim Laden von emails.json", e);
-  }
-}
-
-function saveEmail(){
-  alert("E-Mail gespeichert! (Hier folgt GitHub-Update mit Token)");
-}
-
-init();
-</script>
 </body>
 </html>
