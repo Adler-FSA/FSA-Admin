@@ -41,7 +41,8 @@
         "saved_at": "2025-10-02T07:28:06.503Z"
       }
     ],
-    "history": [
+    "history": [],
+    "archive": [
       {
         "kind": "started",
         "url": "",
@@ -49,10 +50,10 @@
         "mode": "60s",
         "host": "unknown",
         "played_at": "2025-10-02T07:37:01.653Z",
-        "ended_at": null
+        "ended_at": null,
+        "archived_at": "2025-10-02T07:49:11.573Z"
       }
     ],
-    "archive": [],
     "preRoll": {
       "enabled": false,
       "images": [],
@@ -71,5 +72,5 @@
     "enabled": true,
     "imageUrl": ""
   },
-  "updated": "2025-10-02T07:37:01.653Z"
+  "updated": "2025-10-02T07:49:11.573Z"
 }
