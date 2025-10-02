@@ -1,0 +1,638 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FSA Admin · Media (Rota-Style-003)</title>
+<style>
+  :root{
+    --bg:#0b1220; --card:#111827; --muted:#9aa4b2; --txt:#eaf2ff;
+    --gold:#d4af37; --teal:#1cc2a0; --red:#e11d48; --blue:#38bdf8;
+    --shadow:0 10px 30px rgba(0,0,0,.45); --radius:14px;
+  }
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--txt);font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif}
+  h1,h2,h3{margin:0 0 10px;font-family:Montserrat,system-ui,sans-serif}
+  a{color:var(--blue);text-decoration:none}
+  .wrap{max-width:1100px;margin:24px auto;padding:0 16px}
+  .card{background:var(--card);border:1px solid rgba(212,175,55,.25);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+  .grid{display:grid;gap:16px}
+  .g-2{grid-template-columns:1fr 1fr}
+  .g-3{grid-template-columns:1.2fr .8fr}
+  @media (max-width:1020px){.g-2,.g-3{grid-template-columns:1fr}}
+  .title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+  .title h2{color:var(--gold);font-size:1.2rem}
+  .muted{color:var(--muted);font-size:.95rem}
+  .hr{height:1px;background:rgba(255,255,255,.1);margin:12px 0}
+  label{display:block;margin:8px 0 6px;font-weight:700;color:#dbe3f3}
+  input[type="text"], input[type="number"], input[type="datetime-local"], textarea, select{
+    width:100%;padding:10px;border-radius:10px;border:1px solid #334155;background:#0b1325;color:#fff;font-size:.98rem;outline:none;
+  }
+  textarea{min-height:96px}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .btn{padding:10px 14px;border:none;border-radius:10px;font-weight:800;cursor:pointer;box-shadow:var(--shadow)}
+  .btn.gold{background:var(--gold);color:#000}
+  .btn.teal{background:var(--teal);color:#001210}
+  .btn.blue{background:var(--blue);color:#001018}
+  .btn.red{background:var(--red);color:#fff}
+  .btn.ghost{background:transparent;border:1px dashed rgba(255,255,255,.25);color:#cbd5e1}
+  .btn.small{padding:6px 10px;font-weight:700}
+  .list{display:grid;gap:10px}
+  .item{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;background:#0e182b;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px;}
+  .badge{background:var(--gold);color:#000;border-radius:999px;padding:2px 8px;font-weight:900;font-size:.8rem}
+  .item .url{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#dbeafe}
+  .item.active{outline:2px solid var(--teal);background:#0e1e2b}
+  .preview{border:2px solid var(--gold);border-radius:12px;overflow:hidden;height:360px;background:#000;}
+  .stat{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:.92rem}
+  .chip{padding:4px 10px;border-radius:999px;background:#0f1a30;border:1px solid rgba(255,255,255,.12);color:#cbe0ff}
+  .note{font-size:.9rem;color:#b6c3d6}
+  .ok{color:#22c55e}.warn{color:#f59e0b}.err{color:#ef4444}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 🔑 GitHub Verbindung -->
+  <div class="card">
+    <div class="title"><h2>🔑 GitHub Verbindung</h2></div>
+    <div class="grid g-2">
+      <div><label>Owner</label><input id="ghOwner" type="text" value="Adler-FSA"></div>
+      <div><label>Repo</label><input id="ghRepo" type="text" value="FSA-Admin"></div>
+      <div><label>Branch</label><input id="ghBranch" type="text" value="main"></div>
+      <div><label>JSON-Pfad</label><input id="ghPath" type="text" value="rotator.json"></div>
+      <div style="grid-column:1/-1">
+        <label>Personal Access Token (wird NICHT gespeichert)</label>
+        <input id="ghToken" type="text" placeholder="ghp_... (fine-grained: contents read/write)">
+      </div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <button class="btn gold" id="btnConnect">🔗 Verbinden</button>
+      <button class="btn ghost" id="btnReload" disabled>🔄 Daten laden / anlegen</button>
+      <span id="connStatus" class="note">Bitte Token einfügen und verbinden.</span>
+    </div>
+  </div>
+
+  <!-- 📚 Teil 1: Bibliothek · Aktive · Archiv -->
+  <div class="grid g-3" style="margin-top:16px">
+    <div class="card">
+      <div class="title"><h2>📚 Bibliothek</h2><div class="muted">Globaler Pool deiner Videos</div></div>
+      <label>Neue Video-URL (YouTube/Vimeo/Zoom)</label>
+      <input id="newUrl" type="text" placeholder="https://youtu.be/… oder https://www.youtube.com/watch?v=…">
+      <div class="row" style="margin-top:8px">
+        <button class="btn teal" id="btnAddLib">＋ Zur Bibliothek</button>
+        <button class="btn blue" id="btnAddActive">＋ Direkt in Rotator</button>
+        <button class="btn gold" id="btnPreviewNew">▶️ Vorschau</button>
+        <button class="btn ghost" id="btnStopPreview">⏹️ Vorschau Stop</button>
+      </div>
+      <div class="hr"></div>
+      <div class="stat">
+        <span class="chip">Einträge: <span id="countLib">0</span></span>
+        <span class="chip">Aktive max: 12</span>
+      </div>
+      <div id="libList" class="list" style="margin-top:10px"></div>
+    </div>
+
+    <div class="card">
+      <div class="title"><h2>🎛 Aktive Videos (Rotator)</h2><div class="muted">Max. 12 – Reihenfolge zählt</div></div>
+      <div class="stat">
+        <span class="chip">Aktiv: <span id="countActive">0</span>/12</span>
+        <span class="chip">Intervall: <span id="intervalLabel">60</span>s</span>
+      </div>
+      <div id="activeList" class="list" style="margin-top:10px"></div>
+    </div>
+
+    <div class="card">
+      <div class="title"><h2>📦 Archiv</h2><div class="muted">Zurückholen möglich</div></div>
+      <div id="archList" class="list"></div>
+    </div>
+  </div>
+
+  <!-- 🖥 Teil 2: Vorschau & Rotation -->
+  <div class="card" style="margin-top:16px">
+    <div class="title"><h2>🖥 Vorschau & Rotation</h2><div class="muted">Nur Admin-Test – LP liest die gespeicherten Daten</div></div>
+    <div class="grid g-2">
+      <div>
+        <div id="previewBox" class="preview"><iframe id="preview" width="100%" height="100%" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="border:0"></iframe></div>
+        <div class="row" style="margin-top:10px">
+          <button class="btn gold" id="btnTestRotate">✏️ Rotationstest (5s)</button>
+          <button class="btn ghost" id="btnStopAll">⏹️ Test/Rotation beenden</button>
+        </div>
+      </div>
+      <div>
+        <label>Intervall (Sekunden)</label>
+        <input id="intervalSec" type="number" min="3" value="60">
+        <div class="row" style="margin-top:10px">
+          <button class="btn teal" id="btnStartRotation">▶️ Start</button>
+          <button class="btn red"  id="btnPauseRotation">⏸ Stop</button>
+          <button class="btn blue" id="btnSaveInterval">💾 Intervall merken</button>
+        </div>
+        <div class="hr"></div>
+        <div class="note">Status: <span id="statusMsg">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🎬 Teil 3: Kino / Playlist / Fallback (+ Bibliothek/Verlauf/Archiv) -->
+  <div class="card" style="margin-top:16px">
+    <div class="title"><h2>🎬 Kino / Playlist / Fallback</h2><div class="muted">Global für LP-„Kino-Fenster“ inkl. Verlauf/Archiv</div></div>
+    <div class="grid g-2">
+      <div>
+        <label>Kino/Embed URL (YouTube/Zoom …)</label>
+        <input id="kinoUrl" type="text" placeholder="https://www.youtube.com/embed/...">
+        <label>Playlist URL (optional)</label>
+        <input id="playlistUrl" type="text" placeholder="https://www.youtube.com/playlist?list=...">
+        <div class="row" style="margin-top:10px">
+          <button class="btn gold" id="btnKinoPreview">▶️ Kino Vorschau</button>
+          <button class="btn ghost" id="btnKinoClear">🧹 Kino löschen</button>
+          <button class="btn blue" id="btnKinoSave">💾 Kino/Playlist merken</button>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <button class="btn teal" id="btnKinoSaveTemplate">＋ Als Vorlage speichern</button>
+          <button class="btn gold" id="btnKinoStartNow">🟢 Jetzt starten (loggt)</button>
+          <button class="btn red"  id="btnKinoEndNow">⏹ Event beenden</button>
+        </div>
+      </div>
+      <div>
+        <label>Modus</label>
+        <select id="kinoMode">
+          <option value="60s">⏱ alle 60 Sekunden</option>
+          <option value="daily">📅 täglich</option>
+          <option value="3m">📆 alle 3 Monate</option>
+        </select>
+        <label>Geplanter Start</label>
+        <input id="kinoStart" type="datetime-local">
+        <div class="hr"></div>
+        <label>Adler-Fallback</label>
+        <div class="row">
+          <select id="fallbackEnabled">
+            <option value="true">🦅 Fallback aktiv</option>
+            <option value="false">🦅 Fallback aus</option>
+          </select>
+          <input id="fallbackImage" type="text" placeholder="https://.../assets/adler-fallback.jpg">
+        </div>
+      </div>
+    </div>
+
+    <div class="hr"></div>
+    <div class="stat">
+      <span class="chip">Kino-Vorlagen: <span id="countKinoLib">0</span></span>
+      <span class="chip">Zuletzt ausgestrahlt: <span id="countKinoHist">0</span></span>
+      <span class="chip">Kino-Archiv: <span id="countKinoArch">0</span></span>
+    </div>
+
+    <h3 style="color:var(--gold);margin-top:8px">🎞️ Vorlagen (Bibliothek)</h3>
+    <div id="kinoLibList" class="list" style="margin-top:8px"></div>
+
+    <h3 style="color:var(--gold);margin-top:8px">🟢 Verlauf (zuletzt zuerst)</h3>
+    <div id="kinoHistList" class="list" style="margin-top:8px"></div>
+
+    <h3 style="color:var(--gold);margin-top:8px">📦 Kino-Archiv</h3>
+    <div id="kinoArchList" class="list" style="margin-top:8px"></div>
+  </div>
+
+  <div class="muted" style="margin:14px 4px">Letztes Laden: <span id="lastLoad">—</span> · Letztes Speichern: <span id="lastSave">—</span></div>
+</div>
+
+<script>
+/* ===== Konstanten ===== */
+const MAX_ACTIVE = 12;
+const MAX_KINO_HISTORY = 200;
+
+/* ===== Helpers ===== */
+const $ = s => document.querySelector(s);
+const byId = id => document.getElementById(id);
+function shortUrl(u){try{const x=new URL(u);return x.hostname.replace('www.','')+x.pathname+(x.search?'…':'')}catch(e){return u}}
+function nowISO(){return new Date().toISOString()}
+function toISO(v){if(!v) return ""; const d=new Date(v); return isNaN(d)?"":d.toISOString();}
+function fromISOtoLocal(iso){if(!iso) return ""; const d=new Date(iso); if(isNaN(d)) return ""; const z=d.getTimezoneOffset()*60000; return new Date(d - z).toISOString().slice(0,16);}
+/* Base64 UTF-8 */
+function toBase64(str){const enc=new TextEncoder().encode(str);let bin="";enc.forEach(b=>bin+=String.fromCharCode(b));return btoa(bin)}
+function fromBase64(b64){const bin=atob(b64);const bytes=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);return new TextDecoder().decode(bytes)}
+/* URL ➝ EMBED */
+function toEmbed(url){
+  if(!url) return "";
+  let u=url.trim();
+  if(/youtu\.be\//i.test(u)){const id=u.split("youtu.be/")[1].split(/[?&]/)[0];return `https://www.youtube.com/embed/${id}?rel=0&autoplay=1&mute=1&playsinline=1`}
+  if(/youtube\.com\/watch/i.test(u)){const q=new URL(u).searchParams.get("v"); if(q) return `https://www.youtube.com/embed/${q}?rel=0&autoplay=1&mute=1&playsinline=1`}
+  if(/youtube\.com\/embed/i.test(u)) return u;
+  if(/vimeo\.com\/\d+/.test(u)){const id=(u.match(/vimeo\.com\/(\d+)/)||[])[1]; if(id) return `https://player.vimeo.com/video/${id}?autoplay=1&muted=1`}
+  if(/player\.vimeo\.com\/video/.test(u)) return u;
+  return u;
+}
+function hostOf(u){
+  try{const h=new URL(u).hostname.replace('www.','');
+    if(h.includes('youtube')) return 'youtube';
+    if(h.includes('vimeo')) return 'vimeo';
+    if(h.includes('zoom')) return 'zoom';
+    return h;
+  }catch(e){return 'unknown'}
+}
+
+/* ===== GitHub ===== */
+let GH={owner:"Adler-FSA",repo:"FSA-Admin",branch:"main",path:"rotator.json",token:""};
+let current=null, currentSha="", testTimer=null, rotateTimer=null, selectedActiveIndex=-1;
+
+function ghHeaders(){ if(!GH.token) throw new Error("Kein Token"); return {"Authorization":"Bearer "+GH.token,"Accept":"application/vnd.github+json","Content-Type":"application/json"};}
+async function ghGetFile(){
+  const url=`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${GH.path}?ref=${GH.branch}`;
+  const res=await fetch(url,{headers:ghHeaders()});
+  if(res.status===404) return {status:404};
+  if(!res.ok){throw new Error(`GET ${res.status}: ${await res.text()}`)}
+  const j=await res.json(); const content=fromBase64(j.content||"");
+  return {status:200,sha:j.sha,data:JSON.parse(content)};
+}
+async function ghPutFile(data,message){
+  const url=`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${GH.path}`;
+  const body={message:message||"update rotator.json",content:toBase64(JSON.stringify(data,null,2)),branch:GH.branch};
+  if(currentSha) body.sha=currentSha;
+  const res=await fetch(url,{method:"PUT",headers:ghHeaders(),body:JSON.stringify(body)});
+  if(!res.ok){throw new Error(`PUT ${res.status}: ${await res.text()}`)}
+  const j=await res.json(); currentSha=j.content.sha; byId("lastSave").textContent=new Date().toLocaleString();
+}
+
+/* ===== Defaults (inkl. 4 Test-Videos) ===== */
+function defaultData(){
+  return {
+    active:[
+      "https://www.youtube.com/embed/miWBKSszEIw?rel=0&autoplay=1&mute=1&playsinline=1",
+      "https://www.youtube.com/embed/J7QYQ-Qj-48?rel=0&autoplay=1&mute=1&playsinline=1",
+      "https://www.youtube.com/embed/CqesPVWSzao?rel=0&autoplay=1&mute=1&playsinline=1",
+      "https://www.youtube.com/embed/WcuSPqefQBY?rel=0&autoplay=1&mute=1&playsinline=1"
+    ],
+    library:["https://youtu.be/CqesPVWSzao","https://youtu.be/WcuSPqefQBY","https://youtu.be/qPlWNJ__Z1Q"],
+    archived:[],
+    interval:60,
+    kino:{
+      url:"", playlist:"", mode:"60s", startISO:"",
+      preRoll:{enabled:false,images:[],slideSec:6,transition:"fade",countdown:true,overlayText:"",bgm:{url:"",volume:0.25},forceStart:false},
+      library:[],   // Vorlagen
+      history:[],   // Verlauf (zuletzt zuerst)
+      archive:[]    // Archiv
+    },
+    fallback:{enabled:true,imageUrl:""},
+    updated:nowISO()
+  };
+}
+
+/* ===== Rendering ===== */
+function renderAll(){
+  current.library=current.library||[];
+  current.active=current.active||[];
+  current.archived=current.archived||[];
+  current.kino=current.kino||{};
+  current.kino.library=current.kino.library||[];
+  current.kino.history=current.kino.history||[];
+  current.kino.archive=current.kino.archive||[];
+
+  // Teil 1
+  byId("countLib").textContent=current.library.length;
+  byId("countActive").textContent=current.active.length;
+  byId("intervalLabel").textContent=current.interval||60;
+
+  byId("libList").innerHTML=current.library.map((u,i)=>`
+    <div class="item">
+      <span class="badge">${i+1}</span>
+      <div class="url" title="${u}">${shortUrl(u)}</div>
+      <div class="row">
+        <button class="btn small gold" onclick="previewUrl('${encodeURIComponent(u)}')">▶️ Vorschau</button>
+        <button class="btn small teal" onclick="libToActive(${i})">＋ In Rotator</button>
+        <button class="btn small ghost" onclick="removeFromLibrary(${i})">🗑 Entfernen</button>
+      </div>
+    </div>`).join("");
+
+  byId("activeList").innerHTML=current.active.map((u,i)=>`
+    <div class="item ${i===selectedActiveIndex?'active':''}" onclick="selectActive(${i})">
+      <span class="badge">${i+1}</span>
+      <div class="url" title="${u}">${shortUrl(u)}</div>
+      <div class="row">
+        <button class="btn small gold" onclick="event.stopPropagation(); previewUrl('${encodeURIComponent(u)}')">▶️ Vorschau</button>
+        <button class="btn small ghost" onclick="event.stopPropagation(); moveUp(${i})">▲</button>
+        <button class="btn small ghost" onclick="event.stopPropagation(); moveDown(${i})">▼</button>
+        <button class="btn small blue" onclick="event.stopPropagation(); activeToArchive(${i})">📦 Archiv</button>
+      </div>
+    </div>`).join("");
+
+  const ar=current.archived;
+  byId("archList").innerHTML=ar.length? ar.map((o,i)=>`
+    <div class="item">
+      <span class="badge">${i+1}</span>
+      <div class="url" title="${o.url}">${shortUrl(o.url)} <span class="muted">· ${o.archived_at?new Date(o.archived_at).toLocaleString():""}</span></div>
+      <div class="row">
+        <button class="btn small teal" onclick="restoreFromArchive(${i})">↩︎ Zurückholen</button>
+        <button class="btn small ghost" onclick="removeFromArchive(${i})">🗑 Entfernen</button>
+      </div>
+    </div>`).join(""):`<div class="muted">Noch nichts archiviert.</div>`;
+
+  // Teil 2
+  byId("intervalSec").value=current.interval||60;
+
+  // Teil 3 – Felder
+  byId("kinoUrl").value=current.kino.url||"";
+  byId("playlistUrl").value=current.kino.playlist||"";
+  byId("kinoMode").value=current.kino.mode||"60s";
+  byId("kinoStart").value=fromISOtoLocal(current.kino.startISO||"");
+  byId("fallbackEnabled").value=String(current.fallback?.enabled??true);
+  byId("fallbackImage").value=current.fallback?.imageUrl||"";
+
+  // Teil 3 – Listen/Counts
+  byId("countKinoLib").textContent=current.kino.library.length;
+  byId("countKinoHist").textContent=current.kino.history.length;
+  byId("countKinoArch").textContent=current.kino.archive.length;
+
+  byId("kinoLibList").innerHTML=current.kino.library.map((o,i)=>`
+    <div class="item">
+      <span class="badge">${i+1}</span>
+      <div class="url" title="${o.url}">${shortUrl(o.url)} <span class="muted">· gespeichert ${o.saved_at?new Date(o.saved_at).toLocaleString():""}</span></div>
+      <div class="row">
+        <button class="btn small gold" onclick="kinoLoadTemplate(${i})">↩︎ Laden</button>
+        <button class="btn small ghost" onclick="kinoRemoveTemplate(${i})">🗑 Entfernen</button>
+      </div>
+    </div>`).join("") || `<div class="muted">Keine Vorlagen.</div>`;
+
+  const hist=current.kino.history.slice().sort((a,b)=> (b.played_at||"").localeCompare(a.played_at||""));
+  byId("kinoHistList").innerHTML=hist.map((o,i)=>`
+    <div class="item">
+      <span class="badge">${i+1}</span>
+      <div class="url" title="${o.url}">
+        ${shortUrl(o.url)} <span class="muted">· ${o.host||'—'} · ${o.played_at?new Date(o.played_at).toLocaleString():"—"} ${o.ended_at? " – Ende "+new Date(o.ended_at).toLocaleString():""}</span>
+      </div>
+      <div class="row">
+        <button class="btn small teal" onclick="kinoRebroadcast(${i})">▶️ Wieder senden</button>
+        <button class="btn small blue" onclick="kinoHistoryToArchive(${i})">📦 Archiv</button>
+      </div>
+    </div>`).join("") || `<div class="muted">Noch nichts ausgestrahlt.</div>`;
+
+  const ka=current.kino.archive.slice();
+  byId("kinoArchList").innerHTML=ka.map((o,i)=>`
+    <div class="item">
+      <span class="badge">${i+1}</span>
+      <div class="url" title="${o.url}">
+        ${shortUrl(o.url)} <span class="muted">· archiviert ${o.archived_at?new Date(o.archived_at).toLocaleString():""}</span>
+      </div>
+      <div class="row">
+        <button class="btn small teal" onclick="kinoArchiveRestore(${i})">↩︎ Zurückholen</button>
+        <button class="btn small ghost" onclick="kinoArchiveRemove(${i})">🗑 Entfernen</button>
+      </div>
+    </div>`).join("") || `<div class="muted">Kino-Archiv leer.</div>`;
+}
+
+/* ===== Guard: Daten geladen? ===== */
+async function ensureLoaded(){ if(current) return; await loadOrInit(); }
+
+/* ===== Teil 1 Aktionen (unverändert, nur GitHub-Save dazu) ===== */
+async function addToLibrary(){
+  try{await ensureLoaded();
+    const u=toEmbed(byId("newUrl").value); if(!u) return alert("Bitte gültige URL eingeben.");
+    current.library=current.library||[]; if(!current.library.includes(u)) current.library.push(u);
+    current.updated=nowISO(); await ghPutFile(current,"add: library"); renderAll();
+  }catch(e){ alert("Fehler (Bibliothek hinzufügen):\n"+e.message); }
+}
+async function addDirectToActive(){
+  try{await ensureLoaded();
+    const u=toEmbed(byId("newUrl").value); if(!u) return alert("Bitte gültige URL eingeben.");
+    current.active=current.active||[]; if(current.active.length>=MAX_ACTIVE) return alert(`Maximal ${MAX_ACTIVE} aktive Videos.`);
+    if(!current.active.includes(u)) current.active.push(u);
+    current.library=current.library||[]; if(!current.library.includes(u)) current.library.push(u);
+    current.updated=nowISO(); await ghPutFile(current,"add: direct-to-active"); renderAll();
+  }catch(e){ alert("Fehler (Direkt in Rotator):\n"+e.message); }
+}
+async function libToActive(i){
+  try{await ensureLoaded();
+    const u=toEmbed(current.library[i]); if(current.active.length>=MAX_ACTIVE) return alert(`Maximal ${MAX_ACTIVE} aktive Videos.`);
+    if(!current.active.includes(u)) current.active.push(u);
+    current.updated=nowISO(); await ghPutFile(current,"add: lib->active"); renderAll();
+  }catch(e){ alert("Fehler (lib->active):\n"+e.message); }
+}
+async function removeFromLibrary(i){
+  try{await ensureLoaded(); current.library.splice(i,1); current.updated=nowISO(); await ghPutFile(current,"remove: library"); renderAll();
+  }catch(e){ alert("Fehler (Library entfernen):\n"+e.message); }
+}
+function selectActive(i){selectedActiveIndex=i; renderAll();}
+async function moveUp(i){ if(i<=0) return; const a=current.active; [a[i-1],a[i]]=[a[i],a[i-1]]; selectedActiveIndex=i-1; current.updated=nowISO(); await ghPutFile(current,"reorder: up"); renderAll();}
+async function moveDown(i){ const a=current.active; if(i>=a.length-1) return; [a[i+1],a[i]]=[a[i],a[i+1]]; selectedActiveIndex=i+1; current.updated=nowISO(); await ghPutFile(current,"reorder: down"); renderAll();}
+async function activeToArchive(i){
+  try{await ensureLoaded(); const u=current.active[i];
+    current.archived=current.archived||[]; current.archived.unshift({url:u,archived_at:nowISO()});
+    current.active.splice(i,1); selectedActiveIndex=-1; current.updated=nowISO();
+    await ghPutFile(current,"archive: from-active"); renderAll();
+  }catch(e){ alert("Fehler (Archivieren):\n"+e.message); }
+}
+async function restoreFromArchive(i){
+  try{await ensureLoaded(); const u=current.archived[i].url;
+    if(current.active.length>=MAX_ACTIVE) return alert(`Schon ${MAX_ACTIVE} aktive Videos.`);
+    if(!current.active.includes(u)) current.active.push(u);
+    current.archived.splice(i,1); current.updated=nowISO();
+    await ghPutFile(current,"restore: archive->active"); renderAll();
+  }catch(e){ alert("Fehler (Zurückholen):\n"+e.message); }
+}
+async function removeFromArchive(i){ try{await ensureLoaded(); current.archived.splice(i,1); current.updated=nowISO(); await ghPutFile(current,"remove: archive"); renderAll(); }catch(e){ alert("Fehler (Archiv entfernen):\n"+e.message); }}
+
+/* ===== Vorschau/Rotation – Teil 2 ===== */
+function previewUrl(enc){const u=decodeURIComponent(enc); byId("preview").src=u; byId("statusMsg").textContent="Vorschau läuft";}
+function stopPreview(){byId("preview").src="about:blank"; byId("statusMsg").textContent="Vorschau gestoppt";}
+function stopAllTimers(){if(testTimer)clearInterval(testTimer); if(rotateTimer)clearInterval(rotateTimer); testTimer=null; rotateTimer=null; stopPreview();}
+function startTestRotate(){
+  stopAllTimers();
+  const arr=current?.active||[]; if(!arr.length) return alert("Keine aktiven Videos.");
+  let i=0; byId("preview").src=arr[0]; byId("statusMsg").textContent="Rotationstest (5s) …";
+  testTimer=setInterval(()=>{i=(i+1)%arr.length; byId("preview").src=arr[i];},5000);
+}
+function startRotation(){
+  stopAllTimers();
+  const arr=current?.active||[]; if(!arr.length) return alert("Keine aktiven Videos.");
+  const sec=Math.max(3,parseInt(byId("intervalSec").value||"60",10));
+  let i=0; byId("preview").src=arr[0]; byId("statusMsg").textContent=`Rotation aktiv (${sec}s)`;
+  rotateTimer=setInterval(()=>{i=(i+1)%arr.length; byId("preview").src=arr[i];},sec*1000);
+}
+function pauseRotation(){if(rotateTimer)clearInterval(rotateTimer); rotateTimer=null; byId("statusMsg").textContent="Rotation pausiert";}
+async function saveInterval(){
+  try{await ensureLoaded(); const sec=Math.max(3,parseInt(byId("intervalSec").value||"60",10));
+    current.interval=sec; current.updated=nowISO(); await ghPutFile(current,"update: interval");
+    byId("intervalLabel").textContent=sec; byId("statusMsg").textContent="Intervall gespeichert";
+  }catch(e){ alert("Fehler beim Speichern des Intervalls:\n"+e.message); }
+}
+
+/* ===== Kino – Funktionen (Bibliothek/Verlauf/Archiv) ===== */
+function kinoSnapshot(){
+  return {
+    url: (byId("kinoUrl").value||"").trim(),
+    playlist: (byId("playlistUrl").value||"").trim(),
+    mode: byId("kinoMode").value,
+    startISO: toISO(byId("kinoStart").value)
+  };
+}
+async function kinoSave(){ // bestehend, nur GitHub persist
+  try{
+    await ensureLoaded();
+    const snap=kinoSnapshot();
+    current.kino.url=snap.url; current.kino.playlist=snap.playlist; current.kino.mode=snap.mode; current.kino.startISO=snap.startISO;
+    current.fallback={enabled:byId("fallbackEnabled").value==="true",imageUrl:(byId("fallbackImage").value||"").trim()};
+    current.updated=nowISO(); await ghPutFile(current,"update: kino/playlist/fallback");
+    byId("statusMsg").textContent="Kino/Fallback gespeichert";
+  }catch(e){ alert("Fehler beim Speichern Kino:\n"+e.message); }
+}
+function kinoPreview(){
+  const u=byId("kinoUrl").value.trim(); if(!u) return alert("Bitte Kino/Embed URL eintragen.");
+  byId("preview").src=u; byId("statusMsg").textContent="Kino-Vorschau läuft";
+}
+function kinoClear(){
+  byId("kinoUrl").value=""; byId("playlistUrl").value=""; byId("kinoMode").value="60s"; byId("kinoStart").value="";
+  byId("statusMsg").textContent="Kino-Felder geleert (noch nicht gespeichert)";
+}
+
+/* Vorlagen */
+async function kinoSaveTemplate(){
+  try{await ensureLoaded(); const snap=kinoSnapshot(); if(!snap.url) return alert("URL fehlt.");
+    current.kino.library=current.kino.library||[];
+    current.kino.library.unshift({...snap, saved_at:nowISO()});
+    current.updated=nowISO(); await ghPutFile(current,"kino: add template"); renderAll();
+  }catch(e){ alert("Fehler (Kino-Vorlage):\n"+e.message); }
+}
+function kinoLoadTemplate(i){
+  const t=current.kino.library[i]; if(!t) return;
+  byId("kinoUrl").value=t.url||""; byId("playlistUrl").value=t.playlist||""; byId("kinoMode").value=t.mode||"60s"; byId("kinoStart").value=fromISOtoLocal(t.startISO||"");
+  byId("statusMsg").textContent="Vorlage geladen – jetzt „Kino/Playlist merken“ speichern.";
+}
+async function kinoRemoveTemplate(i){
+  try{await ensureLoaded(); current.kino.library.splice(i,1); current.updated=nowISO(); await ghPutFile(current,"kino: remove template"); renderAll();
+  }catch(e){ alert("Fehler (Vorlage entfernen):\n"+e.message); }
+}
+
+/* Verlauf / Logging */
+function _kinoLogEntry(kind){
+  const snap=kinoSnapshot();
+  return {
+    kind: kind||"started",
+    url: snap.url, playlist: snap.playlist, mode: snap.mode,
+    host: hostOf(snap.url),
+    played_at: nowISO(),
+    ended_at: null
+  };
+}
+async function kinoStartNow(){
+  try{await ensureLoaded();
+    // preRoll.forceStart setzen, falls vorhanden
+    current.kino.preRoll=current.kino.preRoll||{enabled:false,images:[],slideSec:6,transition:"fade",countdown:true,overlayText:"",bgm:{url:"",volume:0.25},forceStart:false};
+    current.kino.preRoll.forceStart=true;
+    // in Verlauf aufnehmen
+    current.kino.history=current.kino.history||[];
+    current.kino.history.unshift(_kinoLogEntry("started"));
+    if(current.kino.history.length>MAX_KINO_HISTORY) current.kino.history.length=MAX_KINO_HISTORY;
+    current.updated=nowISO();
+    await ghPutFile(current,"kino: start & log");
+    byId("statusMsg").textContent="Kino gestartet & geloggt";
+    renderAll();
+  }catch(e){ alert("Fehler (Kino Start):\n"+e.message); }
+}
+async function kinoEndNow(){
+  try{await ensureLoaded();
+    const h=current.kino.history||[];
+    const open=h.find(e=>!e.ended_at); // erstes offenes markieren
+    if(open){ open.ended_at=nowISO(); }
+    current.kino.preRoll=current.kino.preRoll||{}; current.kino.preRoll.forceStart=false;
+    current.updated=nowISO(); await ghPutFile(current,"kino: end & log");
+    byId("statusMsg").textContent="Kino beendet & geloggt";
+    renderAll();
+  }catch(e){ alert("Fehler (Kino Ende):\n"+e.message); }
+}
+async function kinoHistoryToArchive(i){
+  try{await ensureLoaded();
+    const hist=current.kino.history.slice().sort((a,b)=> (b.played_at||"").localeCompare(a.played_at||""));
+    const entry=hist[i]; if(!entry) return;
+    // finde denselben Eintrag im original Array (history ist sortiert dargestellt)
+    const idx=current.kino.history.findIndex(e=>e===entry);
+    if(idx>=0){
+      current.kino.archive=current.kino.archive||[];
+      current.kino.archive.unshift({...current.kino.history[idx], archived_at:nowISO()});
+      current.kino.history.splice(idx,1);
+      current.updated=nowISO(); await ghPutFile(current,"kino: history -> archive"); renderAll();
+    }
+  }catch(e){ alert("Fehler (History -> Archiv):\n"+e.message); }
+}
+function kinoRebroadcast(i){
+  const hist=current.kino.history.slice().sort((a,b)=> (b.played_at||"").localeCompare(a.played_at||""));
+  const entry=hist[i]; if(!entry) return;
+  byId("kinoUrl").value=entry.url||""; byId("playlistUrl").value=entry.playlist||"";
+  byId("kinoMode").value=entry.mode||"60s"; byId("kinoStart").value="";
+  byId("statusMsg").textContent="Aus Verlauf geladen – jetzt „Kino/Playlist merken“ speichern oder sofort starten.";
+}
+
+/* Archiv */
+async function kinoArchiveRestore(i){
+  try{await ensureLoaded(); const e=current.kino.archive[i]; if(!e) return;
+    current.kino.library=current.kino.library||[]; current.kino.library.unshift({url:e.url,playlist:e.playlist,mode:e.mode,startISO:"",saved_at:nowISO()});
+    current.kino.archive.splice(i,1);
+    current.updated=nowISO(); await ghPutFile(current,"kino: archive restore->library"); renderAll();
+  }catch(e){ alert("Fehler (Archiv zurückholen):\n"+e.message); }
+}
+async function kinoArchiveRemove(i){
+  try{await ensureLoaded(); current.kino.archive.splice(i,1); current.updated=nowISO(); await ghPutFile(current,"kino: archive remove"); renderAll();
+  }catch(e){ alert("Fehler (Archiv entfernen):\n"+e.message); }
+}
+
+/* ===== Verbinden / Laden ===== */
+async function connect(){
+  GH.owner=byId("ghOwner").value.trim();
+  GH.repo=byId("ghRepo").value.trim();
+  GH.branch=byId("ghBranch").value.trim();
+  GH.path=byId("ghPath").value.trim();
+  GH.token=byId("ghToken").value.trim();
+  byId("connStatus").textContent="Verbinde …"; byId("btnReload").disabled=true;
+  try{
+    const ping=await fetch(`https://api.github.com/repos/${GH.owner}/${GH.repo}`,{headers:ghHeaders()});
+    if(!ping.ok) throw new Error(`Repo nicht erreichbar (${ping.status})`);
+    byId("connStatus").innerHTML=`<span class="ok">Verbunden.</span>`;
+    byId("btnReload").disabled=false;
+    await loadOrInit();
+  }catch(e){ byId("connStatus").innerHTML=`<span class="err">Fehler: ${e.message}</span>`; }
+}
+async function loadOrInit(){
+  byId("connStatus").textContent="Lade rotator.json …";
+  try{
+    const r=await ghGetFile();
+    if(r.status===404){
+      current=defaultData(); await ghPutFile(current,"init rotator.json");
+      byId("connStatus").innerHTML=`<span class="warn">rotator.json neu angelegt.</span>`;
+    }else{
+      current=r.data; currentSha=r.sha;
+      // Migration: Kino-Strukturen sicherstellen
+      current.kino=current.kino||{};
+      current.kino.library=current.kino.library||[];
+      current.kino.history=current.kino.history||[];
+      current.kino.archive=current.kino.archive||[];
+      if(!current.kino.preRoll) current.kino.preRoll={enabled:false,images:[],slideSec:6,transition:"fade",countdown:true,overlayText:"",bgm:{url:"",volume:0.25},forceStart:false};
+      byId("connStatus").innerHTML=`<span class="ok">rotator.json geladen.</span>`;
+    }
+    byId("lastLoad").textContent=new Date().toLocaleString();
+    renderAll();
+  }catch(e){ byId("connStatus").innerHTML=`<span class="err">Fehler: ${e.message}</span>`; }
+}
+
+/* ===== Events ===== */
+byId("btnConnect").addEventListener("click",connect);
+byId("btnReload").addEventListener("click",loadOrInit);
+
+/* Teil 1 */
+byId("btnAddLib").addEventListener("click",addToLibrary);
+byId("btnAddActive").addEventListener("click",addDirectToActive);
+byId("btnPreviewNew").addEventListener("click",()=>{const u=toEmbed(byId("newUrl").value); if(!u) return alert("Bitte gültige URL"); previewUrl(encodeURIComponent(u));});
+byId("btnStopPreview").addEventListener("click",stopPreview);
+
+/* Teil 2 */
+byId("btnTestRotate").addEventListener("click",startTestRotate);
+byId("btnStopAll").addEventListener("click",stopAllTimers);
+byId("btnStartRotation").addEventListener("click",startRotation);
+byId("btnPauseRotation").addEventListener("click",pauseRotation);
+byId("btnSaveInterval").addEventListener("click",saveInterval);
+
+/* Teil 3: Kino */
+byId("btnKinoPreview").addEventListener("click",kinoPreview);
+byId("btnKinoClear").addEventListener("click",kinoClear);
+byId("btnKinoSave").addEventListener("click",kinoSave);
+
+byId("btnKinoSaveTemplate").addEventListener("click",kinoSaveTemplate);
+byId("btnKinoStartNow").addEventListener("click",kinoStartNow);
+byId("btnKinoEndNow").addEventListener("click",kinoEndNow);
+</script>
+</body>
+</html>
