@@ -8,138 +8,184 @@
   :root{
     --bg-card: rgba(15,15,25,0.65);
     --text: #f2f2f2;
-    --muted: #aaa;
-    --accent: #d4af37; 
-    --accent-2:#1cc2a0;
+    --muted: #b9c1cf;
+    --accent: #d4af37;   /* Gold */
+    --accent-2:#1cc2a0;  /* Türkis */
     --shadow: 0 25px 50px rgba(0,0,0,.65);
     --radius: 14px;
     --maxw: 1200px;
   }
 
-  body{font-family:Inter,system-ui,sans-serif;color:var(--text);background:#000;margin:0}
-  h1,h2,h3{font-family:Montserrat,sans-serif;font-weight:700;line-height:1.2}
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color:var(--text);background:#000;margin:0;overflow-x:hidden}
 
-  /* Menü */
+  /* ===== NAV ===== */
   header{
     position:fixed;top:0;left:0;width:100%;
     display:flex;justify-content:center;align-items:center;
-    padding:20px 40px;z-index:1000;
-    background:rgba(0,0,0,.6);backdrop-filter:blur(6px);color:#fff
+    padding:18px 24px;z-index:1000;
+    background:rgba(0,0,0,.6);backdrop-filter:blur(6px);
   }
-  header nav{display:flex;gap:40px}
+  header nav{display:flex;gap:28px;flex-wrap:wrap}
   header a{
-    color:#fff;text-decoration:none;font-weight:600;font-size:1.05rem;
-    font-family:Montserrat,sans-serif;
-    padding:6px 14px;border-radius:8px;
-    box-shadow:0 0 14px rgba(255,255,255,0.15);
-    background:rgba(0,0,0,0.4)
+    color:#fff;text-decoration:none;font-weight:600;font-size:1rem;
+    padding:7px 14px;border-radius:10px;
+    background:rgba(10,10,14,0.45);
+    box-shadow:
+      0 0 15px rgba(255,255,255,0.16),
+      0 0 35px rgba(212,175,55,0.10);
+    transition:.25s ease;
   }
-  header a:hover{color:var(--accent);box-shadow:0 0 18px rgba(212,175,55,0.7)}
+  header a:hover{
+    color:#fff;
+    box-shadow:
+      0 0 22px rgba(255,255,255,0.26),
+      0 0 55px rgba(212,175,55,0.28);
+  }
 
-  /* Video Hintergrund */
+  /* ===== HERO VIDEO (FALLBACK ADLER) ===== */
   .bg-video{
-    position:fixed;top:0;left:0;width:100%;height:100%;
-    z-index:-2;pointer-events:none;background:#000
+    position:fixed;inset:0;z-index:-2;pointer-events:none;background:#000;overflow:hidden;
   }
-  .bg-video video{width:100%;height:100%;object-fit:cover}
+  #heroVideo{width:100%;height:100%;object-fit:cover}
 
-  /* Layout */
-  section{padding:120px 0;position:relative;z-index:2}
+  /* ===== LAYOUT ===== */
+  section{padding:140px 0 90px;position:relative;z-index:2}
   .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
   .grid{display:grid;gap:32px}
-  .grid.cols-2{grid-template-columns:repeat(2,1fr)}
-  @media (max-width:900px){.grid.cols-2{grid-template-columns:1fr}}
+  .cols-2{grid-template-columns:1.05fr .95fr}
+  @media (max-width:1000px){.cols-2{grid-template-columns:1fr}}
 
-  /* Animationen */
-  @keyframes float{0%{transform:translateY(0)}50%{transform:translateY(-6px)}100%{transform:translateY(0)}}
-  @keyframes pulseBorder{0%{box-shadow:var(--shadow);border:1px solid rgba(212,175,55,0)}50%{box-shadow:0 0 25px rgba(212,175,55,0.7),var(--shadow);border:1px solid rgba(212,175,55,0.6)}100%{box-shadow:var(--shadow);border:1px solid rgba(212,175,55,0)}}
-
+  /* ===== CLOUD / GLOW ===== */
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+  @keyframes pulseBorder{
+    0%{box-shadow:var(--shadow), 0 0 0 0 rgba(212,175,55,0)}
+    50%{box-shadow:var(--shadow), 0 0 35px 4px rgba(212,175,55,0.55)}
+    100%{box-shadow:var(--shadow), 0 0 0 0 rgba(212,175,55,0)}
+  }
   .card{
     background:var(--bg-card);
     border-radius:var(--radius);
-    padding:32px;
+    padding:32px 30px;
     backdrop-filter:blur(10px);
     color:var(--text);
-    animation:float 9s ease-in-out infinite,pulseBorder 6s ease-in-out infinite
+    animation:float 9s ease-in-out infinite, pulseBorder 7s ease-in-out infinite;
+    line-height:1.6;
   }
+  .card h1,.card h2,.card h3{margin:0 0 12px}
+  .muted{color:var(--muted)}
 
   /* Buttons */
   .btn{
-    display:inline-block;margin-top:20px;
+    display:inline-block;margin-top:18px;
     background:var(--accent);color:#000;
     padding:14px 28px;border-radius:999px;
-    font-weight:600;text-decoration:none;
-    font-family:Montserrat,sans-serif;font-size:1rem;
-    box-shadow:0 4px 12px rgba(0,0,0,.4)
+    font-weight:700;text-decoration:none;font-size:1rem;
+    box-shadow:0 4px 12px rgba(0,0,0,.45);
+    transition:transform .2s ease, box-shadow .2s ease, background .2s ease;
   }
-  .btn:hover{background:#e5c85f}
+  .btn:hover{background:#e7c85f;transform:translateY(-2px)}
   .btn.full{display:block;width:100%;text-align:center}
 
-  /* Akkordeon */
+  /* Vorteile */
+  ul.benefits{padding-left:0;margin:8px 0 0}
+  ul.benefits li{list-style:none;margin:8px 0}
+
+  /* Accordion */
+  .accordion-item{border-bottom:1px solid rgba(255,255,255,.2)}
   .accordion-btn{
     width:100%;background:none;border:none;outline:none;
-    text-align:left;padding:16px;font-size:1.1rem;font-weight:600;
-    color:var(--accent);cursor:pointer;
-    border-bottom:1px solid rgba(255,255,255,.2);
-    transition:background .3s
+    text-align:left;padding:16px 6px;font-size:1.08rem;font-weight:700;
+    color:var(--accent);cursor:pointer;transition:background .25s ease;
   }
-  .accordion-btn:hover{background:rgba(255,255,255,0.05)}
-  .accordion-content{display:none;padding:0 16px 16px;color:var(--text);font-size:1rem;line-height:1.6}
+  .accordion-btn:hover{background:rgba(255,255,255,.05)}
+  .accordion-content{display:none;padding:0 6px 16px}
   .accordion-item.active .accordion-content{display:block}
 
-  /* Kino Fenster (leer, Glow, Panorama) */
+  /* Panorama-Kino (leer) */
   #kino{
-    margin:80px auto;
-    width:100%;height:400px;
-    border-radius:16px;
-    border:2px solid rgba(212,175,55,0.8);
-    box-shadow:0 0 35px rgba(212,175,55,0.6);
+    width:100%;height:420px;margin:80px auto 0;
+    border-radius:18px;border:2px solid rgba(212,175,55,0.85);
+    box-shadow:
+      0 0 45px rgba(212,175,55,0.55),
+      inset 0 0 60px rgba(255,255,255,0.08);
     background:transparent;
     animation:float 12s ease-in-out infinite;
   }
 
-  /* Musik-Button */
+  /* Musik-Toggle (kleine Wolke) */
   #musikBtn{
-    position:fixed;
-    bottom:20px; right:20px;
-    z-index:10000;
-    padding:12px 20px;
-    border:none;border-radius:999px;
-    background:rgba(0,0,0,0.6);
-    color:#fff;font-size:1rem;
-    font-family:Inter,sans-serif;cursor:pointer;
-    box-shadow:0 0 25px rgba(255,215,0,0.5);
-    backdrop-filter: blur(6px);
-    animation: float 6s ease-in-out infinite;
+    position:fixed;right:22px;bottom:22px;z-index:1200;
+    padding:11px 18px;border:none;border-radius:999px;
+    background:rgba(10,10,14,0.55);color:#fff;font-weight:700;
+    box-shadow:
+      0 0 16px rgba(255,255,255,0.20),
+      0 0 32px rgba(212,175,55,0.18);
+    backdrop-filter:blur(6px);
+    cursor:pointer;transition:.25s ease;
+    animation:float 8s ease-in-out infinite;
   }
-  #musikBtn:hover{background:rgba(0,0,0,0.8)}
+  #musikBtn:hover{
+    box-shadow:
+      0 0 22px rgba(255,255,255,0.28),
+      0 0 48px rgba(212,175,55,0.26);
+  }
 
-  footer{padding:60px 0;color:var(--muted);font-size:1rem;text-align:center}
+  /* Begrüßungs-Overlay (nur bei mode: setup) */
+  #setupOverlay{
+    position:fixed;inset:0;z-index:1100;display:none;
+    align-items:center;justify-content:center;
+    background:rgba(0,0,0,0.55);backdrop-filter:blur(3px);
+  }
+  #setupBox{
+    max-width:560px;margin:0 16px;padding:28px;border-radius:16px;
+    background:rgba(15,15,25,0.85);color:#fff;text-align:center;
+    box-shadow:
+      0 0 35px rgba(255,255,255,0.20),
+      0 0 60px rgba(212,175,55,0.25);
+    animation:float 8s ease-in-out infinite;
+  }
+  #setupBox input{
+    width:100%;max-width:360px;margin:10px auto;padding:12px 14px;
+    border-radius:10px;border:1px solid rgba(255,255,255,.15);outline:none;
+    background:rgba(0,0,0,.35);color:#fff;font-size:1rem;
+  }
+  #setupBox .row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+  #setupBox .row button{
+    padding:12px 18px;border:none;border-radius:10px;cursor:pointer;font-weight:800
+  }
+  #setupConfirm{background:var(--accent);color:#000}
+  #setupSkip{background:rgba(255,255,255,.12);color:#fff}
+  #setupNote{font-size:.95rem;color:var(--muted);margin-top:10px}
+
+  footer{padding:70px 0 80px;color:#cbd5e1;font-size:1rem;text-align:center}
 </style>
 </head>
 <body>
 
+<!-- ===== NAV (Links zur Original-Website) ===== -->
 <header>
   <nav>
-    <a href="#hero">Startseite</a>
-    <a href="#mentor">Campus</a>
-    <a href="#accordion">Grundkurs/Anfänger</a>
-    <a href="#cta">Onboarding</a>
-    <a href="#cta">Krypto-Glossar Pro</a>
+    <a href="https://www.finanziellesouveraenitaet.de/startseite" target="_blank" rel="noopener">Startseite</a>
+    <a href="https://www.finanziellesouveraenitaet.de/campus" target="_blank" rel="noopener">Campus</a>
+    <a href="https://www.finanziellesouveraenitaet.de/grundkurs-anfaenger" target="_blank" rel="noopener">Grundkurs/Anfänger</a>
+    <a href="https://www.finanziellesouveraenitaet.de/onboarding" target="_blank" rel="noopener">Onboarding</a>
+    <a href="https://www.finanziellesouveraenitaet.de/krypto-glossar-pro" target="_blank" rel="noopener">Krypto-Glossar Pro</a>
   </nav>
 </header>
 
-<!-- Adler Hero Fallback Video -->
-<div class="bg-video">
+<!-- ===== HINTERGRUND: ADLER FALLBACK ===== -->
+<div class="bg-video" aria-hidden="true">
   <video id="heroVideo" autoplay muted loop playsinline>
-    <source src="adler-hero.mp4" type="video/mp4">
+    <source src="media/adler-hero.mp4" type="video/mp4">
   </video>
 </div>
 
-<!-- Hero Section -->
-<section id="hero">
+<!-- ===== HERO / INTRO ===== -->
+<section id="hero" aria-label="Einleitung">
   <div class="wrap grid cols-2">
-    <div class="card">
+    <div class="card" style="hyphens:auto">
       <h1>Dein Geld.<br><span style="color:var(--accent-2)">Deine Freiheit.</span></h1>
       <p>Die Welt verändert sich: Inflation, KI, Blockchain. Hier lernst du, wie du souverän wirst.</p>
       <p><strong>Nie mehr Fremdbestimmung.</strong></p>
@@ -147,130 +193,255 @@
       <p>Viele haben Angst – weil sie eben keine Ahnung haben. Genau deshalb gibt es die <strong>Finanzielle Souveränität Online Akademie</strong>.</p>
       <a href="#cta" class="btn">Jetzt starten</a>
     </div>
-    <div style="display:flex;flex-direction:column;gap:20px">
+
+    <div style="display:flex;flex-direction:column;gap:22px">
       <div class="card" style="font-style:italic;text-align:center">„Eine Investition in Wissen bringt die besten Zinsen.“ – Franklin</div>
       <div class="card">
         <h2>Deine Vorteile</h2>
-        <ul>
+        <ul class="benefits">
           <li>💰 Vermögen schützen</li>
           <li>🔑 Zugang zu Krypto</li>
           <li>🤖 Einkommen mit KI</li>
           <li>🌐 Klarheit statt Chaos</li>
         </ul>
-        <p style="margin-top:1rem;font-weight:600;color:var(--muted);text-align:center">All das bekommst du schon im kostenlosen Grundkurs.</p>
+        <p class="muted" style="margin-top:12px;text-align:center">All das bekommst du schon im kostenlosen Grundkurs.</p>
       </div>
       <div class="card" style="font-style:italic;text-align:center">„Das Wichtigste ist, in dich selbst zu investieren.“ – Buffett</div>
     </div>
   </div>
 </section>
 
-<!-- Mentor -->
-<section id="mentor">
+<!-- ===== MENTOR ===== -->
+<section id="mentor" aria-label="Digitaler Mentor">
   <div class="wrap">
-    <div class="card" style="text-align:center">
+    <div class="card" style="text-align:center;hyphens:auto">
       <h2>Dein Digitaler Mentor</h2>
       <p>Dein persönlicher Begleiter durch die Akademie: Er zeigt dir Schritt für Schritt, wie du Ängste überwindest, Wissen aufbaust und souverän in der neuen Welt bestehst.</p>
     </div>
   </div>
 </section>
 
-<!-- Reise -->
-<section id="accordion">
+<!-- ===== REISE / AKKORDEON ===== -->
+<section id="reise" aria-label="Deine Reise">
   <div class="wrap">
     <div class="card">
       <h2>Deine Reise zur finanziellen Souveränität</h2>
+
       <div class="accordion-item">
         <button class="accordion-btn">🚀 Nie mehr Fremdbestimmung</button>
         <div class="accordion-content"><p>Starte deinen eigenen Weg. Wer losgeht, entdeckt die Chancen, die in Blockchain, KI und Krypto stecken.</p></div>
       </div>
+
       <div class="accordion-item">
         <button class="accordion-btn">🎆 Wer es wirklich will, folgt der Einladung</button>
         <div class="accordion-content"><p>Du bist nicht allein – viele Menschen gehen diesen Weg. Die Community wächst täglich.</p></div>
       </div>
+
       <div class="accordion-item">
-        <button class="accordion-btn">🧠 Viele Tausende entdecken täglich die Krypto-Welt</button>
+        <button class="accordion-btn">🧠 Viele Tausende entdecken jeden Tag die Krypto-Welt</button>
         <div class="accordion-content"><p>Die Zukunft ist digital. Blockchain, Krypto und KI eröffnen dir neue Einkommensmöglichkeiten.</p></div>
       </div>
+
       <div class="accordion-item">
-        <button class="accordion-btn">😨 Angst entsteht aus Unwissenheit</button>
-        <div class="accordion-content"><p>Wissen schafft Sicherheit. Genau deshalb gibt es diesen Kurs.</p></div>
+        <button class="accordion-btn">😨 Viele haben Angst – weil sie keine Ahnung haben</button>
+        <div class="accordion-content"><p>Angst entsteht aus Unwissenheit. Wissen schafft Sicherheit. Genau deshalb gibt es diesen Kurs.</p></div>
       </div>
+
       <div class="accordion-item">
-        <button class="accordion-btn">📚 Deshalb gibt es die Akademie</button>
+        <button class="accordion-btn">📚 Deshalb gibt es die Finanzielle Souveränität Online Akademie</button>
         <div class="accordion-content"><p>Hier bekommst du alles, was du brauchst: Klarheit, Praxiswissen und die Tools für deine Freiheit.</p></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- CTA -->
-<section id="cta">
+<!-- ===== CTA / E-MAIL ===== -->
+<section id="cta" aria-label="Call to Action">
   <div class="wrap">
-    <div class="card" style="text-align:center;padding:50px;max-width:780px;margin:0 auto">
+    <div class="card" style="text-align:center;padding:46px;max-width:780px;margin:0 auto">
       <h2 style="font-size:2rem;margin-bottom:10px;color:var(--accent)">Finanzbildung für die neue Welt</h2>
-      <p style="font-size:1.3rem;font-weight:600;color:var(--accent-2);margin-bottom:25px">Dein Geld. Deine Zukunft. Deine Souveränität.</p>
+      <p style="font-size:1.25rem;font-weight:700;color:var(--accent-2);margin-bottom:22px">Dein Geld. Deine Zukunft. Deine Souveränität.</p>
+
+      <!-- E-Mail Placeholder bleibt LEER bis Repo sie ersetzt -->
       <a href="mailto:EMAIL_PLACEHOLDER" class="btn full">🚀 Jetzt kostenlos starten – EMAIL_PLACEHOLDER</a>
-      <p style="margin-top:20px;font-size:1rem;color:var(--muted)">Oder kopiere die Adresse direkt:</p>
-      <p style="font-size:1.2rem;font-weight:600;color:var(--accent)">EMAIL_PLACEHOLDER</p>
-      <button onclick="navigator.clipboard.writeText('EMAIL_PLACEHOLDER').then(()=>alert('📋 E-Mail kopiert: EMAIL_PLACEHOLDER'))" class="btn">📋 E-Mail kopieren</button>
-      <p style="margin-top:25px;font-size:1rem;color:var(--text)">👉 Über diese E-Mail erhältst du direkten Kontakt zu einem menschlichen Mentor.</p>
-      <p style="margin-top:15px;font-size:1.2rem;font-weight:700;color:var(--accent-2)">✅ Von deinem Mentor erhältst du außerdem deine Zugangsdaten zum Grundkurs.</p>
+
+      <p class="muted" style="margin-top:18px">Oder kopiere die Adresse direkt:</p>
+      <p style="font-size:1.2rem;font-weight:700;color:var(--accent)" id="emailCopyText">EMAIL_PLACEHOLDER</p>
+      <a class="btn" href="#" id="copyBtn">📋 E-Mail kopieren</a>
+
+      <p style="margin-top:22px">👉 Über diese E-Mail erhältst du direkten Kontakt zu einem menschlichen Mentor.</p>
+      <p style="margin-top:10px;font-size:1.1rem;font-weight:800;color:var(--accent-2)">✅ Von deinem Mentor erhältst du außerdem deine Zugangsdaten zum Grundkurs.</p>
+
+      <!-- Nachträgliche Änderung nur via Admin vorgesehen -->
+      <div style="margin-top:18px">
+        <small class="muted">✉️ E-Mail ändern? Bitte an den Admin wenden.</small>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- Kino Fenster Panorama -->
-<section id="kino"></section>
+<!-- ===== KINO PANORAMA (leer, nur Rahmen & Glow) ===== -->
+<section id="kino" aria-label="Kino-Panorama (extern gesteuert)"></section>
 
+<!-- ===== FOOTER ===== -->
 <footer>
   <p>© 2025 Finanzielle Souveränitäts Akademie</p>
   <p><em>„Wissen ist Macht – angewandtes Wissen ist Freiheit.“</em></p>
 </footer>
 
-<!-- Musik -->
-<audio id="bgMusic" loop autoplay>
-  <source src="terra-mater-inspiring-cinematic-epic-272565.mp3" type="audio/mpeg">
+<!-- ===== MUSIK (FALLBACK) ===== -->
+<audio id="bgMusic" loop preload="auto">
+  <source src="media/terra-mater-inspiring-cinematic-epic-272565.mp3" type="audio/mpeg">
 </audio>
-<button id="musikBtn">🎵 Musik stoppen</button>
+<button id="musikBtn" type="button">🎵 Musik starten</button>
+
+<!-- ===== SETUP OVERLAY (nur bei mode: setup) ===== -->
+<div id="setupOverlay" role="dialog" aria-modal="true" aria-labelledby="setupTitle">
+  <div id="setupBox" class="card" style="animation:none">
+    <h2 id="setupTitle">Willkommen! 🦅</h2>
+    <p>Aktiviere jetzt deine persönliche Landingpage.</p>
+    <p class="muted">Gib deine <strong>eigene seriöse E-Mail</strong> ein.<br>Sie wird fest mit dieser Seite verbunden.</p>
+    <input id="setupEmail" type="email" placeholder="dein.name@mail.de" autocomplete="email" inputmode="email">
+    <div class="row">
+      <button id="setupConfirm" type="button">✅ Freischalten</button>
+      <button id="setupSkip" type="button">Später ansehen</button>
+    </div>
+    <div id="setupNote" class="muted">Du kannst die Seite auch erst in Ruhe ansehen und später die E-Mail eintragen.</div>
+  </div>
+</div>
 
 <script>
-  // Musikbutton
-  const musikBtn=document.getElementById('musikBtn');
-  const bgMusic=document.getElementById('bgMusic');
-  musikBtn.addEventListener('click',()=>{
-    if(bgMusic.paused){bgMusic.play();musikBtn.textContent="🎵 Musik stoppen";}
-    else{bgMusic.pause();musikBtn.textContent="🎵 Musik starten";}
-  });
+/* ========= LP BOOTSTRAP =========
+   - liest ?id=... aus der URL
+   - lädt data/emails.json
+   - zeigt Begrüßungs-Overlay falls mode==="setup" oder Eintrag fehlt
+   - setzt E-Mail in CTA & Copy Feld, wenn live
+   - Rotator (optional) überschreibt Video & Musik aus rotator.json
+================================= */
 
-  // Akkordeon
-  document.querySelectorAll('.accordion-btn').forEach(btn=>{
-    btn.addEventListener('click',()=>{btn.parentElement.classList.toggle('active');});
-  });
+const qs = new URLSearchParams(location.search);
+const LP_ID = qs.get("id"); // z.B. FSA-2025-10-02-0001
 
-  // Rotator Überschreibung
-  async function initRotator(){
-    try{
-      let res=await fetch("rotator.json");
-      if(!res.ok) throw new Error("kein Rotator");
-      let data=await res.json();
+const emailTextEl = document.getElementById('emailCopyText');
+const copyBtn     = document.getElementById('copyBtn');
+const bgMusic     = document.getElementById('bgMusic');
+const musikBtn    = document.getElementById('musikBtn');
+const setupOverlay= document.getElementById('setupOverlay');
+const setupEmail  = document.getElementById('setupEmail');
+const setupConfirm= document.getElementById('setupConfirm');
+const setupSkip   = document.getElementById('setupSkip');
+const heroVideo   = document.getElementById('heroVideo');
 
-      // Video überschreiben
-      if(data.videos && data.videos.length>0){
-        let hero=document.getElementById("heroVideo");
-        hero.src=data.videos[0].url;
-        hero.load();hero.play();
-      }
+function setEmailEverywhere(mail){
+  // Ersetzt nur die sichtbaren Stellen; der mailto-Button enthält ebenfalls den Placeholder.
+  emailTextEl.textContent = mail || 'EMAIL_PLACEHOLDER';
+  const cta = document.querySelector('#cta a.btn.full');
+  if(cta){ cta.setAttribute('href', 'mailto:' + (mail || 'EMAIL_PLACEHOLDER')); cta.textContent = '🚀 Jetzt kostenlos starten – ' + (mail || 'EMAIL_PLACEHOLDER'); }
+}
 
-      // Musik überschreiben
-      if(data.music && data.music.length>0){
-        let src=data.music[0].url;
-        bgMusic.src=src;
-        bgMusic.load();
-        bgMusic.play();
-      }
-    }catch(e){console.log("Fallback aktiv:",e.message);}
+async function initEmails(){
+  if(!LP_ID){ 
+    // Kein ID → Overlay nicht zeigen, Placeholder bleibt unverändert
+    setEmailEverywhere(null);
+    return;
   }
-  initRotator();
+  try{
+    const res = await fetch('data/emails.json', {cache:'no-store'});
+    const db  = await res.json();
+    const entry = db[LP_ID];
+
+    if(!entry || entry.mode==='setup'){
+      // Begrüßung + Eingabe möglich
+      setupOverlay.style.display = 'flex';
+      setEmailEverywhere(null);
+    } else {
+      // live
+      setEmailEverywhere(entry.email || null);
+      setupOverlay.style.display = 'none';
+    }
+  }catch(err){
+    console.warn('emails.json nicht ladbar:', err);
+    // Fallback: Placeholder
+    setEmailEverywhere(null);
+  }
+}
+
+copyBtn.addEventListener('click', (e)=>{
+  e.preventDefault();
+  const txt = emailTextEl.textContent.trim();
+  if(!txt || txt==='EMAIL_PLACEHOLDER'){ alert('Es ist noch keine E-Mail gesetzt.'); return; }
+  navigator.clipboard.writeText(txt).then(()=> alert('📋 E-Mail kopiert: ' + txt));
+});
+
+/* Musik Toggle (Autoplay wird evtl. blockiert → Button steuert sicher) */
+let musicOn = false;
+musikBtn.addEventListener('click', ()=>{
+  if(musicOn){
+    bgMusic.pause(); musicOn=false; musikBtn.textContent='🎵 Musik starten';
+  } else {
+    const p = bgMusic.play();
+    if(p && p.catch){ p.catch(()=>{}); }
+    musicOn=true; musikBtn.textContent='🔇 Musik stoppen';
+  }
+});
+
+/* Begrüßung */
+setupSkip.addEventListener('click', ()=>{
+  setupOverlay.style.display='none';
+});
+setupConfirm.addEventListener('click', ()=>{
+  const v = (setupEmail.value||'').trim();
+  const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+  if(!ok){ alert('Bitte eine gültige E-Mail eingeben.'); return; }
+
+  // 👉 Hier NICHT lokal speichern (kein LocalStorage).
+  // Dieser Klick triggert in deinem Admin-Prozess eine Repo-Aktualisierung (emails.json[LP_ID] = {email:v, mode:'live'}).
+  // Bis das passiert ist, bleibt (technisch) mode:setup. Die LP bleibt sichtbar, Overlay kann weg.
+  alert('Danke! Deine E-Mail wird übernommen, sobald der Admin bestätigt.');
+  setupOverlay.style.display='none';
+});
+
+/* Rotator: optionales Überschreiben von Video & Musik */
+async function initRotator(){
+  try{
+    const r = await fetch('rotator.json', {cache:'no-store'});
+    if(!r.ok) throw new Error('kein rotator.json');
+    const data = await r.json();
+
+    // Video
+    if(data.videos && data.videos.length>0){
+      const src = document.createElement('source');
+      src.src = data.videos[0].url;
+      src.type = 'video/mp4';
+      heroVideo.innerHTML = '';
+      heroVideo.appendChild(src);
+      heroVideo.load(); heroVideo.play().catch(()=>{});
+    }
+    // Musik
+    if(data.music && data.music.length>0){
+      const src = data.music[0].url;
+      bgMusic.pause();
+      bgMusic.innerHTML='';
+      const s = document.createElement('source');
+      s.src = src; s.type='audio/mpeg';
+      bgMusic.appendChild(s);
+      bgMusic.load();
+      // nicht auto starten; Nutzer steuert per Button
+    }
+  }catch(e){
+    // Fallback aktiv: Adler & TerraMater bleiben
+    // kein Fehler nötig
+  }
+}
+
+/* Accordion */
+document.querySelectorAll('.accordion-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=> btn.parentElement.classList.toggle('active'));
+});
+
+/* Boot */
+initEmails();
+initRotator();
 </script>
 </body>
 </html>
