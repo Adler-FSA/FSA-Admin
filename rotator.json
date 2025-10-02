@@ -30,10 +30,20 @@
     "enabled": true,
     "imageUrl": ""
   },
-  "updated": "2025-10-02T10:13:18.025Z",
+  "updated": "2025-10-02T10:24:10.149Z",
   "settings": {
     "guardSec": 10,
     "hostPref": "auto",
     "autoSkip": false
-  }
+  },
+  "kinoTemplates": [
+    {
+      "url": "https://youtu.be/5Z_X_hV5Nes?si=HkMHzFAwxCqGZpO1 https://youtu.be/5Z_X_hV5Nes?si=HkMHzFAwxCqGZpO1",
+      "playlist": "",
+      "mode": "byDuration",
+      "saved_at": "2025-10-02T10:24:10.149Z"
+    }
+  ],
+  "kinoLog": [],
+  "kinoArchive": []
 }
