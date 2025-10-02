@@ -3,112 +3,154 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Finanzielle Souveränität – Template 02</title>
+  <title>Finanzielle Souveränität – Template 002</title>
   <style>
     body, html {
       margin: 0;
       padding: 0;
       height: 100%;
-      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-family: "Segoe UI", Roboto, Arial, sans-serif;
+      color: #fff;
       background: #000;
-      color: #222;
+      overflow-x: hidden;
     }
 
     /* Hintergrund-Video */
     #bg-video {
       position: fixed;
-      right: 0;
-      bottom: 0;
-      min-width: 100%;
-      min-height: 100%;
-      z-index: -1;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       object-fit: cover;
+      z-index: -1;
+    }
+
+    /* Glow Animation */
+    @keyframes sunGlow {
+      from {
+        box-shadow: 0 0 6px rgba(249, 174, 22, 0.4),
+                    0 0 12px rgba(249, 174, 22, 0.3);
+      }
+      to {
+        box-shadow: 0 0 18px rgba(249, 174, 22, 0.8),
+                    0 0 32px rgba(249, 174, 22, 0.6);
+      }
     }
 
     /* Menü oben */
-    .menu-bar {
+    nav {
       display: flex;
       justify-content: center;
-      align-items: center;
       gap: 30px;
       padding: 20px;
-      background: rgba(255, 255, 255, 0.9);
-      border-bottom: 1px solid #eee;
+      background: rgba(255, 255, 255, 0.85);
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       z-index: 10;
+      backdrop-filter: blur(6px);
     }
 
-    .menu-bar a {
+    nav a {
       text-decoration: none;
-      font-size: 0.95rem;
-      color: #444;
+      font-size: 1rem;
+      color: #333;
       font-weight: 500;
-      padding: 6px 12px;
-      border-radius: 4px;
+      padding: 6px 14px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.8);
+      animation: sunGlow 3s ease-in-out infinite alternate;
       transition: all 0.3s ease;
     }
 
-    .menu-bar a:hover {
-      background: #ff5722;
+    nav a:hover {
+      background: #f97316;
       color: #fff;
     }
 
-    .menu-bar a.glossar-btn {
-      background: #ff5722;
+    nav a.active {
+      background: #f97316;
       color: #fff;
-      font-weight: bold;
     }
 
-    /* Overlay Box Mitte */
-    .overlay-box {
-      background: rgba(0, 0, 0, 0.65);
-      padding: 30px;
+    /* Schwebende Textboxen */
+    .box {
+      background: rgba(0, 0, 0, 0.55);
+      padding: 20px;
       border-radius: 12px;
-      max-width: 640px;
-      margin: 160px auto 0;
-      text-align: center;
-      color: #fff;
+      margin: 20px auto;
+      max-width: 800px;
+      animation: sunGlow 4s ease-in-out infinite alternate;
     }
 
-    .overlay-box h1 {
-      font-size: 2rem;
-      margin-bottom: 15px;
+    .box h1, .box h2 {
       color: #ffd700;
+      margin-bottom: 10px;
     }
 
-    .overlay-box p {
-      font-size: 1.1rem;
-      line-height: 1.6;
-      margin-bottom: 20px;
+    .quote {
+      font-style: italic;
+      color: #facc15;
     }
 
-    /* Email Eingabe */
-    .email-box input {
-      width: 65%;
-      padding: 12px;
-      border: none;
+    /* CTA Button */
+    .cta-btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 14px 28px;
+      background: #f97316;
+      color: #fff;
       border-radius: 8px;
-      margin-right: 8px;
-      font-size: 1rem;
-    }
-
-    .email-box button {
-      padding: 12px 20px;
-      border: none;
-      border-radius: 8px;
-      background: #ffd700;
-      color: #000;
-      font-size: 1rem;
+      text-decoration: none;
       font-weight: bold;
-      cursor: pointer;
-      transition: background 0.3s ease;
+      font-size: 1.2rem;
+      animation: sunGlow 3s ease-in-out infinite alternate;
     }
 
-    .email-box button:hover {
-      background: #ffae00;
+    /* Begrüßungs-Overlay */
+    #setup-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.65);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 200;
+    }
+
+    #setup-box {
+      background: rgba(15,23,42,0.9);
+      padding: 40px;
+      border-radius: 12px;
+      max-width: 520px;
+      text-align: center;
+      animation: sunGlow 3s ease-in-out infinite alternate;
+    }
+
+    #setup-box input {
+      padding: 12px;
+      width: 80%;
+      border: none;
+      border-radius: 6px;
+      margin: 10px 0;
+      font-size: 1rem;
+    }
+
+    #setup-box button {
+      background: #f97316;
+      color: #fff;
+      font-weight: 600;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-top: 10px;
     }
   </style>
 </head>
@@ -119,32 +161,100 @@
     <source src="https://cdn.coverr.co/videos/coverr-flying-bald-eagle-8570/1080p.mp4" type="video/mp4">
   </video>
 
-  <!-- 🌐 Menü-Bar oben -->
-  <nav class="menu-bar">
-    <a href="https://www.finanziellesouveraenitaet.de/startseite">Startseite</a>
+  <!-- 🌐 Menü -->
+  <nav>
+    <a href="https://www.finanziellesouveraenitaet.de/startseite" class="active">Startseite</a>
     <a href="https://www.finanziellesouveraenitaet.de/campus">Campus</a>
     <a href="https://www.finanziellesouveraenitaet.de/grundkurs-anfaenger">Grundkurs/Anfänger</a>
     <a href="https://www.finanziellesouveraenitaet.de/onboarding">Onboarding</a>
-    <a href="https://www.finanziellesouveraenitaet.de/krypto-glossar-pro" class="glossar-btn">Krypto-Glossar-Pro</a>
+    <a href="https://www.finanziellesouveraenitaet.de/krypto-glossar-pro">Krypto-Glossar Pro</a>
   </nav>
 
-  <!-- 📝 Begrüßungs-Box Mitte -->
-  <div class="overlay-box">
-    <h1>Willkommen zur Finanzielle Souveränität Akademie</h1>
-    <p>
-      Dein Geld. Deine Freiheit.<br>
-      Die Welt verändert sich: Inflation, KI, Blockchain.<br>
-      Hier lernst du, wie du souverän wirst.
-    </p>
-    <p>
-      👉 Bitte gib eine <strong>seriöse E-Mail</strong> ein, die dir gehört.<br>
-      Sie wird direkt mit deiner persönlichen Landingpage verbunden.
-    </p>
-    <div class="email-box">
-      <input type="email" placeholder="Deine E-Mail-Adresse eingeben">
-      <button>Jetzt starten</button>
+  <!-- Begrüßung (Partner) -->
+  <div id="setup-screen">
+    <div id="setup-box">
+      <h1>🦅 LP-Aktivierung</h1>
+      <p>Bitte aktiviere jetzt deine persönliche Landingpage:</p>
+      <p>👉 Gib <strong>deine eigene seriöse E-Mail-Adresse</strong> ein.<br>
+         👉 Klicke auf <strong>Freischalten</strong>.<br>
+         👉 Danach kannst du den Link an deine Kontakte weitergeben.</p>
+      <input type="email" id="partnerEmail" placeholder="Deine E-Mail">
+      <br>
+      <button onclick="saveEmail()">✅ Freischalten</button>
     </div>
   </div>
 
+  <!-- Template 002 Inhalte -->
+  <div id="lp-screen" style="display:none;">
+    <div class="box">
+      <h1>Mentor Reise Start</h1>
+      <p>Dein Geld. Deine Freiheit. Die Welt verändert sich: Inflation, KI, Blockchain. Hier lernst du, wie du souverän wirst.<br>
+      Nie mehr Fremdbestimmung.</p>
+      <p>Wer es wirklich will, folgt der Einladung. Viele Tausende entdecken jeden Tag die Krypto-Welt.<br>
+      Viele haben Angst – weil sie keine Ahnung haben. Genau deshalb gibt es die Finanzielle Souveränität Online Akademie.</p>
+      <a href="#start" class="cta-btn">🚀 Jetzt starten</a>
+    </div>
+
+    <div class="box quote">„Eine Investition in Wissen bringt die besten Zinsen.“ – Franklin</div>
+
+    <div class="box">
+      <h2>Deine Vorteile</h2>
+      <ul>
+        <li>💰 Vermögen schützen</li>
+        <li>🔑 Zugang zu Krypto</li>
+        <li>🤖 Einkommen mit KI</li>
+        <li>🌐 Klarheit statt Chaos</li>
+      </ul>
+    </div>
+
+    <div class="box quote">„Das Wichtigste ist, in dich selbst zu investieren.“ – Buffett</div>
+
+    <div class="box">
+      <h2>Dein Digitaler Mentor</h2>
+      <p>Dein persönlicher Begleiter durch die Akademie: Er zeigt dir Schritt für Schritt, wie du Ängste überwindest, Wissen aufbaust und souverän in der neuen Welt bestehst.</p>
+    </div>
+
+    <div class="box">
+      <h2>Finanzbildung für die neue Welt</h2>
+      <p>Dein Geld. Deine Zukunft. Deine Souveränität.</p>
+      <div id="start" class="box">
+        🚀 Jetzt kostenlos starten – <strong id="mentorEmail">EMAIL_PLACEHOLDER</strong><br><br>
+        Oder kopiere die Adresse direkt:<br>
+        <strong id="mentorEmailCopy">EMAIL_PLACEHOLDER</strong><br><br>
+        👉 Über diese E-Mail erhältst du direkten Kontakt zu einem Mentor.<br>
+        ✅ Von deinem Mentor erhältst du außerdem deine Zugangsdaten zum Grundkurs.
+      </div>
+    </div>
+  </div>
+
+<script>
+async function init(){
+  const params = new URLSearchParams(window.location.search);
+  const lp_id = params.get("id");
+  if(!lp_id) return;
+
+  try {
+    const res = await fetch("data/emails.json");
+    const emails = await res.json();
+    const entry = emails[lp_id];
+
+    if(!entry || entry.mode==="setup"){
+      document.getElementById("setup-screen").style.display="flex";
+    } else {
+      document.getElementById("lp-screen").style.display="block";
+      document.getElementById("mentorEmail").innerText = entry.email;
+      document.getElementById("mentorEmailCopy").innerText = entry.email;
+    }
+  } catch(e){
+    console.error("Fehler beim Laden von emails.json", e);
+  }
+}
+
+function saveEmail(){
+  alert("E-Mail gespeichert! (Hier folgt GitHub-Update mit Token)");
+}
+
+init();
+</script>
 </body>
 </html>
