@@ -38,15 +38,12 @@
   .grid.cols-2{grid-template-columns:repeat(2,1fr)}
   @media (max-width:900px){.grid.cols-2{grid-template-columns:1fr}}
 
-  /* Karten */
   .card{background:var(--bg-card);border-radius:var(--radius);padding:32px;backdrop-filter:blur(10px);box-shadow:var(--shadow)}
 
-  /* Musik Button */
   #musikBtn{position:fixed;bottom:20px;right:20px;z-index:10;
     padding:10px 18px;background:rgba(0,0,0,0.6);color:#fff;border:none;border-radius:50px;
     font-size:1rem;cursor:pointer;font-family:Inter,sans-serif;box-shadow:0 6px 14px rgba(0,0,0,0.5)}
 
-  /* Begrüßungsbox */
   #welcomeBox{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);
     display:flex;align-items:center;justify-content:center;z-index:2000}
   #welcomeInner{background:var(--bg-card);padding:40px;max-width:500px;width:90%;
@@ -59,20 +56,19 @@
 </head>
 <body>
 
+<!-- 🔗 Navigation extern, neuer Tab -->
 <header>
-  <nav>
-    <a href="#hero">Startseite</a>
-    <a href="#mentor">Campus</a>
-    <a href="#accordion">Grundkurs</a>
-    <a href="#cta">Onboarding</a>
-    <a href="#cta">Krypto-Glossar Pro</a>
+  <nav class="nav-external">
+    <a href="https://www.finanziellesouveraenitaet.de/" target="_blank" rel="noopener">Startseite</a>
+    <a href="https://www.finanziellesouveraenitaet.de/campus" target="_blank" rel="noopener">Campus</a>
+    <a href="https://www.finanziellesouveraenitaet.de/grundkurs" target="_blank" rel="noopener">Grundkurs</a>
+    <a href="https://www.finanziellesouveraenitaet.de/onboarding" target="_blank" rel="noopener">Onboarding</a>
+    <a href="https://www.finanziellesouveraenitaet.de/krypto-glossar-pro" target="_blank" rel="noopener">Krypto-Glossar Pro</a>
   </nav>
 </header>
 
 <!-- Hintergrundvideo -->
-<div class="bg-video">
-  <!-- Rotator setzt automatisch Hero-Video -->
-</div>
+<div class="bg-video"><!-- Rotator setzt Hero-Video --></div>
 
 <!-- Begrüßung -->
 <div id="welcomeBox">
@@ -102,23 +98,15 @@
 
 <!-- Mentor -->
 <section id="mentor">
-  <div class="wrap">
-    <div class="card" style="text-align:center">
-      <h2>Dein Digitaler Mentor</h2>
-      <p>Dein persönlicher Begleiter durch die Akademie …</p>
-    </div>
-  </div>
+  <div class="wrap"><div class="card" style="text-align:center"><h2>Dein Digitaler Mentor</h2><p>Dein persönlicher Begleiter …</p></div></div>
 </section>
 
 <!-- Reise -->
 <section id="accordion">
-  <div class="wrap">
-    <div class="card">
-      <h2>Deine Reise</h2>
-      <button class="accordion-btn">🚀 Fremdbestimmung ade</button>
-      <div class="accordion-content"><p>Starte deinen eigenen Weg …</p></div>
-    </div>
-  </div>
+  <div class="wrap"><div class="card"><h2>Deine Reise</h2>
+    <button class="accordion-btn">🚀 Fremdbestimmung ade</button>
+    <div class="accordion-content"><p>Starte deinen eigenen Weg …</p></div>
+  </div></div>
 </section>
 
 <!-- CTA -->
@@ -134,11 +122,7 @@
 
 <!-- Kino -->
 <section id="kino">
-  <div class="wrap">
-    <div class="card" style="text-align:center;min-height:300px">
-      🎬 <em>Kino-Platzhalter – Inhalte folgen durch Media-Admin</em>
-    </div>
-  </div>
+  <div class="wrap"><div class="card" style="text-align:center;min-height:300px">🎬 <em>Kino-Platzhalter</em></div></div>
 </section>
 
 <footer>
@@ -151,103 +135,53 @@
 <button id="musikBtn">🎵 Musik stoppen</button>
 
 <script>
-// ========== Musikbutton ==========
 const musikBtn=document.getElementById('musikBtn');
 const bgMusic=document.getElementById('bgMusic');
-musikBtn.addEventListener('click',()=>{
-  if(bgMusic.paused){bgMusic.play();musikBtn.textContent="🎵 Musik stoppen";}
-  else{bgMusic.pause();musikBtn.textContent="🎵 Musik starten";}
-});
+musikBtn.addEventListener('click',()=>{if(bgMusic.paused){bgMusic.play();musikBtn.textContent="🎵 Musik stoppen";}else{bgMusic.pause();musikBtn.textContent="🎵 Musik starten";}});
 
-// ========== Begrüßung ==========
 const welcomeBox=document.getElementById('welcomeBox');
-const laterBtn=document.getElementById('laterBtn');
-const goBtn=document.getElementById('goBtn');
-laterBtn.addEventListener('click',()=>{welcomeBox.style.display='none';});
-goBtn.addEventListener('click',()=>{
+document.getElementById('laterBtn').addEventListener('click',()=>{welcomeBox.style.display='none';});
+document.getElementById('goBtn').addEventListener('click',()=>{
   const mail=document.getElementById('emailInput').value.trim();
   if(!mail){alert("Bitte E-Mail eintragen!");return;}
   document.body.innerHTML=document.body.innerHTML.replace(/EMAIL_PLACEHOLDER/g,mail);
   welcomeBox.style.display='none';
 });
 
-// ========== Akkordeon ==========
-document.querySelectorAll('.accordion-btn').forEach(btn=>{
-  btn.addEventListener('click',()=>{btn.nextElementSibling.classList.toggle('active');});
-});
+// Akkordeon
+document.querySelectorAll('.accordion-btn').forEach(btn=>{btn.addEventListener('click',()=>{btn.nextElementSibling.classList.toggle('active');});});
 
-// ============================
 // Kombi Script: Emails + Rotator + Kino
-// ============================
 function getLPId(){const p=new URLSearchParams(window.location.search);return p.get("id")||null;}
 
-// ---- 1. Email Handling ----
-async function loadEmailStatus(){
-  const id=getLPId(); if(!id) return;
-  try{
-    const res=await fetch("emails.json");
-    const data=await res.json();
-    const entry=data[id];
-    if(!entry) return;
-    if(entry.status==="pending"){
-      document.getElementById("welcomeInner").innerHTML="<h3>⏳ Qualitätsprüfung läuft</h3><p>Dein Eintrag wird geprüft.</p>";
-    }
-    if(entry.status==="confirmed"){
-      document.body.innerHTML=document.body.innerHTML.replace(/EMAIL_PLACEHOLDER/g,entry.email);
-      document.getElementById("welcomeBox").style.display="none";
-      alert("✅ Deine E-Mail wurde erfolgreich eingetragen.");
-    }
-  }catch(e){console.error("emails.json Fehler",e);}
+async function loadEmailStatus(){const id=getLPId();if(!id)return;
+ try{const res=await fetch("emails.json");const data=await res.json();const entry=data[id];
+  if(!entry)return;
+  if(entry.status==="pending"){document.getElementById("welcomeInner").innerHTML="<h3>⏳ Qualitätsprüfung läuft</h3><p>Dein Eintrag wird geprüft.</p>";}
+  if(entry.status==="confirmed"){document.body.innerHTML=document.body.innerHTML.replace(/EMAIL_PLACEHOLDER/g,entry.email);document.getElementById("welcomeBox").style.display="none";alert("✅ Deine E-Mail wurde erfolgreich eingetragen.");}
+ }catch(e){console.error("emails.json Fehler",e);}
 }
 
-// ---- 2. Rotator ----
-async function loadRotator(){
-  try{
-    const res=await fetch("rotator.json");
-    const data=await res.json();
-    if(data.currentVideo){
-      const v=data.videoPool.find(x=>x.id===data.currentVideo);
-      if(v){
-        let embed="";
-        if(v.type==="youtube"){embed=`<iframe src="https://www.youtube.com/embed/${extractYT(v.src)}?autoplay=1&mute=1&loop=1&playlist=${extractYT(v.src)}&controls=0" allow="autoplay; fullscreen"></iframe>`;}
-        if(v.type==="vimeo"){embed=`<iframe src="https://player.vimeo.com/video/${extractVimeo(v.src)}?autoplay=1&muted=1&loop=1" allow="autoplay; fullscreen"></iframe>`;}
-        if(v.type==="mp4"){embed=`<video autoplay muted loop playsinline><source src="${v.src}" type="video/mp4"></video>`;}
-        document.querySelector(".bg-video").innerHTML=embed;
-      }
-    }
-    if(data.currentMusic){
-      const m=data.musicPool.find(x=>x.id===data.currentMusic);
-      if(m){bgMusic.src=m.src; bgMusic.play().catch(()=>{});}
-    }
-  }catch(e){console.error("rotator.json Fehler",e);}
-}
+async function loadRotator(){try{const res=await fetch("rotator.json");const data=await res.json();
+ if(data.currentVideo){const v=data.videoPool.find(x=>x.id===data.currentVideo);if(v){let embed="";
+  if(v.type==="youtube"){embed=`<iframe src="https://www.youtube.com/embed/${extractYT(v.src)}?autoplay=1&mute=1&loop=1&playlist=${extractYT(v.src)}&controls=0" allow="autoplay; fullscreen"></iframe>`;}
+  if(v.type==="vimeo"){embed=`<iframe src="https://player.vimeo.com/video/${extractVimeo(v.src)}?autoplay=1&muted=1&loop=1" allow="autoplay; fullscreen"></iframe>`;}
+  if(v.type==="mp4"){embed=`<video autoplay muted loop playsinline><source src="${v.src}" type="video/mp4"></video>`;}
+  document.querySelector(".bg-video").innerHTML=embed;}}
+ if(data.currentMusic){const m=data.musicPool.find(x=>x.id===data.currentMusic);if(m){bgMusic.src=m.src;bgMusic.play().catch(()=>{});}}
+}catch(e){console.error("rotator.json Fehler",e);}}
 
-// ---- 3. Kino Inhalte ----
-async function loadKino(){
-  try{
-    const res=await fetch("kino.json");
-    const data=await res.json();
-    if(data.nowPlaying){
-      const k=data.nowPlaying;
-      let embed="";
-      if(k.type==="youtube"){embed=`<iframe src="https://www.youtube.com/embed/${extractYT(k.src)}?autoplay=0&controls=1" allow="autoplay; fullscreen"></iframe>`;}
-      if(k.type==="vimeo"){embed=`<iframe src="https://player.vimeo.com/video/${extractVimeo(k.src)}" allow="autoplay; fullscreen"></iframe>`;}
-      if(k.type==="mp4"){embed=`<video controls><source src="${k.src}" type="video/mp4"></video>`;}
-      document.querySelector("#kino .card").innerHTML=embed;
-    }
-  }catch(e){console.error("kino.json Fehler",e);}
-}
+async function loadKino(){try{const res=await fetch("kino.json");const data=await res.json();if(data.nowPlaying){const k=data.nowPlaying;let embed="";
+ if(k.type==="youtube"){embed=`<iframe src="https://www.youtube.com/embed/${extractYT(k.src)}?autoplay=0&controls=1" allow="autoplay; fullscreen"></iframe>`;}
+ if(k.type==="vimeo"){embed=`<iframe src="https://player.vimeo.com/video/${extractVimeo(k.src)}" allow="autoplay; fullscreen"></iframe>`;}
+ if(k.type==="mp4"){embed=`<video controls><source src="${k.src}" type="video/mp4"></video>`;}
+ document.querySelector("#kino .card").innerHTML=embed;}}
+ catch(e){console.error("kino.json Fehler",e);}}
 
-// ---- Helpers ----
 function extractYT(url){const m=url.match(/(?:youtu\.be\/|v=)([^&]+)/);return m?m[1]:url;}
 function extractVimeo(url){const m=url.match(/vimeo\.com\/(\d+)/);return m?m[1]:url;}
 
-// ---- Init ----
-window.addEventListener("DOMContentLoaded",()=>{
-  loadEmailStatus();
-  loadRotator();
-  loadKino();
-});
+window.addEventListener("DOMContentLoaded",()=>{loadEmailStatus();loadRotator();loadKino();});
 </script>
 </body>
 </html>
