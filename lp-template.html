@@ -1,187 +1,799 @@
 <!doctype html>
 <html lang="de">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Finanzielle Souveränitäts Akademie</title>
-<style>
-  :root{
-    --bg-card: rgba(15,15,25,0.65);
-    --text: #f2f2f2;
-    --muted: #aaa;
-    --accent: #d4af37;
-    --accent-2:#1cc2a0;
-    --shadow: 0 25px 50px rgba(0,0,0,.65);
-    --radius: 14px;
-    --maxw: 1200px;
-  }
+  <!-- =========================
+       FSA LP-GENERATOR – MASTER
+       =========================
+       Dieses Template ist read-only (keine Schreibzugriffe).
+       Alle dynamischen Inhalte kommen aus JSON:
+       - settings.json      (globale Schalter/Hintertür)
+       - emails.json        (ID -> {status, email})
+       - rotator.json       (Hero-Video & Musik)
+       - slideshow.json     (Hero-Slideshow-Fallback/Alternative)
+       - playlist.json      (Musikrotation)
+       - kino.json          (Kino-Inhalt)
+       --------------------------------------------------------
+       DSGVO: Keine E-Mail/Token in der URL, kein LocalStorage.
+  -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  body{font-family:Inter,system-ui,sans-serif;color:var(--text);background:#000;margin:0}
-  h1,h2,h3{font-family:Montserrat,sans-serif;font-weight:700;line-height:1.2;color:var(--accent)}
+  <title>Finanzielle Souveränitäts Akademie</title>
+  <meta name="description" content="Dein Geld. Deine Freiheit. – Die Finanzielle Souveränitäts Akademie zeigt dir, wie du souverän in der neuen Welt aus Inflation, KI und Blockchain bestehst.">
 
-  /* Menü */
-  header{position:fixed;top:0;left:0;width:100%;display:flex;justify-content:center;align-items:center;
-    padding:20px 40px;z-index:1000;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);color:#fff}
-  header nav{display:flex;gap:40px}
-  header a{color:#fff;text-decoration:none;font-weight:600;font-size:1.05rem;font-family:Montserrat,sans-serif;
-    padding:6px 14px;border-radius:8px;box-shadow:0 0 14px rgba(255,255,255,0.15);background:rgba(0,0,0,0.4)}
-  header a:hover{color:var(--accent);box-shadow:0 0 18px rgba(212,175,55,0.7)}
+  <!-- (Optional) System-Fonts, kein externer Font-Download nötig -->
+  <style>
+    :root{
+      --bg-card: rgba(15,15,25,0.65);
+      --text: #f2f2f2;
+      --muted: #a9b0bc;
+      --accent: #d4af37;
+      --accent-2:#1cc2a0;
+      --shadow: 0 25px 50px rgba(0,0,0,.65);
+      --radius: 14px;
+      --maxw: 1200px;
+      --glass: blur(10px) saturate(1.1);
+      --border: 1px solid rgba(255,255,255,0.18);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      color:var(--text);
+      background:#000;
+      line-height:1.5;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      text-rendering:optimizeLegibility;
+    }
+    h1,h2,h3{
+      color:var(--accent);
+      font-weight:800;
+      letter-spacing:.2px;
+      line-height:1.2;
+      margin:0 0 16px 0;
+      font-family: Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    }
+    p{margin:0 0 12px 0}
+    a{color:inherit;text-decoration:none}
 
-  /* Hintergrundvideo */
-  .bg-video{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-2;pointer-events:none;background:#000}
-  .bg-video iframe,.bg-video video{width:100%;height:100%;border:none;object-fit:cover}
+    /* Header / Navigation (Ansicht 1 – externe Links, neuer Tab) */
+    header{
+      position:fixed;top:0;left:0;right:0;height:auto;z-index:1000;
+      display:flex;align-items:center;justify-content:center;
+      padding:16px 24px;
+      background:rgba(0,0,0,.58);
+      backdrop-filter:var(--glass);
+      border-bottom:var(--border);
+    }
+    header nav{display:flex;gap:28px;flex-wrap:wrap;align-items:center;justify-content:center}
+    header nav a{
+      display:inline-block;
+      color:#fff;
+      font-weight:700;
+      font-size:15px;
+      padding:8px 14px;
+      border-radius:10px;
+      background:rgba(255,255,255,0.06);
+      box-shadow:0 0 0 1px rgba(255,255,255,0.08) inset, 0 8px 20px rgba(0,0,0,.4);
+      transition:transform .2s ease, box-shadow .2s ease, color .2s;
+    }
+    header nav a:hover{
+      color:var(--accent);
+      transform:translateY(-1px);
+      box-shadow:0 0 0 1px rgba(212,175,55,0.55) inset, 0 12px 28px rgba(0,0,0,.55);
+    }
 
-  /* Layout Sektionen */
-  section{padding:100px 0;position:relative;z-index:2}
-  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
-  .grid{display:grid;gap:32px}
-  .grid.cols-2{grid-template-columns:repeat(2,1fr)}
-  @media (max-width:900px){.grid.cols-2{grid-template-columns:1fr}}
+    /* Hero-Hintergrund (Video oder Slideshow) */
+    .bg-hero{
+      position:fixed;inset:0;z-index:-2;background:#000;overflow:hidden;
+    }
+    .bg-hero iframe,
+    .bg-hero video{
+      width:100%;height:100%;border:0;object-fit:cover;
+    }
+    /* Slideshow Ebenen */
+    .slideshow-layer{
+      position:absolute;inset:0;overflow:hidden;
+    }
+    .slideshow-layer img{
+      position:absolute;inset:0;width:100%;height:100%;
+      object-fit:cover;opacity:0;transition:opacity 1.8s ease-in-out;
+      transform:scale(1.01);
+    }
+    .slideshow-layer img.active{opacity:1}
 
-  .card{background:var(--bg-card);border-radius:var(--radius);padding:32px;backdrop-filter:blur(10px);box-shadow:var(--shadow)}
+    /* Shared Layout */
+    main{display:block}
+    section{padding:110px 0 90px 0;position:relative;z-index:2}
+    .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+    .grid{display:grid;gap:32px}
+    .cols-2{grid-template-columns:repeat(2,1fr)}
+    @media (max-width:960px){.cols-2{grid-template-columns:1fr}}
+    .card{
+      background:var(--bg-card);
+      border-radius:var(--radius);
+      padding:32px;
+      backdrop-filter:var(--glass);
+      border:var(--border);
+      box-shadow:var(--shadow);
+    }
+    .muted{color:var(--muted)}
 
-  #musikBtn{position:fixed;bottom:20px;right:20px;z-index:10;
-    padding:10px 18px;background:rgba(0,0,0,0.6);color:#fff;border:none;border-radius:50px;
-    font-size:1rem;cursor:pointer;font-family:Inter,sans-serif;box-shadow:0 6px 14px rgba(0,0,0,0.5)}
+    /* Buttons */
+    .btn{display:inline-block;margin-top:12px;background:var(--accent);color:#000;
+      padding:14px 22px;border-radius:999px;font-weight:800;letter-spacing:.2px}
+    .btn:hover{filter:brightness(1.05)}
+    .btn.full{display:block;width:100%;text-align:center;margin-top:18px}
 
-  #welcomeBox{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);
-    display:flex;align-items:center;justify-content:center;z-index:2000}
-  #welcomeInner{background:var(--bg-card);padding:40px;max-width:500px;width:90%;
-    border-radius:var(--radius);backdrop-filter:blur(10px);text-align:center}
-  #welcomeInner input{padding:10px;width:80%;border-radius:6px;border:1px solid #ccc;margin:12px 0}
-  #welcomeInner button{margin:8px;padding:10px 16px;border:none;border-radius:6px;cursor:pointer;font-weight:600}
-  #laterBtn{background:#444;color:#fff}
-  #goBtn{background:var(--accent);color:#000}
-</style>
+    /* Akkordeon */
+    .accordion{display:grid;gap:8px}
+    .acc-item{border-radius:12px;overflow:hidden;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12)}
+    .acc-head{width:100%;text-align:left;background:transparent;border:0;color:#fff;padding:16px 18px;font-weight:800;cursor:pointer}
+    .acc-head:hover{background:rgba(255,255,255,0.06)}
+    .acc-body{display:none;padding:0 18px 16px 18px;color:#e9eef7}
+    .acc-item.open .acc-body{display:block}
+
+    /* Kino-Player (16:9 responsive) */
+    .player-shell{position:relative;width:100%;max-width:960px;margin:0 auto;border-radius:14px;overflow:hidden;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,0.12)}
+    .ratio-16x9{position:relative;width:100%;padding-top:56.25%}
+    .ratio-16x9 > .player-embed{position:absolute;inset:0}
+    .player-embed iframe,
+    .player-embed video{width:100%;height:100%;border:0;object-fit:cover;background:#000}
+
+    /* Willkommen / Email */
+    #welcomeBox{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:2000;display:flex;align-items:center;justify-content:center}
+    #welcomeInner{
+      width:min(520px,92%);padding:32px;border-radius:16px;background:var(--bg-card);
+      border:var(--border);backdrop-filter:var(--glass);text-align:center;box-shadow:var(--shadow)
+    }
+    #welcomeInner h2{margin-bottom:6px}
+    .field{display:flex;gap:10px;align-items:center;justify-content:center;margin:14px 0 6px 0}
+    .field input[type="email"]{
+      width:75%;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.18);background:rgba(0,0,0,0.35);color:#fff
+    }
+    .field input::placeholder{color:#b6c0d0}
+    .ui-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+    .ui-row button{padding:10px 16px;border-radius:10px;border:0;cursor:pointer;font-weight:800}
+    #goBtn{background:var(--accent);color:#000}
+    #laterBtn{background:#394150;color:#fff}
+
+    /* Musik Knopf */
+    #musikBtn{position:fixed;right:18px;bottom:18px;z-index:40;padding:10px 16px;border-radius:999px;border:0;background:rgba(0,0,0,.55);color:#fff;font-weight:800;cursor:pointer}
+    #musikBtn:hover{filter:brightness(1.08)}
+
+    /* Footer */
+    footer{padding:44px 20px;text-align:center;color:#cdd6e4}
+
+    /* kleine Helpers */
+    .pill{display:inline-flex;gap:8px;align-items:center;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);font-weight:700}
+    .toast{
+      position:fixed;left:50%;bottom:22px;transform:translateX(-50%);
+      background:rgba(20,24,32,.9);color:#fff;padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.12);
+      z-index:2500;display:none
+    }
+    .toast.show{display:block;animation:fadeToast .2s ease}
+    @keyframes fadeToast{from{opacity:0;transform:translateX(-50%) translateY(6px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+  </style>
+
+  <!-- HLS optional (für .m3u8 Kino-Streams) -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.7/dist/hls.min.js" defer></script>
 </head>
 <body>
+  <!-- ======= Navigation (Ansicht 1 – externe Links, neuer Tab) ======= -->
+  <header>
+    <nav>
+      <a href="https://www.finanziellesouveraenitaet.de/" target="_blank" rel="noopener">Startseite</a>
+      <a href="https://www.finanziellesouveraenitaet.de/campus" target="_blank" rel="noopener">Campus</a>
+      <a href="https://www.finanziellesouveraenitaet.de/grundkurs-anfaenger" target="_blank" rel="noopener">Grundkurs</a>
+      <a href="https://www.finanziellesouveraenitaet.de/onboarding" target="_blank" rel="noopener">Onboarding</a>
+      <a href="https://www.finanziellesouveraenitaet.de/krypto-glossar-pro" target="_blank" rel="noopener">Krypto-Glossar Pro</a>
+    </nav>
+  </header>
 
-<!-- 🔗 Navigation extern, neuer Tab -->
-<header>
-  <nav class="nav-external">
-    <a href="https://www.finanziellesouveraenitaet.de/" target="_blank" rel="noopener">Startseite</a>
-    <a href="https://www.finanziellesouveraenitaet.de/campus" target="_blank" rel="noopener">Campus</a>
-    <a href="https://www.finanziellesouveraenitaet.de/grundkurs-anfaenger" target="_blank" rel="noopener">Grundkurs</a>
-    <a href="https://www.finanziellesouveraenitaet.de/onboarding" target="_blank" rel="noopener">Onboarding</a>
-    <a href="https://www.finanziellesouveraenitaet.de/krypto-glossar-pro" target="_blank" rel="noopener">Krypto-Glossar Pro</a>
-  </nav>
-</header>
+  <!-- ======= Hero Hintergrund (Video ODER Slideshow) ======= -->
+  <div class="bg-hero" id="heroBg"><!-- wird per JS gefüllt --></div>
 
-<!-- Hintergrundvideo -->
-<div class="bg-video"><!-- Rotator setzt Hero-Video --></div>
-
-<!-- Begrüßung -->
-<div id="welcomeBox">
-  <div id="welcomeInner">
-    <h2>👋 Willkommen zur Finanzielle Souveränität Akademie</h2>
-    <p>Trage deine <strong>seriöse E-Mail-Adresse</strong> ein, um deine persönliche Landingpage zu aktivieren.</p>
-    <input type="email" id="emailInput" placeholder="Deine E-Mail">
-    <div>
-      <button id="goBtn">Freischalten</button>
-      <button id="laterBtn">Später ansehen</button>
+  <!-- ======= Willkommen / E-Mail ======= -->
+  <div id="welcomeBox">
+    <div id="welcomeInner">
+      <div class="pill" style="margin-bottom:10px">👋 Willkommen zur Finanzielle Souveränitäts Akademie</div>
+      <h2>Dein Start in die Souveränität</h2>
+      <p class="muted">Trage deine <strong>seriöse E-Mail</strong> ein, um deine persönliche Landingpage zu aktivieren.</p>
+      <div class="field">
+        <input type="email" id="emailInput" placeholder="z. B. vorname.nachname@mail.de" autocomplete="email" inputmode="email">
+      </div>
+      <div class="ui-row">
+        <button id="goBtn">✅ Freischalten</button>
+        <button id="laterBtn">⏳ Später ansehen</button>
+      </div>
+      <p id="qaHint" class="muted" style="display:none;margin-top:10px">⏳ Qualitätsprüfung läuft – du wirst benachrichtigt, sobald freigeschaltet.</p>
     </div>
   </div>
-</div>
 
-<!-- Hero -->
-<section id="hero">
-  <div class="wrap grid cols-2">
-    <div class="card">
-      <h1>Dein Geld.<br><span style="color:var(--accent-2)">Deine Freiheit.</span></h1>
-      <p>Die Welt verändert sich: Inflation, KI, Blockchain. Hier lernst du, wie du souverän wirst.</p>
-      <p><strong>Nie mehr Fremdbestimmung.</strong></p>
-      <a href="#cta" class="btn">Jetzt starten</a>
-    </div>
-    <div class="card">„Eine Investition in Wissen bringt die besten Zinsen.“ – Franklin</div>
-  </div>
-</section>
+  <main>
+    <!-- ======= Hero Content ======= -->
+    <section id="hero">
+      <div class="wrap grid cols-2">
+        <div class="card">
+          <h1>Dein Geld.<br><span style="color:var(--accent-2)">Deine Freiheit.</span></h1>
+          <p>Die Welt verändert sich: Inflation, KI, Blockchain. Hier lernst du, wie du souverän wirst.</p>
+          <p><strong>Nie mehr Fremdbestimmung.</strong></p>
+          <p class="muted">Viele Tausende entdecken täglich die Krypto-Welt – mit Klarheit statt Angst.</p>
+          <a class="btn" href="#cta">Jetzt starten</a>
+        </div>
+        <div class="card" style="display:flex;flex-direction:column;gap:18px">
+          <div class="pill">💡 „Eine Investition in Wissen bringt die besten Zinsen.“ – Franklin</div>
+          <div class="pill">⭐ „Das Wichtigste ist, in dich selbst zu investieren.“ – Buffett</div>
+          <div class="pill">🔐 Souveränität entsteht aus Wissen + Anwendung</div>
+        </div>
+      </div>
+    </section>
 
-<!-- Mentor -->
-<section id="mentor">
-  <div class="wrap"><div class="card" style="text-align:center"><h2>Dein Digitaler Mentor</h2><p>Dein persönlicher Begleiter …</p></div></div>
-</section>
+    <!-- ======= Mentor ======= -->
+    <section id="mentor">
+      <div class="wrap">
+        <div class="card" style="text-align:center">
+          <h2>Dein Digitaler Mentor</h2>
+          <p>Ein Begleiter, der dir Schritt für Schritt zeigt, wie du Ängste abbaust, Klarheit gewinnst und souverän handelst – in Finanzen, Krypto & KI.</p>
+        </div>
+      </div>
+    </section>
 
-<!-- Reise -->
-<section id="accordion">
-  <div class="wrap"><div class="card"><h2>Deine Reise</h2>
-    <button class="accordion-btn">🚀 Fremdbestimmung ade</button>
-    <div class="accordion-content"><p>Starte deinen eigenen Weg …</p></div>
-  </div></div>
-</section>
+    <!-- ======= Accordion / Reise ======= -->
+    <section id="journey">
+      <div class="wrap">
+        <div class="card">
+          <h2>Deine Reise zur finanziellen Souveränität</h2>
+          <p class="muted" style="margin-top:-4px;margin-bottom:12px">Tippe auf die Titel, um mehr zu erfahren.</p>
+          <div class="accordion" id="accordion">
+            <div class="acc-item">
+              <button class="acc-head">🚀 Nie mehr Fremdbestimmung</button>
+              <div class="acc-body"><p>Du entscheidest – mit Wissen, System und Fokus.</p></div>
+            </div>
+            <div class="acc-item">
+              <button class="acc-head">🎆 Wer es wirklich will, folgt der Einladung</button>
+              <div class="acc-body"><p>Die Community wächst täglich – du bist nicht allein.</p></div>
+            </div>
+            <div class="acc-item">
+              <button class="acc-head">🧠 Viele entdecken täglich die Krypto-Welt</button>
+              <div class="acc-body"><p>Blockchain, Krypto & KI eröffnen neue Wege zu Einkommen.</p></div>
+            </div>
+            <div class="acc-item">
+              <button class="acc-head">😨 Angst kommt von Unwissenheit</button>
+              <div class="acc-body"><p>Wissen schafft Sicherheit. Genau deshalb gibt es diese Akademie.</p></div>
+            </div>
+            <div class="acc-item">
+              <button class="acc-head">📚 Deshalb gibt es die Akademie</button>
+              <div class="acc-body"><p>Klarheit, Praxis & Tools – alles, was du brauchst.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-<!-- CTA -->
-<section id="cta">
-  <div class="wrap">
-    <div class="card" style="text-align:center">
-      <h2>Finanzbildung für die neue Welt</h2>
-      <a href="mailto:EMAIL_PLACEHOLDER" class="btn full">🚀 Jetzt kostenlos starten – EMAIL_PLACEHOLDER</a>
-      <p><strong>EMAIL_PLACEHOLDER</strong></p>
-    </div>
-  </div>
-</section>
+    <!-- ======= CTA ======= -->
+    <section id="cta">
+      <div class="wrap">
+        <div class="card" style="text-align:center;max-width:820px;margin:0 auto">
+          <h2 style="font-size:2rem;margin-bottom:8px">Finanzbildung für die neue Welt</h2>
+          <p class="muted" style="margin-bottom:18px">Dein Geld. Deine Zukunft. Deine Souveränität.</p>
 
-<!-- Kino -->
-<section id="kino">
-  <div class="wrap"><div class="card" style="text-align:center;min-height:300px">🎬 <em>Kino-Platzhalter</em></div></div>
-</section>
+          <!-- CTA-Mail (wird mit confirmed Email ersetzt) -->
+          <a href="mailto:EMAIL_PLACEHOLDER" class="btn full">🚀 Jetzt kostenlos starten – EMAIL_PLACEHOLDER</a>
 
-<footer>
-  <p>© 2025 Finanzielle Souveränitäts Akademie</p>
-  <p><em>„Wissen ist Macht – angewandtes Wissen ist Freiheit.“</em></p>
-</footer>
+          <div style="margin-top:16px">
+            <p class="muted">Oder kopiere die Adresse direkt:</p>
+            <p id="emailEcho" style="font-weight:800;color:var(--accent)">EMAIL_PLACEHOLDER</p>
+            <button id="copyBtn" class="btn" style="background:#f0d67b;color:#000">📋 E-Mail kopieren</button>
+          </div>
 
-<!-- Musik -->
-<audio id="bgMusic" autoplay loop></audio>
-<button id="musikBtn">🎵 Musik stoppen</button>
+          <p style="margin-top:18px">👉 Über diese E-Mail erhältst du direkten Kontakt zu einem menschlichen Mentor.</p>
+          <p style="margin-top:8px;color:var(--accent-2);font-weight:800">✅ Deine Zugangsdaten zum Grundkurs kommen anschließend per Mail.</p>
+        </div>
+      </div>
+    </section>
 
-<script>
-const musikBtn=document.getElementById('musikBtn');
-const bgMusic=document.getElementById('bgMusic');
-musikBtn.addEventListener('click',()=>{if(bgMusic.paused){bgMusic.play();musikBtn.textContent="🎵 Musik stoppen";}else{bgMusic.pause();musikBtn.textContent="🎵 Musik starten";}});
+    <!-- ======= Kino ======= -->
+    <section id="kino">
+      <div class="wrap">
+        <div class="card">
+          <h2 style="margin-bottom:14px">🎬 Kino</h2>
+          <div class="player-shell">
+            <div class="ratio-16x9">
+              <div class="player-embed" id="kinoEmbed">
+                <div style="display:flex;align-items:center;justify-content:center;height:100%;color:#9fb1c6;">
+                  <em>Kino wird geladen …</em>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="muted" style="margin-top:10px">Format passt sich automatisch an (YouTube, Vimeo, MP4, HLS, URL-Embed).</p>
+        </div>
+      </div>
+    </section>
+  </main>
 
-const welcomeBox=document.getElementById('welcomeBox');
-document.getElementById('laterBtn').addEventListener('click',()=>{welcomeBox.style.display='none';});
-document.getElementById('goBtn').addEventListener('click',()=>{
-  const mail=document.getElementById('emailInput').value.trim();
-  if(!mail){alert("Bitte E-Mail eintragen!");return;}
-  document.body.innerHTML=document.body.innerHTML.replace(/EMAIL_PLACEHOLDER/g,mail);
-  welcomeBox.style.display='none';
-});
+  <!-- ======= Footer ======= -->
+  <footer>
+    <p>© 2025 Finanzielle Souveränitäts Akademie</p>
+    <p><em>„Wissen ist Macht – angewandtes Wissen ist Freiheit.“</em></p>
+  </footer>
 
-// Akkordeon
-document.querySelectorAll('.accordion-btn').forEach(btn=>{btn.addEventListener('click',()=>{btn.nextElementSibling.classList.toggle('active');});});
+  <!-- ======= Musik ======= -->
+  <audio id="bgMusic" autoplay loop preload="auto"></audio>
+  <button id="musikBtn" aria-live="polite">🎵 Musik starten</button>
 
-// Kombi Script: Emails + Rotator + Kino
-function getLPId(){const p=new URLSearchParams(window.location.search);return p.get("id")||null;}
+  <!-- ======= Toast ======= -->
+  <div class="toast" id="toast"></div>
 
-async function loadEmailStatus(){const id=getLPId();if(!id)return;
- try{const res=await fetch("emails.json");const data=await res.json();const entry=data[id];
-  if(!entry)return;
-  if(entry.status==="pending"){document.getElementById("welcomeInner").innerHTML="<h3>⏳ Qualitätsprüfung läuft</h3><p>Dein Eintrag wird geprüft.</p>";}
-  if(entry.status==="confirmed"){document.body.innerHTML=document.body.innerHTML.replace(/EMAIL_PLACEHOLDER/g,entry.email);document.getElementById("welcomeBox").style.display="none";alert("✅ Deine E-Mail wurde erfolgreich eingetragen.");}
- }catch(e){console.error("emails.json Fehler",e);}
-}
+  <!-- =========================
+       LOGIK / DATENBINDUNG
+       ========================= -->
+  <script>
+    /* ---------------------------------------------------------
+       UTILITIES
+    --------------------------------------------------------- */
+    const $ = sel => document.querySelector(sel);
+    const $$ = sel => Array.from(document.querySelectorAll(sel));
 
-async function loadRotator(){try{const res=await fetch("rotator.json");const data=await res.json();
- if(data.currentVideo){const v=data.videoPool.find(x=>x.id===data.currentVideo);if(v){let embed="";
-  if(v.type==="youtube"){embed=`<iframe src="https://www.youtube.com/embed/${extractYT(v.src)}?autoplay=1&mute=1&loop=1&playlist=${extractYT(v.src)}&controls=0" allow="autoplay; fullscreen"></iframe>`;}
-  if(v.type==="vimeo"){embed=`<iframe src="https://player.vimeo.com/video/${extractVimeo(v.src)}?autoplay=1&muted=1&loop=1" allow="autoplay; fullscreen"></iframe>`;}
-  if(v.type==="mp4"){embed=`<video autoplay muted loop playsinline><source src="${v.src}" type="video/mp4"></video>`;}
-  document.querySelector(".bg-video").innerHTML=embed;}}
- if(data.currentMusic){const m=data.musicPool.find(x=>x.id===data.currentMusic);if(m){bgMusic.src=m.src;bgMusic.play().catch(()=>{});}}
-}catch(e){console.error("rotator.json Fehler",e);}}
+    function showToast(msg, ms=2600){
+      const t = $('#toast'); if(!t) return;
+      t.textContent = msg; t.classList.add('show');
+      setTimeout(()=>t.classList.remove('show'), ms);
+    }
 
-async function loadKino(){try{const res=await fetch("kino.json");const data=await res.json();if(data.nowPlaying){const k=data.nowPlaying;let embed="";
- if(k.type==="youtube"){embed=`<iframe src="https://www.youtube.com/embed/${extractYT(k.src)}?autoplay=0&controls=1" allow="autoplay; fullscreen"></iframe>`;}
- if(k.type==="vimeo"){embed=`<iframe src="https://player.vimeo.com/video/${extractVimeo(k.src)}" allow="autoplay; fullscreen"></iframe>`;}
- if(k.type==="mp4"){embed=`<video controls><source src="${k.src}" type="video/mp4"></video>`;}
- document.querySelector("#kino .card").innerHTML=embed;}}
- catch(e){console.error("kino.json Fehler",e);}}
+    function getLPId(){
+      const p = new URLSearchParams(location.search);
+      return p.get('id') || null;
+    }
 
-function extractYT(url){const m=url.match(/(?:youtu\.be\/|v=)([^&]+)/);return m?m[1]:url;}
-function extractVimeo(url){const m=url.match(/vimeo\.com\/(\d+)/);return m?m[1]:url;}
+    function safeJson(url){
+      // Cache-Bust light (verhindert aggressive CDN-Caches)
+      const bust = (url.includes('?') ? '&' : '?') + 'v=' + Date.now();
+      return fetch(url + bust).then(r=>r.json());
+    }
 
-window.addEventListener("DOMContentLoaded",()=>{loadEmailStatus();loadRotator();loadKino();});
-</script>
+    function extractYouTubeId(url){
+      if(!url) return null;
+      const m = url.match(/(?:youtu\.be\/|v=|\/embed\/)([^&#?/]+)/i);
+      return m ? m[1] : null;
+    }
+
+    function extractVimeoId(url){
+      if(!url) return null;
+      const m = url.match(/vimeo\.com\/(?:video\/)?(\d+)/i);
+      return m ? m[1] : null;
+    }
+
+    /* ---------------------------------------------------------
+       GLOBAL STATE
+    --------------------------------------------------------- */
+    let SETTINGS = {};
+    let EMAILS = {};
+    let HERO_MODE = 'video'; // 'video' | 'slideshow'
+    let EMAIL_CONFIRMED = null; // bestätigte Mail (string) oder null
+
+    /* ---------------------------------------------------------
+       EMAIL / WILLKOMMEN
+       - Kein Schreiben hier (read-only).
+       - Admin pflegt emails.json via GitHub API (lp-admin.html).
+    --------------------------------------------------------- */
+    async function handleEmail(){
+      const id = getLPId();
+      const welcomeBox = $('#welcomeBox');
+      const goBtn = $('#goBtn');
+      const laterBtn = $('#laterBtn');
+      const qaHint = $('#qaHint');
+
+      laterBtn.addEventListener('click', ()=>{ welcomeBox.style.display='none'; });
+
+      // Klick: "Freischalten" ersetzt nur lokal den Placeholder
+      goBtn.addEventListener('click', ()=>{
+        const mail = $('#emailInput').value.trim();
+        if(!mail){ alert('Bitte E-Mail eintragen!'); return; }
+        replaceEmailPlaceholders(mail);
+        welcomeBox.style.display='none';
+        showToast('🔒 Hinweis: Der finale Eintrag erfolgt nach Qualitätsprüfung durch den Admin.');
+      });
+
+      if(!id){
+        // Kein ID → normale Besucher-Ansicht, Formular bleibt möglich
+        return;
+      }
+
+      try{
+        EMAILS = await safeJson('emails.json');
+        const entry = EMAILS[id];
+        if(!entry) return; // Kein Eintrag → Formular bleibt
+        if(entry.status === 'pending'){
+          // Status pending → Info anzeigen, Formular sperren (nur Info)
+          $('#emailInput').disabled = true;
+          $('#goBtn').disabled = true;
+          qaHint.style.display = 'block';
+        }
+        if(entry.status === 'confirmed'){
+          EMAIL_CONFIRMED = entry.email;
+          replaceEmailPlaceholders(entry.email);
+          welcomeBox.style.display = 'none';
+          showToast('✅ E-Mail bestätigt & eingetragen.');
+        }
+      }catch(e){
+        console.warn('emails.json konnte nicht geladen werden:', e);
+      }
+    }
+
+    function replaceEmailPlaceholders(email){
+      // Ersetzt Vorkommen im CTA-Link, Echo, Copy-Button
+      // (gezielte Ersetzung statt innerHTML global auszutauschen)
+      const cta = document.querySelectorAll('a[href^="mailto:EMAIL_PLACEHOLDER"]');
+      cta.forEach(a=>a.href = 'mailto:' + email);
+      const ctaText = $$('#cta .btn.full');
+      ctaText.forEach(btn => btn.textContent = '🚀 Jetzt kostenlos starten – ' + email);
+
+      const echo = $('#emailEcho'); if(echo) echo.textContent = email;
+
+      const copyBtn = $('#copyBtn');
+      if(copyBtn){
+        copyBtn.onclick = ()=>navigator.clipboard.writeText(email).then(()=>showToast('📋 E-Mail kopiert: ' + email));
+      }
+    }
+
+    /* ---------------------------------------------------------
+       SETTINGS / HINTERTÜR
+       - ui.useSlideshow: true => Slideshow, sonst Video
+       - ui.showWelcomeBox / showMentorSection
+       - maintenanceMode => Hard-Stop
+    --------------------------------------------------------- */
+    async function loadSettings(){
+      try{
+        SETTINGS = await safeJson('settings.json');
+      }catch(e){
+        console.warn('settings.json nicht gefunden – Standardwerte aktiv.', e);
+        SETTINGS = { ui:{ useSlideshow:false, showWelcomeBox:true, showMentorSection:true, maintenanceMode:false, debug:false } };
+      }
+
+      if(SETTINGS?.ui?.maintenanceMode){
+        document.body.innerHTML = "<main style='display:flex;min-height:100vh;align-items:center;justify-content:center;color:#fff'><h1>🚧 Wartungsmodus – bitte später wiederkommen.</h1></main>";
+        return { stop:true };
+      }
+
+      // Sichtbarkeit
+      if(SETTINGS?.ui?.showWelcomeBox === false){
+        const wb = $('#welcomeBox'); if(wb) wb.style.display='none';
+      }
+      if(SETTINGS?.ui?.showMentorSection === false){
+        const sec = $('#mentor'); if(sec) sec.style.display='none';
+      }
+
+      HERO_MODE = SETTINGS?.ui?.useSlideshow ? 'slideshow' : 'video';
+      return { stop:false };
+    }
+
+    /* ---------------------------------------------------------
+       HERO: VIDEO-ROTATOR
+       - Quelle: rotator.json (2 mögliche Formen)
+         A) { videoPool:[{id,src,type}], musicPool:[], currentVideo, currentMusic }
+         B) { video: "<yt/vimeo/mp4 url>", videoType: "youtube|vimeo|mp4", music: "<mp3 url>" }
+    --------------------------------------------------------- */
+    async function loadHeroVideo(){
+      let data = {};
+      try{
+        data = await safeJson('rotator.json');
+      }catch(e){
+        console.warn('rotator.json fehlte – fallback auf YouTube Adler-Video', e);
+        embedYouTube($('#heroBg'), 'miWBKSszEIw', { autoplay:1, mute:1, loop:1, controls:0 });
+        await ensureMusicFromFallback();
+        return;
+      }
+
+      const host = $('#heroBg');
+      host.innerHTML = '';
+
+      // a) Pool-Variante
+      if(Array.isArray(data.videoPool) && data.currentVideo){
+        const v = data.videoPool.find(x=>x.id === data.currentVideo);
+        if(v){
+          if(v.type === 'youtube'){
+            const vid = extractYouTubeId(v.src);
+            embedYouTube(host, vid, { autoplay:1, mute:1, loop:1, controls:0 });
+          }else if(v.type === 'vimeo'){
+            const vid = extractVimeoId(v.src);
+            embedVimeo(host, vid, { autoplay:1, loop:1, background:1, muted:1 });
+          }else if(v.type === 'mp4'){
+            embedMP4(host, v.src, { autoplay:true, muted:true, loop:true });
+          }else{
+            // unbekannt → versuche generisch als iframe
+            embedIFrame(host, v.src);
+          }
+        }
+        await ensureMusicFromPools(data);
+        return;
+      }
+
+      // b) Einfache Variante
+      if(data.video){
+        const type = (data.videoType || guessType(data.video));
+        if(type === 'youtube'){
+          const vid = extractYouTubeId(data.video);
+          embedYouTube(host, vid, { autoplay:1, mute:1, loop:1, controls:0 });
+        }else if(type === 'vimeo'){
+          const vid = extractVimeoId(data.video);
+          embedVimeo(host, vid, { autoplay:1, loop:1, background:1, muted:1 });
+        }else if(type === 'mp4'){
+          embedMP4(host, data.video, { autoplay:true, muted:true, loop:true });
+        }else{
+          embedIFrame(host, data.video);
+        }
+
+        // Musik direkt oder via Playlist
+        if(data.music){ playMusic(data.music, 1); }
+        else { await ensureMusicFromPlaylist(); }
+        return;
+      }
+
+      // Fallback wenn alles fehlt
+      embedYouTube(host, 'miWBKSszEIw', { autoplay:1, mute:1, loop:1, controls:0 });
+      await ensureMusicFromFallback();
+    }
+
+    function guessType(url){
+      if(!url) return 'url';
+      if(/youtu\.be|youtube\.com/i.test(url)) return 'youtube';
+      if(/vimeo\.com/i.test(url)) return 'vimeo';
+      if(/\.(mp4|webm|ogg)(\?|$)/i.test(url)) return 'mp4';
+      return 'url';
+    }
+
+    function embedYouTube(host, videoId, opts={}){
+      if(!videoId){ return embedFallbackPoster(host); }
+      const params = new URLSearchParams({
+        autoplay: opts.autoplay?1:0,
+        mute: opts.mute?1:0,
+        loop: opts.loop?1:0,
+        controls: opts.controls ?? 0,
+        playlist: videoId,
+        modestbranding: 1,
+        showinfo: 0
+      });
+      host.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?${params.toString()}" allow="autoplay; fullscreen"></iframe>`;
+    }
+
+    function embedVimeo(host, videoId, opts={}){
+      if(!videoId){ return embedFallbackPoster(host); }
+      const params = new URLSearchParams({
+        autoplay: opts.autoplay?1:0,
+        loop: opts.loop?1:0,
+        background: opts.background?1:0,
+        muted: opts.muted?1:0
+      });
+      host.innerHTML = `<iframe src="https://player.vimeo.com/video/${videoId}?${params.toString()}" allow="autoplay; fullscreen"></iframe>`;
+    }
+
+    function embedMP4(host, src, {autoplay=true, muted=true, loop=true}={}){
+      host.innerHTML = `
+        <video ${autoplay?'autoplay':''} ${muted?'muted':''} ${loop?'loop':''} playsinline>
+          <source src="${src}" type="video/mp4">
+        </video>`;
+    }
+
+    function embedIFrame(host, src){
+      host.innerHTML = `<iframe src="${src}" allow="autoplay; fullscreen"></iframe>`;
+    }
+
+    function embedFallbackPoster(host){
+      host.innerHTML = `<div class="slideshow-layer"><img class="active" src="assets/slide01.jpg" alt=""></div>`;
+    }
+
+    async function ensureMusicFromPools(rotator){
+      // 1) rotator.musicPool → currentMusic
+      if(rotator?.musicPool?.length && rotator.currentMusic){
+        const m = rotator.musicPool.find(x=>x.id === rotator.currentMusic);
+        if(m?.src) return playMusic(m.src, 1);
+      }
+      // 2) playlist.json
+      await ensureMusicFromPlaylist();
+    }
+
+    async function ensureMusicFromPlaylist(){
+      try{
+        const pl = await safeJson('playlist.json');
+        if(Array.isArray(pl.tracks) && pl.tracks.length){
+          const idx = Math.max(0, Math.min(pl.tracks.length-1, pl.current || 0));
+          playMusic(pl.tracks[idx], 1);
+          return;
+        }
+      }catch(e){ console.warn('playlist.json nicht geladen', e); }
+      // 3) Settings-Fallback
+      await ensureMusicFromFallback();
+    }
+
+    async function ensureMusicFromFallback(){
+      const src = SETTINGS?.rotator?.fallbackMusic || 'terra-mater-inspiring-cinematic-epic-272565.mp3';
+      playMusic(src, 1);
+    }
+
+    /* ---------------------------------------------------------
+       HERO: SLIDESHOW
+       - Quelle: slideshow.json (+ optional music)
+    --------------------------------------------------------- */
+    async function loadHeroSlideshow(){
+      let data = {};
+      try{
+        data = await safeJson('slideshow.json');
+      }catch(e){
+        console.warn('slideshow.json fehlte – nutze Settings-Fallback', e);
+        data = { enabled:true, interval:15000, images:[], music:null };
+      }
+
+      if(data.enabled === false){
+        // Wenn explizit deaktiviert → zurück auf Video
+        return loadHeroVideo();
+      }
+
+      const host = $('#heroBg');
+      host.innerHTML = '';
+      const layer = document.createElement('div');
+      layer.className = 'slideshow-layer';
+      host.appendChild(layer);
+
+      const imgs = (Array.isArray(data.images) && data.images.length) ? data.images : [
+        'assets/slide01.jpg','assets/slide02.jpg','assets/slide03.jpg','assets/slide04.jpg'
+      ];
+
+      imgs.forEach((src,i)=>{
+        const img = document.createElement('img');
+        img.src = src;
+        img.alt = '';
+        if(i===0) img.classList.add('active');
+        layer.appendChild(img);
+      });
+
+      // Crossfade
+      const all = Array.from(layer.querySelectorAll('img'));
+      let idx = 0;
+      const step = ()=>{
+        const cur = all[idx];
+        idx = (idx+1) % all.length;
+        const next = all[idx];
+        cur.classList.remove('active');
+        next.classList.add('active');
+      };
+      setInterval(step, Math.max(3000, data.interval || 15000));
+
+      // Musik: Slideshow-spezifisch ODER Playlist ODER Settings-Fallback
+      if(data.music?.src){
+        playMusic(data.music.src, data.music.volume ?? 1);
+      }else{
+        await ensureMusicFromPlaylist();
+      }
+    }
+
+    /* ---------------------------------------------------------
+       MUSIK
+    --------------------------------------------------------- */
+    function playMusic(src, volume=1){
+      const el = $('#bgMusic');
+      if(!el) return;
+      el.src = src;
+      el.volume = Math.max(0, Math.min(1, volume));
+      el.play().then(()=>{
+        $('#musikBtn').textContent = '🎵 Musik stoppen';
+      }).catch(()=>{
+        // Autoplay blockiert (z. B. iOS) → Button zeigt „starten“
+        $('#musikBtn').textContent = '🎵 Musik starten';
+      });
+    }
+
+    $('#musikBtn').addEventListener('click', ()=>{
+      const el = $('#bgMusic');
+      if(el.paused){ el.play(); $('#musikBtn').textContent = '🎵 Musik stoppen'; }
+      else { el.pause(); $('#musikBtn').textContent = '🎵 Musik starten'; }
+    });
+
+    /* ---------------------------------------------------------
+       KINO
+       - Quelle: kino.json (nowPlaying)
+       - Typen: youtube | vimeo | mp4 | hls | url
+    --------------------------------------------------------- */
+    async function loadKino(){
+      let data = {};
+      try{
+        data = await safeJson('kino.json');
+      }catch(e){
+        console.warn('kino.json nicht gefunden – zeige Platzhalter', e);
+        $('#kinoEmbed').innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#9fb1c6;"><em>Kein Kino gesetzt.</em></div>`;
+        return;
+      }
+
+      const now = data?.nowPlaying;
+      if(!now || !now.src){
+        $('#kinoEmbed').innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#9fb1c6;"><em>Kein Kino gesetzt.</em></div>`;
+        return;
+      }
+
+      const type = (now.type || guessType(now.src));
+      const host = $('#kinoEmbed');
+
+      if(type === 'youtube'){
+        const vid = extractYouTubeId(now.src);
+        host.innerHTML = `<iframe src="https://www.youtube.com/embed/${vid}?autoplay=0&controls=1" allow="autoplay; fullscreen"></iframe>`;
+        return;
+      }
+      if(type === 'vimeo'){
+        const vid = extractVimeoId(now.src);
+        host.innerHTML = `<iframe src="https://player.vimeo.com/video/${vid}" allow="autoplay; fullscreen"></iframe>`;
+        return;
+      }
+      if(type === 'mp4'){
+        host.innerHTML = `<video controls playsinline><source src="${now.src}" type="video/mp4"></video>`;
+        return;
+      }
+      if(type === 'hls' || /\.m3u8(\?|$)/i.test(now.src)){
+        // HLS über hls.js (wenn unterstützt)
+        host.innerHTML = `<video id="kinoHls" controls playsinline></video>`;
+        const video = $('#kinoHls');
+        const tryHls = ()=>{
+          if(window.Hls && window.Hls.isSupported()){
+            const hls = new Hls(); hls.loadSource(now.src); hls.attachMedia(video);
+          }else if(video.canPlayType('application/vnd.apple.mpegurl')){
+            video.src = now.src;
+          }else{
+            host.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#f88">HLS wird von deinem Browser nicht unterstützt.</div>`;
+          }
+        };
+        // Warten bis hls.js geladen ist (defer)
+        if(typeof Hls === 'undefined'){ setTimeout(tryHls, 200); } else { tryHls(); }
+        return;
+      }
+
+      // Generischer Fallback (z. B. Zoom-Embed o.ä.)
+      host.innerHTML = `<iframe src="${now.src}" allow="autoplay; fullscreen"></iframe>`;
+    }
+
+    /* ---------------------------------------------------------
+       UI: Akkordeon
+    --------------------------------------------------------- */
+    function initAccordion(){
+      $$('#accordion .acc-item .acc-head').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          const item = btn.closest('.acc-item');
+          item.classList.toggle('open');
+        });
+      });
+    }
+
+    /* ---------------------------------------------------------
+       INIT
+    --------------------------------------------------------- */
+    async function boot(){
+      initAccordion();
+
+      const res = await loadSettings();
+      if(res.stop) return;
+
+      // E-Mail Handling (read-only view)
+      await handleEmail();
+
+      // Hero Modus
+      if(HERO_MODE === 'slideshow') await loadHeroSlideshow();
+      else await loadHeroVideo();
+
+      // Kino
+      await loadKino();
+
+      // Copy Button (falls noch nicht ersetzt)
+      const copyBtn = $('#copyBtn');
+      if(copyBtn){
+        copyBtn.addEventListener('click', ()=>{
+          const echo = $('#emailEcho')?.textContent?.trim() || 'EMAIL_PLACEHOLDER';
+          navigator.clipboard.writeText(echo).then(()=>showToast('📋 E-Mail kopiert: ' + echo));
+        });
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', boot);
+  </script>
 </body>
 </html>
